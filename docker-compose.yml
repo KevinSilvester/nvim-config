@@ -3,7 +3,7 @@ version: "3.9"
 services:
   hello:
     build: .
-    container_name: nvim-config
+    container_name: nvim-config-v3
     init: true
     ports:
       - 8092:3000

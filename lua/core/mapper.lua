@@ -1,4 +1,3 @@
-
 local keymap = {}
 local opts = {}
 
@@ -56,7 +55,7 @@ function keymap.new_opts(...)
    end
 
    for _, arg in pairs(args) do
-      if type(arg) == "string" then
+      if type(arg) == 'string' then
          o.options.desc = arg
       else
          arg(o.options)()
@@ -66,21 +65,21 @@ function keymap.new_opts(...)
 end
 
 function keymap.cmd(str)
-   return "<cmd>" .. str .. "<CR>"
+   return '<cmd>' .. str .. '<CR>'
 end
 
 -- visual
 function keymap.cu(str)
-   return "<C-u><cmd>" .. str .. "<CR>"
+   return '<C-u><cmd>' .. str .. '<CR>'
 end
 
 --@private
 local keymap_set = function(mode, tbl)
-   vim.validate({ tbl = { tbl, "table" } })
+   vim.validate({ tbl = { tbl, 'table' } })
 
    local len = #tbl
    if len < 2 then
-      vim.notify("keymap must has rhs")
+      vim.notify('keymap must has rhs')
       return
    end
 
@@ -92,9 +91,9 @@ end
 local function map(mod)
    ---@param tbl table
    return function(tbl)
-      vim.validate({ tbl = { tbl, "table" } })
+      vim.validate({ tbl = { tbl, 'table' } })
 
-      if type(tbl[1]) == "table" and type(tbl[2]) == "table" then
+      if type(tbl[1]) == 'table' and type(tbl[2]) == 'table' then
          for _, v in pairs(tbl) do
             keymap_set(mod, v)
          end
@@ -107,13 +106,13 @@ end
 ---@private
 local buf_keymap_set = function(mod, bufnr, tbl)
    vim.validate({
-      bufnr = { bufnr, "number" },
-      tbl = { tbl, "table" },
+      bufnr = { bufnr, 'number' },
+      tbl = { tbl, 'table' },
    })
 
    local len = #tbl
    if len < 2 then
-      vim.notify("keymap must has rhs")
+      vim.notify('keymap must has rhs')
       return
    end
 
@@ -127,11 +126,11 @@ local function buf_map(mod)
    ---@param tbl table
    return function(bufnr, tbl)
       vim.validate({
-         bufnr = { bufnr, "number" },
-         tbl = { tbl, "table" },
+         bufnr = { bufnr, 'number' },
+         tbl = { tbl, 'table' },
       })
 
-      if type(tbl[1]) == "table" and type(tbl[2]) == "table" then
+      if type(tbl[1]) == 'table' and type(tbl[2]) == 'table' then
          for _, v in pairs(tbl) do
             buf_keymap_set(mod, bufnr, v)
          end
@@ -141,18 +140,18 @@ local function buf_map(mod)
    end
 end
 
-keymap.nmap = map("n")
-keymap.imap = map("i")
-keymap.cmap = map("c")
-keymap.vmap = map("v")
-keymap.xmap = map("x")
-keymap.tmap = map("t")
+keymap.nmap = map('n')
+keymap.imap = map('i')
+keymap.cmap = map('c')
+keymap.vmap = map('v')
+keymap.xmap = map('x')
+keymap.tmap = map('t')
 
-keymap.buf_nmap = buf_map("n")
-keymap.buf_imap = buf_map("i")
-keymap.buf_cmap = buf_map("c")
-keymap.buf_vmap = buf_map("v")
-keymap.buf_xmap = buf_map("x")
-keymap.buf_tmap = buf_map("t")
+keymap.buf_nmap = buf_map('n')
+keymap.buf_imap = buf_map('i')
+keymap.buf_cmap = buf_map('c')
+keymap.buf_vmap = buf_map('v')
+keymap.buf_xmap = buf_map('x')
+keymap.buf_tmap = buf_map('t')
 
 return keymap

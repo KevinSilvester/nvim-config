@@ -1,25 +1,25 @@
 local fn, uv, api = vim.fn, vim.loop, vim.api
 
 -- dir paths
-local config_dir = fn.stdpath("config")
-local data_dir = fn.stdpath("data")
-local cache_dir = fn.stdpath("cache")
-local modules_dir = config_dir .. "/lua/modules"
+local config_dir = fn.stdpath('config')
+local data_dir = string.format('%s/site/', fn.stdpath('data'))
+local cache_dir = fn.stdpath('cache')
+local modules_dir = config_dir .. '/lua/modules'
 
 -- packer info
 local packer = nil
-local packer_compiled = data_dir .. "/lua/packer_compiled.lua"
-local bak_compiled = data_dir .. "/lua/bak_compiled.lua"
+local packer_compiled = data_dir .. '/lua/packer_compiled.lua'
+local bak_compiled = data_dir .. '/lua/bak_compiled.lua'
 
-
--- wrapper around packer
+-- wrapper ar--
+-- Packer wrapper
 local Packer = {}
 Packer.__index = Packer
 
-function Packer:load_plugin()
+function Packer:load_plugins()
    self.repos = {}
 
-  local get_plugins_list = function()
+   local get_plugins_list = function()
       local list = {}
       local tmp = vim.split(fn.globpath(modules_dir, "*/plugins.lua"), "\n")
       for _, f in ipairs(tmp) do
@@ -34,7 +34,7 @@ function Packer:load_plugin()
    end
 end
 
- function Packer:load_packer()
+function Packer:load_packer()
    if not packer then
       api.nvim_command("packadd packer.nvim")
       packer = require("packer")
@@ -42,7 +42,6 @@ end
    packer.init({
       compile_path = packer_compiled,
       git = { clone_timeout = 120 },
-      max_jobs = 40,
       disable_commands = true,
       display = {
          open_fn = function()
@@ -78,7 +77,8 @@ function Packer:init_ensure_plugins()
    end
 end
 
--- wrapper interface
+--
+-- Wrapper inteface
 local plugins = setmetatable({}, {
    __index = function(_, key)
       if key == "Packer" then
@@ -91,39 +91,49 @@ local plugins = setmetatable({}, {
    end,
 })
 
-plugins.ensure_plugins = function()
+function plugins.ensure_plugins()
    Packer:init_ensure_plugins()
 end
 
-plugins.bak_compile = function()
-	if fn.filereadable(packer_compiled) == 1 then
-		os.rename(packer_compiled, bak_compiled)
-	end
-	plugins.compile()
-	vim.notify("Compile Done!", vim.log.levels.INFO, { title = "Packer" })
+function plugins.register_plugin(repo)
+   if not Packer.repos then
+      Packer.repos = {}
+   end
+   table.insert(Packer.repos, repo)
 end
 
-plugins.auto_compile = function()
-   local file = vim.fn.expand("%:p")
-	if file:match(modules_dir) then
-		plugins.clean()
-		plugins.bak_compile()
-	end
+function plugins.auto_compile()
+   local file = api.nvim_buf_get_name(0)
+   if not file:match(vim_path) then
+      return
+   end
+
+   if file:match("plugins.lua") then
+      plugins.clean()
+   end
+   plugins.compile()
    require("packer_compiled")
 end
 
-plugins.load_compile = function ()
-   if fn.filereadable(packer_compiled) == 1 then
+function plugins.load_compile()
+   if vim.fn.filereadable(packer_compiled) == 1 then
       require("packer_compiled")
    else
-      plugins.bak_compile()
+      vim.notify("Run PackerSync or PackerCompile", "info", { title = "Packer" })
    end
 
-   local cmds = { "Compile", "Install", "Update", "Sync", "Clean", "Status" }
+   local cmds = {
+      "Compile",
+      "Install",
+      "Update",
+      "Sync",
+      "Clean",
+      "Status",
+   }
    for _, cmd in ipairs(cmds) do
       api.nvim_create_user_command("Packer" .. cmd, function()
-         plugins[cmd == "Compile" and "bak_compile" or cmd:lower()]()
-		end, { force = true })
+         plugins[cmd:lower()]()
+      end, {})
    end
 
    local PackerHooks = vim.api.nvim_create_augroup("PackerHooks", { clear = true })
@@ -131,7 +141,9 @@ plugins.load_compile = function ()
       group = PackerHooks,
       pattern = "PackerCompileDone",
       callback = function()
-         plugins.bak_compile()
+         vim.notify("Compile Done!", vim.log.levels.INFO, { title = "Packer" })
       end,
    })
 end
+
+return plugins

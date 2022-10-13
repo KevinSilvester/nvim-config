@@ -166,7 +166,7 @@ end
 ------------------------
 -- For Neovim Nightly --
 ------------------------
-if utils.is_nightly() then
+if utils.is_latest() then
    vim.opt.cmdwinheight = 5
    vim.opt.equalalways = false
    vim.opt.display = "lastline"

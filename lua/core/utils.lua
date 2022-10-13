@@ -26,18 +26,18 @@ end
 ---@param open_split boolean|nil whether to use popup window
 ---@return nil
 M.inspect = function(input, yank, open_split)
-   local popup_ok, Popup = pcall(require, "nui.popup")
-   local split_ok, Split = pcall(require, "nui.split")
+   local popup_ok, Popup = pcall(require, 'nui.popup')
+   local split_ok, Split = pcall(require, 'nui.split')
    if not popup_ok or not split_ok then
       return
    end
 
    if input == nil then
-      vim.notify("No input provided", vim.log.levels.WARN, { title = "nvim-config" })
+      vim.notify('No input provided', vim.log.levels.WARN, { title = 'nvim-config' })
       return
    end
    if not popup_ok or not split_ok then
-      vim.notify("Failed to load 'nui' modules", vim.log.levels.ERROR, { title = "nvim-config" })
+      vim.notify("Failed to load 'nui' modules", vim.log.levels.ERROR, { title = 'nvim-config' })
       return
    end
 
@@ -50,18 +50,18 @@ M.inspect = function(input, yank, open_split)
    if open_split then
       component = Split({
          enter = true,
-         relative = "win",
-         position = "bottom",
-         size = "20%",
+         relative = 'win',
+         position = 'bottom',
+         size = '20%',
          buf_options = { modifiable = true, readonly = false },
       })
    else
       component = Popup({
          enter = true,
          focusable = true,
-         border = { style = "rounded" },
-         position = "50%",
-         size = { width = "80%", height = "60%" },
+         border = { style = 'rounded' },
+         position = '50%',
+         size = { width = '80%', height = '60%' },
          buf_options = { modifiable = true, readonly = false },
       })
    end
@@ -69,20 +69,20 @@ M.inspect = function(input, yank, open_split)
    vim.defer_fn(function()
       component:mount()
 
-      component:map("n", "q", function()
+      component:map('n', 'q', function()
          component:unmount()
       end, { noremap = true })
 
-      component:on({ "BufLeave", "BufDelete", "BufWinLeave" }, function()
+      component:on({ 'BufLeave', 'BufDelete', 'BufWinLeave' }, function()
          vim.schedule(function()
             component:unmount()
          end)
       end, { once = true })
 
-      vim.api.nvim_buf_set_lines(component.bufnr, 0, 1, false, vim.split(output, "\n"))
+      vim.api.nvim_buf_set_lines(component.bufnr, 0, 1, false, vim.split(output, '\n'))
 
       if yank then
-         vim.cmd(component.bufnr .. "b +%y")
+         vim.cmd(component.bufnr .. 'b +%y')
       end
    end, 750)
 end
@@ -108,12 +108,12 @@ end
 
 M.fs.mkdir = function(path)
    local cmd = function()
-      local tbl = { "mkdir" }
+      local tbl = { 'mkdir' }
       if not vim.g.is_win then
-         table.insert(tbl, "-p")
+         table.insert(tbl, '-p')
       end
       table.insert(tbl, path)
-      return table.concat(tbl, " ")
+      return table.concat(tbl, ' ')
    end
 
    if not M.fs.is_dir(path) then
@@ -134,8 +134,8 @@ M.colors.get_highlight = function(group)
    if hl == nil then
       return nil
    end
-   local fg = string.format("#%x", hl.foreground)
-   local bg = string.format("#%x", hl.background)
+   local fg = string.format('#%x', hl.foreground)
+   local bg = string.format('#%x', hl.background)
    return { fg = fg, bg = bg }
 end
 
@@ -143,11 +143,11 @@ end
 ---@param hex_str string hex colour (e.g.'#7E9CD8')
 ---@return table {r, g, b} color values
 M.colors.hex_to_rgb = function(hex_str)
-   local hex = "[abcdef0-9][abcdef0-9]"
-   local pat = "^#(" .. hex .. ")(" .. hex .. ")(" .. hex .. ")$"
+   local hex = '[abcdef0-9][abcdef0-9]'
+   local pat = '^#(' .. hex .. ')(' .. hex .. ')(' .. hex .. ')$'
    hex_str = string.lower(hex_str)
 
-   assert(string.find(hex_str, pat) ~= nil, "hex_to_rgb: invalid hex_str: " .. tostring(hex_str))
+   assert(string.find(hex_str, pat) ~= nil, 'hex_to_rgb: invalid hex_str: ' .. tostring(hex_str))
 
    local red, green, blue = string.match(hex_str, pat)
    return { tonumber(red, 16), tonumber(green, 16), tonumber(blue, 16) }
@@ -165,7 +165,7 @@ M.colors.blend = function(fg, bg, alpha)
       return math.floor(math.min(math.max(0, ret), 255) + 0.5)
    end
 
-   return string.format("#%02X%02X%02X", blendChannel(1), blendChannel(2), blendChannel(3))
+   return string.format('#%02X%02X%02X', blendChannel(1), blendChannel(2), blendChannel(3))
 end
 
 ---darken a hex colour
@@ -192,9 +192,9 @@ M.lsp.server_capabilities = function()
    end
 
    vim.ui.select(vim.tbl_keys(active_client_map), {
-      prompt = "Select client:",
+      prompt = 'Select client:',
       format_item = function(item)
-         return "capabilites for: " .. item
+         return 'capabilites for: ' .. item
       end,
    }, function(choice)
       M.inspect(vim.lsp.get_active_clients()[active_client_map[choice]].server_capabilities)
@@ -202,4 +202,3 @@ M.lsp.server_capabilities = function()
 end
 
 return M
-
