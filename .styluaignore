@@ -1,2 +1,2 @@
 lua/core/options.lua
-lua/core/global.lua
+lua/core/globals.lua

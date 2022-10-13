@@ -8,6 +8,10 @@ config.dashboard = function()
    require('modules.ui.config._dashboard')
 end
 
+config.input = function()
+   require('modules.ui.config._input')
+end
+
 config.notification = function()
    require('modules.ui.config._notification')
 end

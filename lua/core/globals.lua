@@ -1,6 +1,7 @@
 local utils = require('core.utils')
 local fn = vim.fn
 
+
 ------------------------------------------------------------------------
 --                          custom variables                          --
 ------------------------------------------------------------------------
@@ -10,10 +11,12 @@ vim.g.is_mac = (vim.loop.os_uname().sysname == 'Darwin') and true or false
 vim.g.catppuccin_flavour = 'mocha'
 vim.g.material_style = 'deep ocean'
 
+
 ------------------------------------------------------------------------
 --                      PATH environment variable                     --
 ------------------------------------------------------------------------
-vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. vim.fn.stdpath('data') .. '/mason/bin'
+vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. fn.stdpath('data') .. '/mason/bin'
+
 
 ------------------------------------------------------------------------
 --                          filetype loader                           --
@@ -22,6 +25,7 @@ vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. vim.fn.stdpath('
 --    vim.g.did_load_filetypes = 1
 --    vim.g.do_filetype_lua = 1
 -- end
+
 
 ------------------------------------------------------------------------
 --                    clipboard in WSL and MacOS                      --
@@ -55,6 +59,7 @@ if vim.g.is_mac then
    }
 end
 
+
 ------------------------------------------------------------------------
 --                           python host                              --
 ------------------------------------------------------------------------
@@ -74,15 +79,17 @@ if vim.g.is_mac then
    vim.g.python3_host_prog = '/usr/local/bin/python3'
 end
 
+
 ------------------------------------------------------------------------
 --                         neovide options                            --
 ------------------------------------------------------------------------
-if vim.fn.exists('g:neovide') then
+if fn.exists('g:neovide') then
    vim.g.neovide_refresh_rate = 60
    vim.g.neovide_transparancey = 1
    vim.g.neovide_fullscreen = false
    vim.g.neovide_remember_window_size = true
 end
+
 
 ------------------------------------------------------------------------
 --                         minimap options                            --
@@ -92,6 +99,7 @@ vim.g.minimap_auto_start = 0
 vim.g.minimap_auto_start_win_enter = 0
 vim.g.minimap_highlight_range = 0
 vim.g.minimap_git_colors = 1
+
 
 ------------------------------------------------------------------------
 --                  disable distribution plugins                      --
@@ -114,6 +122,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrwSettings = 1
 vim.g.loaded_netrwFileHandlers = 1
+
 
 ------------------------------------------------------------------------
 --                           lsp servers                              --

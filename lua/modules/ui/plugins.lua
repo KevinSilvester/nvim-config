@@ -20,6 +20,13 @@ plugin({
    end,
 })
 
+-- inputs
+plugin({
+   'stevearc/dressing.nvim',
+   after = 'nui.nvim',
+   config = conf.input
+})
+
 -- notifications
 plugin({
    "rcarriga/nvim-notify",
