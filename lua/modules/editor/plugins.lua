@@ -1,6 +1,5 @@
 local plugin = require('core.pack').register_plugin
 local conf = require('modules.editor.config')
-local utils = require('core.utils')
 
 -- hightlight selection
 plugin({
@@ -43,9 +42,14 @@ plugin({
 -- comments
 plugin({
    'numToStr/Comment.nvim',
-   event = 'InsertEnter',
+   event = 'BufRead',
    config = conf.comment,
    requires = { 'folke/todo-comments.nvim' },
+})
+plugin({
+   'folke/todo-comments.nvim',
+   event = 'BufRead',
+   config = conf.todo_comments,
 })
 
 -- navigation
@@ -63,10 +67,32 @@ plugin({
    config = conf.hop,
 })
 plugin({
-   'karb94neoscroll.nvim',
+   'karb94/neoscroll.nvim',
    opt = true,
    event = 'BufReadPost',
    config = conf.neoscroll,
+})
+plugin({
+   'wfxr/minimap.vim',
+   run = 'cargo install --locked code-minimap',
+   opt = true,
+   config = conf.minimap,
+   cmd = {
+      'Minimap',
+      'MinimapClose',
+      'MinimapToggle',
+      'MinimapRescan',
+      'MinimapRefresh',
+      'MinimapUpdateHighlight',
+   },
+})
+
+-- find + search + replace
+plugin({
+   'windwp/nvim-spectre',
+   opt = true,
+   after = { 'plenary.nvim', 'nvim-web-devicons' },
+   config = conf.nvim_spectre,
 })
 
 -- project management
@@ -87,7 +113,7 @@ plugin({
    opt = true,
    after = 'plenary.nvim',
    cmd = { 'DiffViewOpen' },
-   config = conf.diffview
+   config = conf.diffview,
 })
 
 -- package info
@@ -149,6 +175,6 @@ plugin({
    opt = true,
    event = 'InsertEnter',
    wants = 'nvim-treesitter',
-   after = 'nvim-cmp',
+   -- after = 'nvim-cmp',
    config = conf.tabout,
 })

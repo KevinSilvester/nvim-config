@@ -17,7 +17,7 @@ vim.opt.virtualedit = "block"
 vim.opt.encoding = "utf-8"
 vim.opt.viewoptions = "folds,cursor,curdir,slash,unix"
 vim.opt.wildignore = ".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**"
-vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/site/parsers")
+vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/treesitter")
 
 
 ------------------
