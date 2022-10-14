@@ -19,7 +19,7 @@ config.input = function()
 end
 
 config.gitsigns = function()
-   require("modules.ui.config._gitsigns")
+   require('modules.ui.config._gitsigns')
 end
 
 config.notification = function()
@@ -33,7 +33,6 @@ end
 config.statusline = function()
    require('modules.ui.config._statusline')
 end
-
 
 -- local tmp = vim.split(fn.globpath(fn.stdpath("config") .. "/lua/modules/ui/config", "_*.lua"), "\n")
 -- for _, f in ipairs(tmp) do
