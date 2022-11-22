@@ -43,5 +43,8 @@ luac.out
 *.x86_64
 *.hex
 
+# Packer compiled
+.plugins
+
 
 # End of https://www.toptal.com/developers/gitignore/api/lua

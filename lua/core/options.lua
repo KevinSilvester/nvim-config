@@ -16,7 +16,7 @@ vim.opt.termguicolors = true
 vim.opt.virtualedit = "block"
 vim.opt.encoding = "utf-8"
 vim.opt.viewoptions = "folds,cursor,curdir,slash,unix"
-vim.opt.wildignore = ".git,.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**"
+vim.opt.wildignore = ".hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**"
 vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/treesitter")
 
 
@@ -89,7 +89,7 @@ end
 ---------------
 -- Behaviors --
 ---------------
-vim.opt.breakat = [[\ \	;:,!?/.+-]]          -- characters that might cause a linbreak if linebreak is on
+vim.opt.breakat = [[\ \	;:,!?/.+-]]          -- characters that might cause a linebreak if linebreak is on
 vim.opt.whichwrap:append("h,l,<,>,[,],~")    -- allow keys to move cursor left/right to move to previous line
 vim.opt.splitbelow = true
 vim.opt.splitright = true

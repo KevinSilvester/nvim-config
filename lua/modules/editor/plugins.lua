@@ -110,7 +110,6 @@ plugin({
 })
 plugin({
    'sindrets/diffview.nvim',
-   opt = true,
    after = 'plenary.nvim',
    cmd = { 'DiffViewOpen' },
    config = conf.diffview,

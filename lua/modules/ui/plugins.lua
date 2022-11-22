@@ -37,7 +37,6 @@ plugin({
 -- git
 plugin({
    'lewis6991/gitsigns.nvim',
-   opt = true,
    after = 'plenary.nvim',
    event = { 'BufReadPost', 'BufNewFile' },
    config = conf.gitsigns,
