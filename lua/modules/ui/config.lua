@@ -34,14 +34,8 @@ config.statusline = function()
    require('modules.ui.config._statusline')
 end
 
--- local tmp = vim.split(fn.globpath(fn.stdpath("config") .. "/lua/modules/ui/config", "_*.lua"), "\n")
--- for _, f in ipairs(tmp) do
---    local mod_path = string.match(f, "lua/(.+).lua$")
---    local mod_name = mod_path:gsub("modules/ui/config/_", "")
---
---    config[mod_name] = function()
---       require(mod_path)
---    end
--- end
+config.wilder = function()
+   require('modules.ui.config._wilder')
+end
 
 return config

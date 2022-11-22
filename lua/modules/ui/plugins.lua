@@ -27,6 +27,12 @@ plugin({
    config = conf.input,
 })
 
+-- command completion
+plugin({
+   "gelguy/wilder.nvim",
+   config = conf.wilder
+})
+
 -- indent
 plugin({
    'lukas-reineke/indent-blankline.nvim',
