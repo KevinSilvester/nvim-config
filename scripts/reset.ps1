@@ -1,2 +1,2 @@
-rm -r -fo "$env:LOCALAPPDATA\temp\nvim"
-rm -r -fo "$env:LOCALAPPDATA\nvim-data"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\temp\nvim"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\nvim-data"
