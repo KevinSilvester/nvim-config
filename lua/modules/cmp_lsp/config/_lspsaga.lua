@@ -62,7 +62,7 @@ saga.init_lsp_saga({
       enable = true,
       separator = '  ',
       show_file = true,
-      file_formatter = '%:t',
+      file_formatter = '',
       click_support = function(node, clicks, button, modifiers)
          -- To see all avaiable details: vim.pretty_print(node)
          local st = node.range.start

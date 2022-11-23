@@ -24,7 +24,7 @@ plugin({
 plugin({
    'nvim-lualine/lualine.nvim',
    opt = true,
-   after = 'nvim-lspconfig',
+   after = { 'nvim-lspconfig', 'gitsigns.nvim' },
    config = conf.statusline,
 })
 
