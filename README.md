@@ -3,3 +3,9 @@
 - cargo/rust
 - ripgrep
 - sed
+- fd
+- find
+- viu
+- ls_emmet
+- go
+- pynvim 

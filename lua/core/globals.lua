@@ -8,7 +8,7 @@ local fn = vim.fn
 vim.g.is_win = (vim.loop.os_uname().sysname == 'Widnows_NT') and true or false
 vim.g.is_linux = (vim.loop.os_uname().sysname == 'Linux') and true or false
 vim.g.is_mac = (vim.loop.os_uname().sysname == 'Darwin') and true or false
-vim.g.is_docker = (vim.fn.filereadable('/.dockerenv')) and true or false
+vim.g.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 vim.g.catppuccin_flavour = 'mocha'
 vim.g.material_style = 'deep ocean'
 
