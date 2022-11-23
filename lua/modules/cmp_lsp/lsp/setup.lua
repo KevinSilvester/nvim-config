@@ -16,7 +16,7 @@ M.set_lsp_keymaps = function(bufnr)
       { "K",     cmd("Lspsaga hover_doc"),                  opts(noremap, silent) },
       { "D",     cmd("lua vim.lsp.buf.type_definintion()"), opts(noremap, silent) },
       { "gD",    cmd("lua vim.lsp.buf.declaration()"),      opts(noremap, silent) },
-      { "gd",    cmd("Lspsaga peek_defition"),              opts(noremap, silent) },
+      { "gd",    cmd("Lspsaga peek_definition"),              opts(noremap, silent) },
       { "gi",    cmd("Lspsaga lsp_finder"),                 opts(noremap, silent) },
       { "gl",    cmd("Lspsaga show_line_diagnostics"),      opts(noremap, silent) },
       { "gr",    cmd("lua vim.lsp.buf.references()"),       opts(noremap, silent) },
