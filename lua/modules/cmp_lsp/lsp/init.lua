@@ -1,12 +1,6 @@
-local lspconfig_ok, lspconfig = pcall(require, 'lspconfig')
-if not lspconfig_ok then
-   return
-end
-
-local typescript_ok, typescript = pcall(require, 'typescript')
-if not typescript_ok then
-   return
-end
+local lspconfig = require('lspconfig')
+local mason_lsp = require('mason-lspconfig')
+local typescript = require('typescript')
 
 local setup = require('modules.cmp_lsp.lsp.setup')
 setup.handlers()
@@ -17,7 +11,7 @@ local default_opts = {
    capabilities = setup.capabilities,
 }
 
-for _, server in ipairs(vim.g.lsp_servers) do
+for _, server in ipairs(mason_lsp.get_installed_servers()) do
    if server == 'cssls' then
       lspconfig.cssls.setup({
          capabilities = setup.capabilities,
@@ -108,7 +102,6 @@ for _, server in ipairs(vim.g.lsp_servers) do
       typescript.setup({
          disable_commands = false, -- prevent the plugin from creating Vim commands
          debug = false, -- enable debug logging for commands
-         -- LSP Config options
          server = {
             capabilities = require('modules.cmp_lsp.lsp.servers.tsserver').capabilities,
             handlers = require('modules.cmp_lsp.lsp.servers.tsserver').handlers,
