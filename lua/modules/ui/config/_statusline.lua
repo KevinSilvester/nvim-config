@@ -56,7 +56,7 @@ local treesitter = {
    color = function()
       local buf = vim.api.nvim_get_current_buf()
       local ts = vim.treesitter.highlighter.active[buf]
-      return { fg = ts and not vim.tbl_isempty(ts) and "#98be65" or "#ECBE7B" }
+      return { fg = ts and not vim.tbl_isempty(ts) and '#98be65' or '#ECBE7B' }
    end,
 }
 
