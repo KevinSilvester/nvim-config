@@ -95,15 +95,6 @@ plugin({
 ---------------------------------
 --         cmp plugins         --
 ---------------------------------
--- plugin({ "hrsh7th/cmp-nvim-lsp" })
--- plugin({ "hrsh7th/cmp-path" })
--- plugin({ "hrsh7th/cmp-buffer" })
--- plugin({ "hrsh7th/cmp-nvim-lsp-signature-help" })
--- plugin({ "hrsh7th/cmp-nvim-lua" })
--- plugin({ "saadparwaiz1/cmp_luasnip" })
--- plugin({ "lukas-reineke/cmp-under-comparator" })
--- plugin({ "hrsh7th/cmp-cmdline" })
--- plugin({ "hrsh7th/cmp-nvim-lsp-document-symbol" })
 plugin({
    'L3MON4D3/LuaSnip',
    after = 'nvim-cmp',
