@@ -18,6 +18,8 @@ vim.opt.encoding = "utf-8"
 vim.opt.viewoptions = "folds,cursor,curdir,slash,unix"
 vim.opt.wildignore = ".hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**"
 vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/treesitter")
+vim.opt.spell = true
+vim.opt.spelllang = { 'en_gb' }
 
 
 ------------------
@@ -175,4 +177,3 @@ if utils.is_latest() then
    vim.opt.pumblend = 10
    vim.opt.winblend = 10
 end
-

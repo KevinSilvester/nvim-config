@@ -1,5 +1,6 @@
 return {
    tools = {
+      executor = require('rust-tools.executors').termopen,
       -- autoSetHints = false,
       on_initialized = function()
          vim.api.nvim_create_autocmd({ 'BufWritePost', 'BufEnter', 'CursorHold', 'InsertLeave' }, {
@@ -60,18 +61,21 @@ return {
       },
    },
    server = {
-      cmd = { 'rustup', 'run', 'stable', 'rust-analyzer' },
+      cmd = { 'rust-analyzer' },
       on_attach = require('modules.cmp_lsp.lsp.setup').on_attach,
       capabilities = require('modules.cmp_lsp.lsp.setup').capabilities,
       settings = {
          ['rust-analyzer'] = {
-            lens = {
-               enable = true,
-            },
-            checkOnSave = {
-               command = 'clippy',
-            },
+            lens = { enable = true },
+            checkOnSave = { command = 'clippy' },
          },
+      },
+   },
+   dap = {
+      adapter = {
+         type = 'executable',
+         command = 'lldb-vscode',
+         name = 'rt_lldb',
       },
    },
 }

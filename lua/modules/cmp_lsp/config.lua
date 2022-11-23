@@ -4,6 +4,10 @@ config.nvim_lspconfig = function()
    require('modules.cmp_lsp.lsp')
 end
 
+config.cmp = function()
+   require('modules.cmp_lsp.cmp')
+end
+
 config.copilot = function()
    require('modules.cmp_lsp.config._copilot')
 end

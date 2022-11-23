@@ -25,7 +25,7 @@ saga.init_lsp_saga({
       sign = true,
       update_time = 150,
       sign_priority = 20,
-      virtual_text = true,
+      virtual_text = false,
    },
    -- finder icons
    finder_icons = {
@@ -36,7 +36,7 @@ saga.init_lsp_saga({
    -- finder do lsp request timeout
    -- if your project big enough or your server very slow
    -- you may need to increase this value
-   finder_request_timeout = 1500,
+   finder_request_timeout = 3000,
    finder_action_keys = {
       open = { 'o', '<CR>' },
       vsplit = 's',

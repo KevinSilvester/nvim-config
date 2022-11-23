@@ -5,10 +5,19 @@ local conf = require('modules.cmp_lsp.config')
 --         lsp plugins         --
 ---------------------------------
 plugin({
+   'folke/neodev.nvim',
+   opt = true,
+   event = 'BufReadPre',
+   config = function()
+      require('neodev').setup({})
+   end,
+})
+
+plugin({
    'neovim/nvim-lspconfig',
    opt = true,
    event = 'BufReadPre',
-   after = 'cmp-nvim-lsp',
+   after = { 'cmp-nvim-lsp', 'neodev.nvim' },
    config = conf.nvim_lspconfig,
 })
 
@@ -20,8 +29,8 @@ plugin({
    config = conf.lspsaga,
 })
 
-plugin({ 'b0o/schemastore.nvim', opt = true })
-plugin({ 'simrat39/rust-tools.nvim', opt = true })
+plugin({ 'b0o/schemastore.nvim' })
+plugin({ 'simrat39/rust-tools.nvim' })
 
 plugin({
    'williamboman/mason.nvim',
@@ -117,6 +126,7 @@ plugin({
       { 'f3fora/cmp-spell', after = 'cmp-path' },
       { 'kdheepak/cmp-latex-symbols', after = 'cmp-buffer' },
    },
+   config = conf.cmp,
 })
 
 plugin({
