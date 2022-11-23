@@ -3,7 +3,8 @@ require('neoscroll').setup({
    mappings = {
       '<C-u>',
       '<C-d>',
-      '<C-b>',
+      -- '<C-b>',
+      nil,
       '<C-f>',
       '<C-y>',
       '<C-e>',

@@ -45,7 +45,7 @@ saga.init_lsp_saga({
       quit = { 'q', '<ESC>' },
    },
    code_action_keys = {
-      quit = { 'q', '<ESC>' },
+      quit = 'q',
       exec = '<CR>',
    },
    definition_action_keys = {
@@ -53,7 +53,7 @@ saga.init_lsp_saga({
       vsplit = '<C-c>v',
       split = '<C-c>i',
       tabe = '<C-c>t',
-      quit = { 'q', '<ESC>' },
+      quit = 'q',
    },
    rename_action_quit = '<C-c>',
    rename_in_select = true,

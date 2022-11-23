@@ -7,6 +7,8 @@ local imap = mapper.imap
 local vmap = mapper.vmap
 local xmap = mapper.xmap
 
+local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
+
 --
 -- LEADER
 vim.keymap.set('', '<Space>', '<Nop>', opts(noremap, silent))
@@ -82,7 +84,10 @@ xmap({
    -- Comment
    {
       '<leader>/',
-      cmd("lua require('comment.api').toggle_linewise_op(vim.fn.visualmode())"),
+      function()
+         vim.api.nvim_feedkeys(esc, 'nx', false)
+         require('Comment.api').toggle.linewise(vim.fn.visualmode())
+      end,
       opts(noremap, silent),
    },
 })

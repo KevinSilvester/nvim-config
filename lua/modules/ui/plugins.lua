@@ -20,6 +20,14 @@ plugin({
    end,
 })
 
+-- statusline
+plugin({
+   'nvim-lualine/lualine.nvim',
+   opt = true,
+   after = 'nvim-lspconfig',
+   config = conf.statusline,
+})
+
 -- preview color
 plugin({ 'NvChad/nvim-colorizer.lua' })
 
