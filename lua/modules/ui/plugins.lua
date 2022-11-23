@@ -20,6 +20,9 @@ plugin({
    end,
 })
 
+-- preview color
+plugin({ 'NvChad/nvim-colorizer.lua' })
+
 -- inputs
 plugin({
    'stevearc/dressing.nvim',
@@ -29,8 +32,8 @@ plugin({
 
 -- command completion
 plugin({
-   "gelguy/wilder.nvim",
-   config = conf.wilder
+   'gelguy/wilder.nvim',
+   config = conf.wilder,
 })
 
 -- indent
@@ -68,7 +71,7 @@ plugin({
    'kyazdani42/nvim-tree.lua',
    config = conf.sidebar,
    opt = true,
-   cmd = { 'NvimTreeToggle' },
+   cmd = { 'NvimTreeToggle', 'NvimTreeRefresh' },
 })
 
 -- bufferline

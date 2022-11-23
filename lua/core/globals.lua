@@ -8,6 +8,7 @@ local fn = vim.fn
 vim.g.is_win = (vim.loop.os_uname().sysname == 'Widnows_NT') and true or false
 vim.g.is_linux = (vim.loop.os_uname().sysname == 'Linux') and true or false
 vim.g.is_mac = (vim.loop.os_uname().sysname == 'Darwin') and true or false
+vim.g.is_docker = (vim.fn.filereadable('/.dockerenv')) and true or false
 vim.g.catppuccin_flavour = 'mocha'
 vim.g.material_style = 'deep ocean'
 
@@ -30,7 +31,7 @@ vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. fn.stdpath('data
 ------------------------------------------------------------------------
 --                    clipboard in WSL and MacOS                      --
 ------------------------------------------------------------------------
-if utils.has('wsl') then
+if utils.has('wsl') and not vim.g.is_docker then
    vim.g.clipboard = {
       copy = {
          ['+'] = 'win32yank.exe -i --crlf',

@@ -164,6 +164,11 @@ plugin({
    config = conf.better_escape,
 })
 plugin({
+   'moll/vim-bbye',
+   opt = true,
+   event = 'BufReadPost',
+})
+plugin({
    'edluffy/specs.nvim',
    opt = true,
    event = 'CursorMoved',

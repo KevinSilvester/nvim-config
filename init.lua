@@ -37,6 +37,7 @@ end
 
 require('core.autocmds')
 require('core.cmds')
+require('keymaps')
 
 local pack = require('core.pack')
 pack.ensure_plugins()
