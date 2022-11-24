@@ -1,8 +1,9 @@
 {
-    "Lua.diagnostics.globals": [
-        "vim",
-        "packer_plugins",
-        "JAVA_DAP_ACTIVE"
-    ],
-    "runtime.version": "Lua 5.4"
+   "Lua.diagnostics.globals": [
+      "vim",
+      "packer_plugins",
+      "JAVA_DAP_ACTIVE"
+   ],
+   "Lua.workspace.checkThirdParty": false,
+   "runtime.version": "Lua 5.4"
 }
