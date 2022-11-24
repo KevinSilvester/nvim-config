@@ -9,3 +9,4 @@
 - ls_emmet
 - go
 - pynvim 
+- code-minimap
