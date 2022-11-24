@@ -1,8 +1,11 @@
 local utils = require('core.utils')
 
-if not utils.executable('code-minimap') then
+if utils.executable('code-minimap') then
    vim.notify(
-      '`code-mimimap` not found\nInstall with `brew install code-minimap`, `cargo binstall code-minimap`, etc.',
+      [[`code-mimimap` not found
+Install on macOS/linux: `brew install code-minimap`,
+Install on Windows: `scoop bucket add extras`, `scoop install code-minimap`,
+Install from source: `cargo install --locked code-minimap`]],
       vim.log.levels.ERROR,
       { title = 'nvim-config' }
    )
