@@ -31,11 +31,7 @@ require('core.globals')
 require('core.options')
 
 if not pcall(vim.cmd, 'colorscheme catppuccin') then
-   vim.notify(
-      'Failed to load colorscheme',
-      vim.log.levels.ERROR,
-      { title = 'nvim-config' }
-   )
+   vim.notify('Failed to load colorscheme', vim.log.levels.ERROR, { title = 'nvim-config' })
 end
 
 require('core.autocmds')
