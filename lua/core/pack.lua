@@ -21,11 +21,14 @@ function Packer:load_plugins()
 
    local get_plugins_list = function()
       local list = {}
-      local tmp =
-         vim.split(fn.globpath(modules_dir, (vim.g.is_win and '*\\plugins.lua' or '*/plugins.lua')), '\n')
+      local glob_pattern = vim.g.is_win and '*\\plugins.lua' or '*/plugins.lua'
+      local match_pattern = vim.g.is_win and 'lua\\(.+).lua$' or 'lua/(.+).lua$'
+      local tmp = vim.split(fn.globpath(modules_dir, glob_pattern), '\n')
+
       for _, f in ipairs(tmp) do
-         list[#list + 1] = string.match(f, 'lua/(.+).lua$')
+         list[#list + 1] = string.match(f, match_pattern)
       end
+
       return list
    end
 
