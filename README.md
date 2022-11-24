@@ -9,4 +9,5 @@
 - ls_emmet
 - go
 - pynvim 
+- tree-sitter-cli
 - code-minimap
