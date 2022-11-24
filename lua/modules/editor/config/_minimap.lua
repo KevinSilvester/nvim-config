@@ -1,13 +1,24 @@
+local utils = require('core.utils')
+
+if not utils.executable('code-minimap') then
+   vim.notify(
+      '`code-mimimap` not found\nInstall with `brew install code-minimap`, `cargo binstall code-minimap`, etc.',
+      vim.log.levels.ERROR,
+      { title = 'nvim-config' }
+   )
+   return
+end
+
 -- stylua: ignore
 local colors = {
    kanagawa = {
-      minimapDiffAdded =         { guibg = "#1f1f28", guifg = "#76946a" },
-      minimapDiffRemoved =       { guibg = "#1f1f28", guifg = "#c34043" },
-      minimapDiffLine =          { guibg = "#1f1f28", guifg = "#dca561" },
-      minimapCursor =            { guibg = "#363646", guifg = "#7E9CD8" },
-      minimapCursorDiffAdded =   { guibg = "#363646", guifg = "#76946a" },
+      minimapDiffAdded = { guibg = "#1f1f28", guifg = "#76946a" },
+      minimapDiffRemoved = { guibg = "#1f1f28", guifg = "#c34043" },
+      minimapDiffLine = { guibg = "#1f1f28", guifg = "#dca561" },
+      minimapCursor = { guibg = "#363646", guifg = "#7E9CD8" },
+      minimapCursorDiffAdded = { guibg = "#363646", guifg = "#76946a" },
       minimapCursorDiffRemoved = { guibg = "#363646", guifg = "#c34043" },
-      minimapCursorDiffLine =    { guibg = "#363646", guifg = "#dca561" },
+      minimapCursorDiffLine = { guibg = "#363646", guifg = "#dca561" },
    },
 }
 

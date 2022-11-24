@@ -8,9 +8,6 @@ plugin({
    'folke/neodev.nvim',
    opt = true,
    event = 'BufReadPre',
-   config = function()
-      require('neodev').setup({})
-   end,
 })
 
 plugin({

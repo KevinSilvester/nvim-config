@@ -9,7 +9,7 @@ plugin({
    after = { 'plenary.nvim', 'popup.nvim', 'nvim-web-devicons', 'nvim-treesitter', 'nvim-notify' },
    requires = {
       'nvim-telescope/telescope-fzf-native.nvim',
-      run = 'make clean && make',
+      run = 'make',
    },
 })
 

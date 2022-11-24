@@ -1,5 +1,5 @@
-local ok1, impatient = pcall(require, 'impatient')
-if ok1 then
+local ok, impatient = pcall(require, 'impatient')
+if ok then
    impatient.enable_profile()
 end
 

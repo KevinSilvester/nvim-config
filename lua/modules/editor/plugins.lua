@@ -74,7 +74,6 @@ plugin({
 })
 plugin({
    'wfxr/minimap.vim',
-   run = 'cargo install --locked code-minimap',
    opt = true,
    config = conf.minimap,
    cmd = {
