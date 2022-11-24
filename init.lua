@@ -30,9 +30,12 @@ createdir()
 require('core.globals')
 require('core.options')
 
-local ok2, _ = pcall(vim.cmd, 'colorscheme catppuccin')
-if not ok2 then
-   vim.notify('Failed to load colorscheme', vim.log.levels.ERROR, { title = 'nvim-config' })
+if not pcall(vim.cmd, 'colorscheme catppuccin') then
+   vim.notify(
+      'Failed to load colorscheme',
+      vim.log.levels.ERROR,
+      { title = 'nvim-config' }
+   )
 end
 
 require('core.autocmds')

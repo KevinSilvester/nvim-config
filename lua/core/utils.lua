@@ -28,9 +28,6 @@ end
 M.inspect = function(input, yank, open_split)
    local popup_ok, Popup = pcall(require, 'nui.popup')
    local split_ok, Split = pcall(require, 'nui.split')
-   if not popup_ok or not split_ok then
-      return
-   end
 
    if input == nil then
       vim.notify('No input provided', vim.log.levels.WARN, { title = 'nvim-config' })
