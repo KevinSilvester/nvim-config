@@ -4,7 +4,7 @@ local fn, uv, api = vim.fn, vim.loop, vim.api
 local config_dir = fn.stdpath('config')
 local data_dir = string.format('%s/site/', fn.stdpath('data'))
 local cache_dir = fn.stdpath('cache')
-local modules_dir = config_dir .. '/lua/modules'
+local modules_dir = config_dir .. (vim.g.is_win and '\\lua\\modules' or '/lua/modules')
 
 -- packer info
 local packer = nil
@@ -21,7 +21,8 @@ function Packer:load_plugins()
 
    local get_plugins_list = function()
       local list = {}
-      local tmp = vim.split(fn.globpath(modules_dir, '*/plugins.lua'), '\n')
+      local tmp =
+         vim.split(fn.globpath(modules_dir, (vim.g.is_win and '*\\plugins.lua' or '*/plugins.lua')), '\n')
       for _, f in ipairs(tmp) do
          list[#list + 1] = string.match(f, 'lua/(.+).lua$')
       end
