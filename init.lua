@@ -27,17 +27,14 @@ end
 
 createdir()
 
+-- load core
 require('core.globals')
 require('core.options')
-
-if not pcall(vim.cmd, 'colorscheme catppuccin') then
-   vim.notify('Failed to load colorscheme', vim.log.levels.ERROR, { title = 'nvim-config' })
-end
-
 require('core.autocmds')
 require('core.cmds')
-require('keymaps')
+require('core.pack').ensure_plugins()
+require('core.pack').load_compile()
 
-local pack = require('core.pack')
-pack.ensure_plugins()
-pack.load_compile()
+-- setup colorscheme and keymaps
+require('modules.ui.colorscheme').setup('catppuccin')
+require('keymaps')

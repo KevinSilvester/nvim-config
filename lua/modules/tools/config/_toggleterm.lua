@@ -2,7 +2,7 @@ local toggleterm = require('toggleterm')
 
 toggleterm.setup({
    size = 20,
-   open_mapping = '<C-b>',
+   open_mapping = '<C-P>',
    hide_numbers = true,
    shade_terminals = true,
    shading_factor = 2,

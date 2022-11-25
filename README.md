@@ -1,4 +1,6 @@
 ### Dependencies
+**Common**
+- git
 - nodejs
 - cargo/rust
 - ripgrep
@@ -11,3 +13,14 @@
 - pynvim 
 - tree-sitter-cli
 - code-minimap
+
+**Unix**
+- curl/wget
+- unzip
+- tar
+- gzip
+
+**Windows**
+- powershell
+- tar
+- 7zip/peazip/archiver/winzip/WinRaR

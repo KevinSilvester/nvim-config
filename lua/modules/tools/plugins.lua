@@ -24,6 +24,23 @@ plugin({
    'akinsho/toggleterm.nvim',
    opt = true,
    cmd = 'ToggleTerm',
-   keys = '<C-b>',
+   keys = '<C-P>',
    config = conf.toggleterm,
+})
+
+-- markdown preview
+plugin({
+   'iamcco/markdown-preview.nvim',
+   opt = true,
+   cmd = {
+      'MarkdownPreview',
+      'MarkdownPreviewStop',
+      'MarkdownPreviewToggle',
+   },
+   run = 'cd app && npm i',
+   setup = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+   end,
+   ft = { 'markdown' },
+   event = 'BufReadPost',
 })
