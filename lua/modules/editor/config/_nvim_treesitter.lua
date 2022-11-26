@@ -13,7 +13,6 @@ local ensure_installed = {
    'dockerfile',
    'fish',
    'gitattributes',
-   'gitignore',
    'go',
    'gomod',
    'gowork',
