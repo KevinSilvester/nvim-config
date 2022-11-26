@@ -32,8 +32,11 @@ require('core.globals')
 require('core.options')
 require('core.autocmds')
 require('core.cmds')
-require('core.pack').ensure_plugins()
-require('core.pack').load_compile()
+
+-- load plugins
+local pack = require('core.pack')
+pack.ensure_plugins()
+pack.load_compile()
 
 -- setup colorscheme and keymaps
 require('modules.ui.colorscheme').setup('catppuccin')
