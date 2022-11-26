@@ -4,13 +4,14 @@ local conf = require('modules.tools.config')
 -- search tools
 plugin({
    'nvim-telescope/telescope.nvim',
+   opt = true,
    cmd = 'Telescope',
-   config = conf.telescope,
    after = { 'plenary.nvim', 'popup.nvim', 'nvim-web-devicons', 'nvim-treesitter', 'nvim-notify' },
    requires = {
       'nvim-telescope/telescope-fzf-native.nvim',
       run = 'make',
    },
+   config = conf.telescope,
 })
 
 -- keymap helper
