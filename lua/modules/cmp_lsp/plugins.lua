@@ -7,7 +7,9 @@ local conf = require('modules.cmp_lsp.config')
 plugin({
    'folke/neodev.nvim',
    opt = true,
+   ft = { 'lua' },
    event = 'BufReadPre',
+   config = conf.neodev
 })
 
 plugin({

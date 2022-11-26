@@ -36,6 +36,10 @@ config.mason_lspconfig = function()
    require('modules.cmp_lsp.config._mason_lspconfig')
 end
 
+config.neodev = function()
+   require('modules.cmp_lsp.config._neodev')
+end
+
 config.null_ls = function()
    require('modules.cmp_lsp.config._null_ls')
 end
