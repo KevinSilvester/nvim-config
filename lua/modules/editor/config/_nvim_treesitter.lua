@@ -53,6 +53,9 @@ local ensure_installed = {
    'yaml',
 }
 
+require('nvim-treesitter.install').prefer_git = false
+require('nvim-treesitter.install').compilers = { 'clang' }
+
 require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,
    highlight = {
@@ -101,5 +104,3 @@ require('nvim-treesitter.configs').setup({
    matchup = { enable = true },
    parser_install_dir = vim.fn.stdpath('data') .. '/treesitter',
 })
-
-require('nvim-treesitter.install').prefer_git = true
