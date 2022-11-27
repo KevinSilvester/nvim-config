@@ -2,33 +2,23 @@
 
 local M = {}
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-local cmp_nvim_lsp_ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
-if cmp_nvim_lsp_ok then
-   capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-   capabilities.textDocument.completion.completionItem.snippetSupport = true
-   capabilities.textDocument.colorProvider = { dynamicRegistration = false }
-end
-
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.colorProvider = { dynamicRegistration = false }
 capabilities.textDocument.foldingRange = {
    dynamicRegistration = false,
    lineFoldingOnly = true,
 }
 
 -- Settings
-
 local on_attach = function(client, bufnr)
    if client.server_capabilities.colorProvider then
-      -- require("lsp/utils/documentcolors").buf_attach(bufnr)
       require('colorizer').attach_to_buffer(
          bufnr,
-         { mode = 'background', css = true, names = true, tailwind = true }
+         { mode = 'background', css = true, names = false, tailwind = true }
       )
    end
 end
-
-local filetypes = { 'html', 'mdx', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'svelte' }
 
 local init_options = {
    userLanguages = {
@@ -39,6 +29,7 @@ local init_options = {
 
 local settings = {
    tailwindCSS = {
+      classAttributes = { 'class', 'className', 'classList', 'ngClass' },
       lint = {
          cssConflict = 'warning',
          invalidApply = 'error',
@@ -64,7 +55,6 @@ local settings = {
 }
 
 M.on_attach = on_attach
-M.filetypes = filetypes
 M.capabilities = capabilities
 M.settings = settings
 M.init_options = init_options

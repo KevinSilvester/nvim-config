@@ -90,7 +90,6 @@ for _, server in ipairs(mason_lsp.get_installed_servers()) do
    if server == 'tailwindcss' then
       lspconfig.tailwindcss.setup({
          capabilities = require('modules.cmp_lsp.lsp.servers.tailwindcss').capabilities,
-         filetypes = require('modules.cmp_lsp.lsp.servers.tailwindcss').filetypes,
          init_options = require('modules.cmp_lsp.lsp.servers.tailwindcss').init_options,
          on_attach = require('modules.cmp_lsp.lsp.servers.tailwindcss').on_attach,
          settings = require('modules.cmp_lsp.lsp.servers.tailwindcss').settings,
