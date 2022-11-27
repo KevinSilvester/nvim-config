@@ -1,3 +1,3 @@
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Temp\nvim"
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Temp\nvimundo"
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\nvim-data"
+lms rm "$env:LOCALAPPDATA\Temp\nvim"
+lms rm "$env:LOCALAPPDATA\Temp\nvimundo"
+lms rm "$env:LOCALAPPDATA\nvim-data"
