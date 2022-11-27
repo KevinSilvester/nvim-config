@@ -57,7 +57,7 @@ require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,
    highlight = {
       enable = true,
-      disable = { 'lua' }
+      disable = { 'lua' },
    },
    indent = {
       enable = true,
