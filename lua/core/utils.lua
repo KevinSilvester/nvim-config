@@ -91,25 +91,44 @@ end
 ------------------------------------------------------------------------
 M.fs = {}
 
+---check if path points to a directory
+---@param path string
+---@return boolean
 M.fs.is_dir = function(path)
    return fn.isdirectory(path) == 1
 end
 
+---check path points to a file
+---@param path string
+---@return boolean
 M.fs.is_file = function(path)
    return fn.filereadable(path) == 1
 end
 
+---check if file/directory is a symlink
+---@param path string
+---@return boolean
 M.fs.is_link = function(path)
    return fn.isdirectory(path) == 2
 end
 
+---make a new directory
+---@param path string
 M.fs.mkdir = function(path)
    local cmd = function()
-      local tbl = { 'mkdir' }
-      if not vim.g.is_win then
+      local tbl = {}
+      if vim.g.is_win then
+         table.insert(tbl, 'powershell -c')
+         table.insert(tbl, 'New-Item')
+         table.insert(tbl, '-Type directory')
+         table.insert(tbl, '-Path')
+         table.insert(tbl, path)
+      else
+         table.insert(tbl, 'bash -c')
+         table.insert(tbl, 'mkdir')
          table.insert(tbl, '-p')
+         table.insert(tbl, path)
       end
-      table.insert(tbl, path)
       return table.concat(tbl, ' ')
    end
 
