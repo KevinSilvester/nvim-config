@@ -24,7 +24,7 @@ plugin({
 plugin({
    'nvim-lualine/lualine.nvim',
    opt = true,
-   after = { 'nvim-lspconfig', 'gitsigns.nvim' },
+   after = { 'gitsigns.nvim' },
    config = conf.statusline,
 })
 
@@ -87,5 +87,5 @@ plugin({
    'akinsho/nvim-bufferline.lua',
    config = conf.bufferline,
    opt = true,
-   event = 'BufReadPost',
+   event = 'BufWinEnter',
 })
