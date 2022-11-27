@@ -57,6 +57,7 @@ require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,
    highlight = {
       enable = true,
+      disable = { 'lua' }
    },
    indent = {
       enable = true,
@@ -96,7 +97,7 @@ require('nvim-treesitter.configs').setup({
          },
       },
    },
-   context_commentstring = { enable = true, enable_autocmd = false },
+   context_commentstring = { enable = true, enable_autocmd = true },
    matchup = { enable = true },
    parser_install_dir = vim.fn.stdpath('data') .. '/treesitter',
 })
