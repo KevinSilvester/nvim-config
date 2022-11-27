@@ -13,17 +13,17 @@ local M = {}
 M.set_lsp_keymaps = function(bufnr)
    -- stylua: ignore
    buf_nmap(bufnr, {
-      { "K",     cmd("Lspsaga hover_doc"),                  opts(noremap, silent) },
-      { "D",     cmd("lua vim.lsp.buf.type_definintion()"), opts(noremap, silent) },
-      { "gD",    cmd("lua vim.lsp.buf.declaration()"),      opts(noremap, silent) },
-      { "gd",    cmd("lua vim.lsp.buf.definition()"),       opts(noremap, silent) },
-      { "pd",    cmd("Lspsaga peek_definition"),            opts(noremap, silent) },
-      { "gi",    cmd("Lspsaga lsp_finder"),                 opts(noremap, silent) },
-      { "gl",    cmd("Lspsaga show_line_diagnostics"),      opts(noremap, silent) },
-      { "gr",    cmd("lua vim.lsp.buf.references()"),       opts(noremap, silent) },
-      { "gQ",    cmd("lua vim.diagnostic.setqflist()"),     opts(noremap, silent) },
-      { "<C-[>", cmd("Lspsaga diagnostic_jump_prev"),       opts(noremap, silent) },
-      { "<C-]>", cmd("Lspsaga diagnostic_jump_next"),       opts(noremap, silent) },
+      { "K", cmd("lua vim.lsp.buf.hover()"), opts(noremap, silent) },
+      { "D", cmd("lua vim.lsp.buf.type_definintion()"), opts(noremap, silent) },
+      { "gD", cmd("lua vim.lsp.buf.declaration()"), opts(noremap, silent) },
+      { "gd", cmd("lua vim.lsp.buf.definition()"), opts(noremap, silent) },
+      { "pd", cmd("Lspsaga peek_definition"), opts(noremap, silent) },
+      { "gi", cmd("Lspsaga lsp_finder"), opts(noremap, silent) },
+      { "gl", cmd("Lspsaga show_line_diagnostics"), opts(noremap, silent) },
+      { "gr", cmd("lua vim.lsp.buf.references()"), opts(noremap, silent) },
+      { "gQ", cmd("lua vim.diagnostic.setqflist()"), opts(noremap, silent) },
+      { "<C-[>", cmd("Lspsaga diagnostic_jump_prev"), opts(noremap, silent) },
+      { "<C-]>", cmd("Lspsaga diagnostic_jump_next"), opts(noremap, silent) },
       {
          "<A-[>",
          cmd('lua require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR })'),
@@ -89,15 +89,20 @@ M.handlers = function()
       ['textDocument/hover'] = function(_, result, ctx, config)
          config = config or {}
          config.focus_id = ctx.method
+         config.border = 'rounded'
+
          if not (result and result.contents) then
             return
          end
-         local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(result.contents)
-         markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-         if vim.tbl_isempty(markdown_lines) then
-            return
+
+         ---@param contents MarkedString|MarkedString[]|lsp.MarkupContent
+         ---@return table
+         local markdown_lines = function(contents)
+            local s = vim.lsp.util.convert_input_to_markdown_lines(contents, {})
+            return vim.lsp.util.trim_empty_lines(s)
          end
-         return vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', config)
+
+         return vim.lsp.util.open_floating_preview(markdown_lines(result.contents), 'markdown', config)
       end,
       ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' }),
    }
