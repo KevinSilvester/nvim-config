@@ -23,7 +23,6 @@ local cfg = {
    hint_enable = true, -- virtual hint enable
    hint_prefix = 'ﯦ ', -- Panda for parameter
    hint_scheme = 'Comment',
-   use_lspsaga = true, -- set to true if you want to use lspsaga popup
    hi_parameter = 'LspSignatureActiveParameter', -- how your parameter will be highlight
    handler_opts = {
       border = 'rounded', -- double, rounded, single, shadow, none

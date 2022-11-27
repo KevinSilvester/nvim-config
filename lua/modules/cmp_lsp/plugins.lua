@@ -53,6 +53,7 @@ plugin({
 
 plugin({
    'ray-x/lsp_signature.nvim',
+   commit = '055b82b98e3c2e4d3ca3300d0b453674ce166237',
    after = 'nvim-lspconfig',
    config = conf.lsp_signature,
 })
