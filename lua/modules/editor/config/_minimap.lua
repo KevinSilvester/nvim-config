@@ -1,6 +1,6 @@
 local utils = require('core.utils')
 
-if utils.executable('code-minimap') then
+if not utils.executable('code-minimap') then
    vim.notify(
       [[`code-mimimap` not found
 Install on macOS/linux: `brew install code-minimap`,
