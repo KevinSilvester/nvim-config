@@ -70,4 +70,7 @@ nvim_tree.setup({
          },
       },
    },
+   git = {
+      ignore = false
+   }
 })
