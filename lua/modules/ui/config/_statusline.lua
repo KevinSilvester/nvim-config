@@ -64,14 +64,14 @@ local mode = {
 local filename = {
    'filename',
    icon = '',
-   color = { bg = '#212430', fg = '#b4befe' },
+   color = { bg = '#212430', fg = '#b4befe', gui = 'bold' },
    separator = { left = '', right = '' },
 }
 
 local branch = {
    'branch',
    icon = '',
-   color = { bg = '#212430', fg = '#b4befe' },
+   color = { bg = '#212430', fg = '#b4befe', gui = 'bold' },
    separator = { left = '', right = '' },
 }
 
@@ -148,7 +148,7 @@ local treesitter = {
    color = function()
       local buf = vim.api.nvim_get_current_buf()
       local ts = vim.treesitter.highlighter.active[buf]
-      return { fg = ts and not vim.tbl_isempty(ts) and colours.green or colours.red }
+      return { fg = ts and not vim.tbl_isempty(ts) and colours.green or colours.red, gui = 'bold' }
    end,
 }
 
@@ -158,7 +158,7 @@ local fmt = {
    end,
    color = function()
       ACTIVE_FMT = get_active_fmt()
-      return { fg = #ACTIVE_FMT > 0 and colours.green or colours.red }
+      return { fg = #ACTIVE_FMT > 0 and colours.green or colours.red, gui = 'bold' }
    end,
    padding = 0,
    separator = '',
@@ -178,7 +178,7 @@ local lsp = {
    end,
    color = function()
       ACTIVE_LSP = get_active_lsp()
-      return { fg = #ACTIVE_LSP > 0 and colours.green or colours.red }
+      return { fg = #ACTIVE_LSP > 0 and colours.green or colours.red, gui = 'bold' }
    end,
    separator = '',
    on_click = function()
@@ -205,14 +205,14 @@ local fileformat = {
 local filesize = {
    'filesize',
    icon = '',
-   color = { bg = '#212430', fg = '#b4befe' },
+   color = { bg = '#212430', fg = '#b4befe', gui = 'bold' },
    separator = { left = '', right = '' },
 }
 
 local filetype = {
    'filetype',
    colored = true,
-   color = { bg = '#212430', fg = '#b4befe' },
+   color = { bg = '#212430', fg = '#b4befe', gui = 'bold' },
    separator = { left = '', right = '' },
 }
 
@@ -231,6 +231,7 @@ local location = {
    end,
    padding = 0,
    separator = { left = '', right = '' },
+   color = { gui = 'bold' },
 }
 
 local layout = {
