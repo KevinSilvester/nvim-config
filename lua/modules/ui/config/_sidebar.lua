@@ -71,6 +71,6 @@ nvim_tree.setup({
       },
    },
    git = {
-      ignore = false
-   }
+      ignore = false,
+   },
 })
