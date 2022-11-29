@@ -54,7 +54,7 @@ local ensure_installed = {
 }
 
 require('nvim-treesitter.install').prefer_git = false
-require('nvim-treesitter.install').compilers = { 'clang' }
+require('nvim-treesitter.install').compilers = vim.g.is_win and { 'clang' } or { 'clang', 'gcc', 'zig' }
 
 require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,
