@@ -13,6 +13,12 @@ plugin({ 'rebelot/kanagawa.nvim' })
 plugin({ 'marko-cerovac/material.nvim' })
 plugin({ 'olimorris/onedarkpro.nvim' })
 plugin({
+   'olivercederborg/poimandres.nvim',
+   config = function()
+      require('poimandres').setup()
+   end,
+})
+plugin({
    'catppuccin/nvim',
    as = 'catppuccin',
    config = function()
