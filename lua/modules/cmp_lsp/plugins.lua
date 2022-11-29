@@ -43,7 +43,7 @@ plugin({
 
 plugin({
    'jose-elias-alvarez/null-ls.nvim',
-   event = 'InsertEnter',
+   event = 'BufReadPost',
    config = conf.null_ls,
 })
 
