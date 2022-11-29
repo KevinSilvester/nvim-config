@@ -47,11 +47,11 @@ vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
    end,
 })
 
-vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
-   callback = function()
-      if not vim.g.neovide then
-         vim.cmd('hi Normal guibg=NONE')
-         vim.cmd('hi NormalNC guibg=NONE')
-      end
-   end,
-})
+-- vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
+--    callback = function()
+--       if not vim.g.neovide then
+--          vim.cmd('hi Normal guibg=NONE')
+--          vim.cmd('hi NormalNC guibg=NONE')
+--       end
+--    end,
+-- })
