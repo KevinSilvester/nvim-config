@@ -3,11 +3,11 @@ if ok then
    impatient.enable_profile()
 end
 
-local ufs = require('core.utils').fs
+local fs = require('utils.fs')
 local cache_dir = vim.fn.stdpath('cache')
 
 local createdir = function()
-   local data_dir = {
+   local cache_dirs = {
       cache_dir .. '/backup',
       cache_dir .. '/session',
       cache_dir .. '/swap',
@@ -15,12 +15,9 @@ local createdir = function()
       cache_dir .. '/undo',
    }
 
-   if not ufs.is_dir(cache_dir) then
-      ufs.mkdir(cache_dir)
-      for _, v in pairs(data_dir) do
-         if not ufs.is_dir(v) then
-            ufs.mkdir(v)
-         end
+   for _, d in ipairs(cache_dirs) do
+      if not fs.is_dir(d) then
+         fs.mkdir(d)
       end
    end
 end

@@ -1,4 +1,4 @@
-local utils = require('core.utils')
+local ufn = require('utils.fn')
 local fn = vim.fn
 
 
@@ -31,7 +31,7 @@ vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. fn.stdpath('data
 ------------------------------------------------------------------------
 --                    clipboard in WSL and MacOS                      --
 ------------------------------------------------------------------------
-if utils.has('wsl') and not vim.g.is_docker then
+if ufn.has('wsl') and not vim.g.is_docker then
    vim.g.clipboard = {
       copy = {
          ['+'] = 'win32yank.exe -i --crlf',
@@ -64,13 +64,13 @@ end
 ------------------------------------------------------------------------
 --                           python host                              --
 ------------------------------------------------------------------------
-if vim.g.is_win and utils.executable('scoop') then
+if vim.g.is_win and ufn.executable('scoop') then
    vim.g.python_host_prog = fn.expand('~/scoop/apps/python/current/python.exe')
    vim.g.python3_host_prog = fn.expand('~/scoop/shims/python3.exe')
 end
 
 if vim.g.is_linux then
-   local has_brew = utils.executable('brew')
+   local has_brew = ufn.executable('brew')
    vim.g.python_host_prog = '/usr/bin/python'
    vim.g.python3_host_prog = has_brew and '/home/linuxbrew/.linuxbrew/bin/python3' or '/usr/bin/python3'
 end

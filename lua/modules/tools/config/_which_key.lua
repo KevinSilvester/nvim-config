@@ -143,7 +143,7 @@ local mappings = {
    l = {
       name = 'LSP',
       a = { '<cmd>Lspsaga code_action<cr>', 'Code Action' },
-      c = { "<cmd>lua require('core.utils').lsp.server_capabilities()<cr>", 'Get Capabilites' },
+      c = { "<cmd>lua require('utils.lsp').server_capabilities()<cr>", 'Get Capabilites' },
       f = { '<cmd>lua vim.lsp.buf.format({ timeout_ms = 1000 })<cr>', 'Format' },
       h = { '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Help' },
       i = { '<cmd>LspInfo<cr>', 'LSP Info' },

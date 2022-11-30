@@ -1,4 +1,4 @@
-local utils = require("core.utils")
+local ufn = require("utils.fn")
 local cache_dir = vim.fn.stdpath("cache")
 
 
@@ -82,7 +82,7 @@ vim.opt.completeopt = { "menuone", "noselect" } -- mostly just for cmp
 -- Search --
 ------------
 vim.opt.ignorecase = true                                      -- ignore case when searching
-if utils.executable("rg") then
+if ufn.executable("rg") then
    vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case"  -- command to when running search
    vim.opt.grepformat = "%f:%l:%c:%m"                          -- scanf-like string used format ':grep' command output
 end
@@ -149,7 +149,7 @@ end
 if vim.g.is_win then
    -- ref: https://github.com/akinsho/toggleterm.nvim/wiki/Tips-and-Tricks#windows
    local powershell_options = {
-      shell = utils.executable("pwsh") and "pwsh" or "powershell",
+      shell = ufn.executable("pwsh") and "pwsh" or "powershell",
       shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
       shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
       shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
@@ -168,7 +168,7 @@ end
 ------------------------
 -- For Neovim Nightly --
 ------------------------
-if utils.is_latest() then
+if ufn.is_latest() then
    vim.opt.cmdwinheight = 5
    vim.opt.equalalways = false
    vim.opt.display = "lastline"
