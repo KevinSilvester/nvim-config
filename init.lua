@@ -6,12 +6,12 @@ end
 local fs = require('utils.fs')
 local cache_dir = vim.fn.stdpath('cache')
 
-local createdir = function()
+local setup_cache = function()
    local cache_dirs = {
       cache_dir .. '/backup',
       cache_dir .. '/session',
       cache_dir .. '/swap',
-      cache_dir .. '/tags',
+      cache_dir .. '/view',
       cache_dir .. '/undo',
    }
 
@@ -22,13 +22,13 @@ local createdir = function()
    end
 end
 
-createdir()
 
 -- load core
 require('core.globals')
 require('core.options')
 require('core.autocmds')
 require('core.cmds')
+setup_cache()
 
 -- load plugins
 local pack = require('core.pack')

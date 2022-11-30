@@ -32,8 +32,6 @@ M.mkdir = function(path)
          return 'bash -c "mkdir -p ' .. path .. '"'
       end
    end
-   vim.notify(cmd())
-
    os.execute(cmd())
 end
 
