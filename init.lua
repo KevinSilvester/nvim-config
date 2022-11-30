@@ -22,7 +22,6 @@ local setup_cache = function()
    end
 end
 
-
 -- load core
 require('core.globals')
 require('core.options')

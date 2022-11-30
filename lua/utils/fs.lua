@@ -27,9 +27,9 @@ end
 M.mkdir = function(path)
    local cmd = function()
       if vim.g.is_win then
-         return 'powershell -c "New-Item -Type directory -Path ' .. path .. '"'
+         return 'powershell -c "New-Item -Type directory -Path ' .. path .. ' 2>&1 | Out-Null"'
       else
-         return 'bash -c "mkdir -p ' .. path .. '"'
+         return 'bash -c "mkdir -p ' .. path .. ' $>/dev/null"'
       end
    end
    os.execute(cmd())

@@ -77,7 +77,7 @@ M.inspect = function(input, yank, open_split)
          end)
       end, { once = true })
 
-      vim.api.nvim_buf_set_lines(component.bufnr, 0, 1, false, vim.split(output, '\n'))
+      vim.api.nvim_buf_set_lines(component.bufnr, 0, 1, false, vim.split(output, '\n', {}))
 
       if yank then
          vim.cmd(component.bufnr .. 'b +%y')
