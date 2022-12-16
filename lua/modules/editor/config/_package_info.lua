@@ -7,8 +7,8 @@ require('package-info').setup({
       enable = true, -- Whether to display icons
       style = {
          -- up_to_date = "|  ", -- Icon for up to date dependencies
-         up_to_date = '   ', -- Icon for up to date dependencies
-         outdated = '   ', -- Icon for outdated dependencies
+         up_to_date = '   ', -- Icon for up to date dependencies
+         outdated = '   ', -- Icon for outdated dependencies
       },
    },
    -- display the status of the package in the statusline
