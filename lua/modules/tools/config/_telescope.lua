@@ -1,7 +1,7 @@
 if not packer_plugins['plenary.nvim'].loaded then
    vim.cmd([[packadd plenary.nvim]])
    vim.cmd([[packadd popup.nvim]])
-   vim.cmd([[packadd telescope-fzy-native.nvim]])
+   vim.cmd([[packadd telescope-fzf-native.nvim]])
 end
 
 local actions = require('telescope.actions')

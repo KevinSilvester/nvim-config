@@ -30,9 +30,8 @@ require('core.cmds')
 setup_cache()
 
 -- load plugins
-local pack = require('core.pack')
-pack.ensure_plugins()
-pack.load_compile()
+require('core.pack').ensure_plugins()
+require('core.pack').load_compile()
 
 -- setup colorscheme and keymaps
 require('modules.ui.colorscheme').setup('catppuccin')

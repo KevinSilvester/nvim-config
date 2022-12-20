@@ -68,6 +68,8 @@ return {
          ['rust-analyzer'] = {
             lens = { enable = true },
             checkOnSave = { command = 'clippy' },
+            procMacro = { enable = true },
+            diagnostics = { disabled = { 'unresolved-proc-macro' } },
          },
       },
    },

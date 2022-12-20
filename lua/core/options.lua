@@ -168,12 +168,10 @@ end
 ------------------------
 -- For Neovim Nightly --
 ------------------------
-if ufn.is_latest() then
-   vim.opt.cmdwinheight = 5
-   vim.opt.equalalways = false
-   vim.opt.display = "lastline"
-   vim.opt.showbreak = "↳  "
-   vim.opt.listchars = "tab:»·,nbsp:+,trail:·,extends:→,precedes:←"
-   vim.opt.pumblend = 10
-   vim.opt.winblend = 10
-end
+vim.opt.cmdwinheight = 5
+vim.opt.equalalways = false
+vim.opt.display = "lastline"
+vim.opt.showbreak = "↳  "
+vim.opt.listchars = "tab:»·,nbsp:+,trail:·,extends:→,precedes:←"
+vim.opt.pumblend = 10
+vim.opt.winblend = 10

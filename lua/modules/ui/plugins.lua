@@ -83,6 +83,7 @@ plugin({
 -- sidebar
 plugin({
    'kyazdani42/nvim-tree.lua',
+   commit = '0cd8ac4751c39440a1c28c6be4704f3597807d29',
    config = conf.sidebar,
    opt = true,
    cmd = { 'NvimTreeToggle', 'NvimTreeRefresh' },
