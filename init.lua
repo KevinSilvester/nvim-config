@@ -29,10 +29,12 @@ require('core.autocmds')
 require('core.cmds')
 setup_cache()
 
+-- setup keymaps
+require('keymaps')
+
 -- load plugins
 require('core.pack').ensure_plugins()
 require('core.pack').load_compile()
 
 -- setup colorscheme and keymaps
 require('modules.ui.colorscheme').setup('catppuccin')
-require('keymaps')

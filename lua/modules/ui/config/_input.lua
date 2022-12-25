@@ -48,7 +48,8 @@ require('dressing').setup({
 
       -- Priority list of preferred vim.select implementations
       -- backend = { "telescope", "fzf_lua", "fzf", "builtin", "nui" },
-      backend = { 'builtin', 'telescope', 'nui' },
+      backend = { 'telescope', 'builtin', 'nui', },
+
 
       -- Trim trailing `:` from prompt
       trim_prompt = true,

@@ -1,5 +1,30 @@
+local ufs = require('utils.fs')
+
+local delete_bundled_parsers = function()
+   local parser_rtp = vim.api.nvim_get_runtime_file('parser', true)
+   local path = string.gsub(vim.env.VIM, 'share', 'lib')
+   path = ufs.path_join(path, 'parser')
+
+   if not ufs.is_dir(path) then
+      return
+   end
+
+   vim.loop.fs_rmdir(path, function(err, _)
+      if err ~= nil then
+         vim.notify(
+            'Failed to remove bundled Tree-Sitter parsers!',
+            vim.log.levels.ERROR,
+            { title = 'nvim-config' }
+         )
+      end
+   end)
+end
+
 vim.api.nvim_command('set foldmethod=expr')
 vim.api.nvim_command('set foldexpr=nvim_treesitter#foldexpr()')
+delete_bundled_parsers()
+
+-- delete the treesitter parsers bundled with neovim
 
 local ensure_installed = {
    'astro',
@@ -60,7 +85,6 @@ require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,
    highlight = {
       enable = true,
-      disable = { 'lua' },
    },
    indent = {
       enable = true,

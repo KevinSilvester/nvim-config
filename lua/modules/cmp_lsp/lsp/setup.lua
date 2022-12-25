@@ -14,7 +14,7 @@ M.set_lsp_keymaps = function(bufnr)
    -- stylua: ignore
    buf_nmap(bufnr, {
       { "K", cmd("lua vim.lsp.buf.hover()"), opts(noremap, silent) },
-      { "D", cmd("lua vim.lsp.buf.type_definintion()"), opts(noremap, silent) },
+      { "D", cmd("lua vim.lsp.buf.type_definitio()"), opts(noremap, silent) },
       { "gD", cmd("lua vim.lsp.buf.declaration()"), opts(noremap, silent) },
       { "gd", cmd("lua vim.lsp.buf.definition()"), opts(noremap, silent) },
       { "pd", cmd("Lspsaga peek_definition"), opts(noremap, silent) },

@@ -46,3 +46,25 @@ plugin({
    ft = { 'markdown' },
    event = 'BufReadPost',
 })
+
+-- colour picker
+plugin({
+   'max397574/colortils.nvim',
+   -- opt = true,
+   event = 'BufReadPost',
+   cmd = 'Colortils',
+   config = conf.colortils,
+})
+
+-- icon picker
+-- plugin({
+--    'ziontee113/icon-picker.nvim',
+--    opt = true,
+--    event = 'BufReadPost',
+--    cmd = {
+--       'IconPickerNormal',
+--       'IconPickerInsert',
+--       'IconPickerYank',
+--    },
+--    config = conf.icon_picker,
+-- })

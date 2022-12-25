@@ -23,7 +23,7 @@ function Packer:load_plugins()
       local list = {}
       local glob_pattern = vim.g.is_win and '*\\plugins.lua' or '*/plugins.lua'
       local match_pattern = vim.g.is_win and 'lua\\(.+).lua$' or 'lua/(.+).lua$'
-      local tmp = vim.split(fn.globpath(modules_dir, glob_pattern), '\n')
+      local tmp = vim.split(fn.globpath(modules_dir, glob_pattern), '\n', {})
 
       for _, f in ipairs(tmp) do
          list[#list + 1] = string.match(f, match_pattern)
@@ -108,7 +108,7 @@ end
 
 function plugins.auto_compile()
    local file = api.nvim_buf_get_name(0)
-   if not file:match(vim_path) then
+   if not file:match(config_dir) then
       return
    end
 
@@ -123,7 +123,7 @@ function plugins.load_compile()
    if vim.fn.filereadable(packer_compiled) == 1 then
       require('packer_compiled')
    else
-      vim.notify('Run PackerSync or PackerCompile', 'info', { title = 'Packer' })
+      vim.notify('Run PackerSync or PackerCompile', vim.log.levels.INFO, { title = 'Packer' })
    end
 
    local cmds = {

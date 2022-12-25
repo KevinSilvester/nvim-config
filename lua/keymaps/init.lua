@@ -55,7 +55,10 @@ imap({
    { '<A-k>', '<Esc>:m .-2<CR>==gi', opts(noremap, silent) },
 
    -- Delete Word
-   { '<C-BS>', '<C-W>', opts(noremap, silent) },
+   { '<S-BS>', '<C-W>', opts(noremap, silent) },
+
+   -- Icon Picker
+   -- { '<C-I>', cmd('IconPickerInsert'), opts(noremap, silent) },
 })
 
 --
@@ -82,12 +85,20 @@ xmap({
    { '<A-k>', cmd("move '<-2<CR>gv-gv"), opts(noremap, silent) },
 
    -- Comment
-   {
-      '<leader>/',
-      function()
-         vim.api.nvim_feedkeys(esc, 'nx', false)
-         require('Comment.api').toggle.linewise(vim.fn.visualmode())
-      end,
-      opts(noremap, silent),
-   },
+   -- {
+   --    '<leader>//',
+   --    function()
+   --       vim.api.nvim_feedkeys(esc, 'nx', false)
+   --       require('Comment.api').toggle.linewise(vim.fn.visualmode())
+   --    end,
+   --    opts(noremap, silent),
+   -- },
+   -- {
+   --    '<leader>/b',
+   --    function()
+   --       vim.api.nvim_feedkeys(esc, 'nx', false)
+   --       require('Comment.api').toggle.blockwise(vim.fn.visualmode())
+   --    end,
+   --    opts(noremap, silent),
+   -- },
 })

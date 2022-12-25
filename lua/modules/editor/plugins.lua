@@ -88,9 +88,10 @@ plugin({
 
 -- find + search + replace
 plugin({
-   'windwp/nvim-spectre',
+   'nvim-pack/nvim-spectre',
    opt = true,
-   after = { 'plenary.nvim', 'nvim-web-devicons' },
+   event = 'BufReadPost',
+   requires = { 'plenary.nvim', 'nvim-web-devicons' },
    config = conf.nvim_spectre,
 })
 
@@ -109,7 +110,9 @@ plugin({
 })
 plugin({
    'sindrets/diffview.nvim',
+   opt = true,
    after = 'plenary.nvim',
+   event = 'BufReadPost',
    cmd = { 'DiffViewOpen' },
    config = conf.diffview,
 })
@@ -118,7 +121,7 @@ plugin({
 plugin({
    'vuki656/package-info.nvim',
    opt = true,
-   event = { 'BufRead package.json' },
+   event = { 'BufReadPost package.json' },
    after = 'nui.nvim',
    config = conf.package_info,
 })

@@ -155,7 +155,7 @@ vim.g.lsp_servers = {
    'yamlls',
 }
 if vim.g.is_win then
-   vim.list_extend(vim.g.lsp_servers, { 'powershell_es' })
+   table.insert(vim.g.lsp_servers, { 'powershell_es' })
 end
 
 -- vim.g.lsp_servers = {

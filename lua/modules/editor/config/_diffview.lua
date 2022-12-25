@@ -28,17 +28,19 @@ diffview.setup({
       },
    },
    file_history_panel = {
-      log_options = { -- See ':h diffview-config-log_options'
-         single_file = {
-            diff_merges = 'combined',
+      git = {
+         log_options = { -- See ':h diffview-config-log_options'
+            single_file = {
+               diff_merges = 'combined',
+            },
+            multi_file = {
+               diff_merges = 'first-parent',
+            },
          },
-         multi_file = {
-            diff_merges = 'first-parent',
+         win_config = { -- See ':h diffview-config-win_config'
+            position = 'bottom',
+            height = 16,
          },
-      },
-      win_config = { -- See ':h diffview-config-win_config'
-         position = 'bottom',
-         height = 16,
       },
    },
    commit_log_panel = {
