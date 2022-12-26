@@ -90,7 +90,7 @@ M.path_join = function(...)
    end
 
    for _, arg in ipairs(args) do
-      if arg == '' and #all_parts == 0 and not host.is_win then
+      if arg == '' and #all_parts == 0 and not HOST.is_win then
          all_parts = { '' }
       else
          local arg_parts = M.split(arg, M.path_separator)

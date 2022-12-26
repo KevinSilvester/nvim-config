@@ -5,7 +5,7 @@ local PATH = '/mason/packages/powershell-editor-services/PowerShellEditorService
 
 local bundle_path = function(p)
    p = p or ''
-   return ufs.path_join(vim.fn.stdpath('data'), PATH, p)
+   return ufs.path_join(vim.fn.stdpath('data'), vim.split(PATH, '/', {}), p)
 end
 
 local log_path = function(file_name)

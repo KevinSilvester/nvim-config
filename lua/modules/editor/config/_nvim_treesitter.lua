@@ -8,7 +8,7 @@ local delete_bundled_parsers = function()
       return
    end
 
-   local files = ufs.scandir('./test')
+   local files = ufs.scandir(path)
 
    for _, file in ipairs(files) do
       vim.loop.fs_unlink(file, function(err, _)
