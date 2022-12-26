@@ -1,12 +1,25 @@
 local ufs = require('utils.fs')
 
 local delete_bundled_parsers = function()
-   local parser_rtp = vim.api.nvim_get_runtime_file('parser', true)
    local path = string.gsub(vim.env.VIM, 'share', 'lib')
    path = ufs.path_join(path, 'parser')
 
    if not ufs.is_dir(path) then
       return
+   end
+
+   local files = ufs.scandir('./test')
+
+   for _, file in ipairs(files) do
+      vim.loop.fs_unlink(file, function(err, _)
+         if err ~= nil then
+            vim.notify(
+               'Failed to delete bundled parser: ' .. file .. ' ' .. err,
+               vim.log.levels.ERROR,
+               { title = 'nvim-config' }
+            )
+         end
+      end)
    end
 
    vim.loop.fs_rmdir(path, function(err, _)
@@ -79,7 +92,7 @@ local ensure_installed = {
 }
 
 require('nvim-treesitter.install').prefer_git = false
-require('nvim-treesitter.install').compilers = vim.g.is_win and { 'clang' } or { 'clang', 'gcc', 'zig' }
+require('nvim-treesitter.install').compilers = HOST.is_win and { 'clang' } or { 'clang', 'gcc', 'zig' }
 
 require('nvim-treesitter.configs').setup({
    ensure_installed = ensure_installed,

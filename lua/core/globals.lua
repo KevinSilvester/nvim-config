@@ -3,20 +3,16 @@ local fn = vim.fn
 
 
 ------------------------------------------------------------------------
---                          custom variables                          --
+--                      colourscheme variation                        --
 ------------------------------------------------------------------------
-vim.g.is_win = (vim.loop.os_uname().sysname == 'Windows_NT') and true or false
-vim.g.is_linux = (vim.loop.os_uname().sysname == 'Linux') and true or false
-vim.g.is_mac = (vim.loop.os_uname().sysname == 'Darwin') and true or false
-vim.g.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 vim.g.catppuccin_flavour = 'mocha'
 vim.g.material_style = 'deep ocean'
 
 
 ------------------------------------------------------------------------
---                      PATH environment variable                     --
+--                     PATH environment variable                      --
 ------------------------------------------------------------------------
-vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. fn.stdpath('data') .. '/mason/bin'
+vim.env.PATH = vim.env.PATH .. (HOST.is_win and ';' or ':') .. fn.stdpath('data') .. '/mason/bin'
 
 
 ------------------------------------------------------------------------
@@ -31,7 +27,7 @@ vim.env.PATH = vim.env.PATH .. (vim.g.is_win and ';' or ':') .. fn.stdpath('data
 ------------------------------------------------------------------------
 --                    clipboard in WSL and MacOS                      --
 ------------------------------------------------------------------------
-if ufn.has('wsl') and not vim.g.is_docker then
+if ufn.has('wsl') and not HOST.is_docker then
    vim.g.clipboard = {
       copy = {
          ['+'] = 'win32yank.exe -i --crlf',
@@ -45,7 +41,7 @@ if ufn.has('wsl') and not vim.g.is_docker then
    }
 end
 
-if vim.g.is_mac then
+if HOST.is_mac then
    vim.g.clipboard = {
       name = 'macOS-clipboard',
       copy = {
@@ -64,18 +60,18 @@ end
 ------------------------------------------------------------------------
 --                           python host                              --
 ------------------------------------------------------------------------
-if vim.g.is_win and ufn.executable('scoop') then
+if HOST.is_win and ufn.executable('scoop') then
    vim.g.python_host_prog = fn.expand('~/scoop/apps/python/current/python.exe')
    vim.g.python3_host_prog = fn.expand('~/scoop/shims/python3.exe')
 end
 
-if vim.g.is_linux then
+if HOST.is_linux then
    local has_brew = ufn.executable('brew')
    vim.g.python_host_prog = '/usr/bin/python'
    vim.g.python3_host_prog = has_brew and '/home/linuxbrew/.linuxbrew/bin/python3' or '/usr/bin/python3'
 end
 
-if vim.g.is_mac then
+if HOST.is_mac then
    vim.g.python_host_prog = '/usr/bin/python'
    vim.g.python3_host_prog = '/usr/local/bin/python3'
 end
@@ -125,38 +121,6 @@ vim.g.loaded_netrwSettings = 1
 vim.g.loaded_netrwFileHandlers = 1
 
 
-------------------------------------------------------------------------
---                           lsp servers                              --
-------------------------------------------------------------------------
-vim.g.lsp_servers = {
-   'astro',
-   'awk_ls',
-   'bashls',
-   'clangd',
-   'cmake',
-   'cssls',
-   'dockerls',
-   'dotls',
-   'emmet_ls',
-   'eslint',
-   'gopls',
-   'graphql',
-   'html',
-   'jsonls',
-   'pyright',
-   'rust_analyzer',
-   'sqls',
-   'sumneko_lua',
-   'svelte',
-   'tailwindcss',
-   'taplo',
-   'tsserver',
-   'vuels',
-   'yamlls',
-}
-if vim.g.is_win then
-   table.insert(vim.g.lsp_servers, { 'powershell_es' })
-end
 
 -- vim.g.lsp_servers = {
 --    "astro-language-server",

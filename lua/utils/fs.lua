@@ -3,7 +3,7 @@ local fn = vim.fn
 
 ---The file system path separator for the current platform.
 M.path_separator = '/'
-if vim.g.is_win then
+if HOST.is_win then
    M.path_separator = '\\'
 end
 
@@ -32,13 +32,32 @@ end
 ---@param path string
 M.mkdir = function(path)
    local cmd = function()
-      if vim.g.is_win then
-         return 'powershell -c "New-Item -Type directory -Path ' .. path .. ' 2>&1 | Out-Null"'
+      if HOST.is_win then
+         return 'powershell -NoProfile -c "New-Item -Type directory -Path ' .. path .. ' 2>&1 | Out-Null"'
       else
          return 'bash -c "mkdir -p ' .. path .. ' $>/dev/null"'
       end
    end
    os.execute(cmd())
+end
+
+---list all files in a directory recursively
+---@param path string
+---@return table list of files
+M.scandir = function(path)
+   local cmd = function()
+      if HOST.is_win then
+         return 'powershell -NoProfile -c "Get-ChildItem -Path '
+            .. path
+            .. ' -File -Recurse | Select-Object -ExpandProperty FullName"'
+      else
+         return 'bash -c "find ' .. path .. ' -type f -exec readlink -f {} \\;"'
+      end
+   end
+   local handle = assert(io.popen(cmd()))
+   local result = handle:read('*a')
+   handle:close()
+   return vim.split(result, '\n', { trimempty = true })
 end
 
 ---Split string into a table of strings using a separator.
@@ -71,8 +90,12 @@ M.path_join = function(...)
    end
 
    for _, arg in ipairs(args) do
-      arg_parts = M.split(arg, M.path_separator)
-      vim.list_extend(all_parts, arg_parts)
+      if arg == '' and #all_parts == 0 and not host.is_win then
+         all_parts = { '' }
+      else
+         local arg_parts = M.split(arg, M.path_separator)
+         vim.list_extend(all_parts, arg_parts, 1, #arg_parts)
+      end
    end
    return table.concat(all_parts, M.path_separator)
 end

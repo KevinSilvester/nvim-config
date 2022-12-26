@@ -3,6 +3,7 @@ if ok then
    impatient.enable_profile()
 end
 
+require('core.lua_globals')
 local fs = require('utils.fs')
 local cache_dir = vim.fn.stdpath('cache')
 

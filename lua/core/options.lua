@@ -146,7 +146,7 @@ end
 -----------
 -- Shell --
 -----------
-if vim.g.is_win then
+if HOST.is_win then
    -- ref: https://github.com/akinsho/toggleterm.nvim/wiki/Tips-and-Tricks#windows
    local powershell_options = {
       shell = ufn.executable("pwsh") and "pwsh" or "powershell",

@@ -1,4 +1,4 @@
 require('mason-lspconfig').setup({
-   ensure_installed = vim.g.lsp_servers,
+   ensure_installed = DEFAULT_LSP_SERVERS,
    automatic_installation = true,
 })

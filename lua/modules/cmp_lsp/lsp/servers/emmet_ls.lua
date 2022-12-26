@@ -3,7 +3,7 @@
 
 local cmd = {}
 
-if vim.g.is_win then
+if HOST.is_win then
    cmd = { 'pwsh', '-c', 'ls_emmet', '--stdio' }
 else
    cmd = { 'ls_emmet', '--stdio' }

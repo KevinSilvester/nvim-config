@@ -4,7 +4,7 @@ local function bundle_path(path)
    path = path or ''
 
    local bp = '/mason/packages/powershell-editor-services/PowerShellEditorServices' .. path
-   if vim.g.is_win then
+   if HOST.is_win then
       bp = vim.fn.substitute(bp, '/', '\\', 'g')
    end
 
@@ -12,7 +12,7 @@ local function bundle_path(path)
 end
 
 local function log_path(file_name)
-   file_name = vim.g.is_win and vim.fn.substitute(file_name, '/', '\\', 'g') or file_name
+   file_name = HOST.is_win and vim.fn.substitute(file_name, '/', '\\', 'g') or file_name
    return vim.fn.stdpath('cache') .. file_name
 end
 

@@ -32,7 +32,7 @@ local custom_marker = function(filepath, bufnr, opts)
 
          -- If on Windows, display images using viu as telescope media file extension requires ueberzug
          -- which is not available on Windows
-         elseif mime_type == 'image' and vim.g.is_win then
+         elseif mime_type == 'image' and HOST.is_win then
             vim.schedule(function()
                previewers_utils.set_preview_message(bufnr, opts.winid, 'Image Loading...')
                local term = vim.api.nvim_open_term(bufnr, {})
