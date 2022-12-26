@@ -39,5 +39,5 @@ _G.DEFAULT_LSP_SERVERS = {
    'yamlls',
 }
 if HOST.is_win then
-   table.insert(_G.DEFAULT_LSP_SERVERS, { 'powershell_es' })
+   table.insert(_G.DEFAULT_LSP_SERVERS, 'powershell_es')
 end

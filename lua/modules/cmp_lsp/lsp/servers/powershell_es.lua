@@ -1,19 +1,15 @@
+local ufs = require('utils.fs')
 local M = {}
 
-local function bundle_path(path)
-   path = path or ''
+local PATH = '/mason/packages/powershell-editor-services/PowerShellEditorServices'
 
-   local bp = '/mason/packages/powershell-editor-services/PowerShellEditorServices' .. path
-   if HOST.is_win then
-      bp = vim.fn.substitute(bp, '/', '\\', 'g')
-   end
-
-   return vim.fn.stdpath('data') .. bp
+local bundle_path = function(p)
+   p = p or ''
+   return ufs.path_join(vim.fn.stdpath('data'), PATH, p)
 end
 
-local function log_path(file_name)
-   file_name = HOST.is_win and vim.fn.substitute(file_name, '/', '\\', 'g') or file_name
-   return vim.fn.stdpath('cache') .. file_name
+local log_path = function(file_name)
+   return ufs.path_join(vim.fn.stdpath('cache'), file_name)
 end
 
 local pses_command = bundle_path('/Start-EditorServices.ps1')
