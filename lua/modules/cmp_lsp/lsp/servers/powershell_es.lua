@@ -3,9 +3,24 @@ local M = {}
 
 local PATH = '/mason/packages/powershell-editor-services/PowerShellEditorServices'
 
+local extend = function(t, ...)
+   for i = 1, select('#', ...) do
+      local x = select(i, ...)
+      if x then
+         for k, v in pairs(x) do
+            t[k] = v
+         end
+      end
+   end
+   return t
+end
+
 local bundle_path = function(p)
    p = p or ''
-   return ufs.path_join(vim.fn.stdpath('data'), vim.split(PATH, '/', {}), p)
+   local tbl = { vim.fn.stdpath('data') }
+   extend(tbl, vim.split(PATH, '/', {}))
+   extend(tbl, {p})
+   return ufs.path_join(unpack(tbl))
 end
 
 local log_path = function(file_name)
