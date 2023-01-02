@@ -13,7 +13,7 @@ local function get_active_lsp()
    local buf_lsp_names = {}
 
    -- add lsp clients
-   for _, client in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
+   for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
       if client.name ~= 'copilot' and client.name ~= 'null-ls' then
          table.insert(buf_lsp_names, client.name)
       end
