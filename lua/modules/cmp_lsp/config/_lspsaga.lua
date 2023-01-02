@@ -36,7 +36,7 @@ saga.init_lsp_saga({
    -- finder do lsp request timeout
    -- if your project big enough or your server very slow
    -- you may need to increase this value
-   finder_request_timeout = 3000,
+   finder_request_timeout = 10000,
    finder_action_keys = {
       open = { 'o', '<CR>' },
       vsplit = 's',
