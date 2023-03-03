@@ -19,7 +19,7 @@ local bundle_path = function(p)
    p = p or ''
    local tbl = { vim.fn.stdpath('data') }
    extend(tbl, vim.split(PATH, '/', {}))
-   extend(tbl, {p})
+   extend(tbl, { p })
    return ufs.path_join(unpack(tbl))
 end
 
