@@ -30,7 +30,7 @@ _G.DEFAULT_LSP_SERVERS = {
    'pyright',
    'rust_analyzer',
    'sqls',
-   'sumneko_lua',
+   'lua_ls',
    'svelte',
    'tailwindcss',
    'taplo',

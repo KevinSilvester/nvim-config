@@ -39,6 +39,13 @@ plugin({
    },
 })
 
+-- multiple cursors
+plugin({
+   'mg979/vim-visual-multi',
+   opt = true,
+   event = 'BufReadPost',
+})
+
 -- comments
 plugin({
    'numToStr/Comment.nvim',

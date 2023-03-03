@@ -1,5 +1,7 @@
 local toggleterm = require('toggleterm')
 
+vim.notify(vim.o.shell)
+
 toggleterm.setup({
    size = 20,
    open_mapping = '<C-P>',

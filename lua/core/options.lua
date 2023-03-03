@@ -161,7 +161,7 @@ if HOST.is_win then
       vim.opt[option] = value
    end
 else
-   vim.opt.shell = "fish"
+   vim.opt.shell = "bash"
 end
 
 
