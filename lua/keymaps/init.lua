@@ -47,6 +47,13 @@ nmap({
    { 'nr', cmd('NvimTreeRefresh'), opts(noremap, silent) },
 })
 
+if HOST.is_mac then
+   nmap({
+      { '<D-Up>', cmd('call vm#commands#add_cursor_up(0, v:count1)', opts(noremap, silent)) },
+      { '<D-Down>', cmd('call vm#commands#add_cursor_down(0, v:count1)', opts(noremap, silent)) },
+   })
+end
+
 --
 -- INSERT MODE --
 imap({
