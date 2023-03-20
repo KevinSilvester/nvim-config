@@ -30,7 +30,7 @@ plugin({
 plugin({
    'nvim-lualine/lualine.nvim',
    opt = true,
-   after = { 'gitsigns.nvim' },
+   after = { 'gitsigns.nvim', 'null-ls.nvim' },
    config = conf.statusline,
 })
 

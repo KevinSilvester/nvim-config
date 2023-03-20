@@ -15,43 +15,36 @@ plugin({
    run = ':TSUpdate',
    event = 'BufReadPost',
    config = conf.nvim_treesitter,
-   requires = {
-      {
-         'JoosepAlviste/nvim-ts-context-commentstring',
-         opt = true,
-         after = 'nvim-treesitter',
-      },
-      {
-         'nvim-treesitter/nvim-treesitter-textobjects',
-         opt = true,
-         after = 'nvim-treesitter',
-      },
-      {
-         'windwp/nvim-ts-autotag',
-         opt = true,
-         after = 'nvim-treesitter',
-      },
-      {
-         'andymass/vim-matchup',
-         opt = true,
-         after = 'nvim-treesitter',
-      },
-   },
+})
+plugin({
+   'JoosepAlviste/nvim-ts-context-commentstring',
+   after = 'nvim-treesitter',
+})
+plugin({
+   'nvim-treesitter/nvim-treesitter-textobjects',
+   after = 'nvim-treesitter',
+})
+plugin({
+   'windwp/nvim-ts-autotag',
+   after = 'nvim-treesitter',
+})
+plugin({
+   'andymass/vim-matchup',
+   after = 'nvim-treesitter',
 })
 
 -- multiple cursors
 plugin({
    'mg979/vim-visual-multi',
-   opt = true,
    event = 'BufReadPost',
 })
 
 -- comments
 plugin({
    'numToStr/Comment.nvim',
-   event = 'BufRead',
    config = conf.comment,
    requires = { 'folke/todo-comments.nvim' },
+   after = { 'nvim-treesitter', 'nvim-ts-context-commentstring' },
 })
 plugin({
    'folke/todo-comments.nvim',

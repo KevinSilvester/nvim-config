@@ -14,7 +14,7 @@ plugin({
    'neovim/nvim-lspconfig',
    opt = true,
    event = 'BufReadPre',
-   after = { 'cmp-nvim-lsp', 'neodev.nvim' },
+   after = { 'neodev.nvim' },
    config = conf.nvim_lspconfig,
 })
 
@@ -72,7 +72,6 @@ plugin({
 plugin({
    'zbirenbaum/copilot.lua',
    after = 'nvim-lspconfig',
-   event = { 'VimEnter' },
    config = conf.copilot,
 })
 
@@ -95,7 +94,7 @@ plugin({
 ---------------------------------
 plugin({
    'L3MON4D3/LuaSnip',
-   after = 'nvim-cmp',
+   -- after = 'nvim-cmp',
    config = conf.lua_snip,
    requires = { 'rafamadriz/friendly-snippets' },
 })
@@ -103,20 +102,19 @@ plugin({
 plugin({
    'hrsh7th/nvim-cmp',
    event = 'BufReadPost',
-   requires = {
-      { 'lukas-reineke/cmp-under-comparator' },
-      { 'hrsh7th/cmp-nvim-lsp', after = 'cmp_luasnip' },
-      { 'hrsh7th/cmp-nvim-lua', after = 'cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-nvim-lsp-signature-help', after = 'cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-nvim-lsp-document-symbol', after = 'cmp-nvim-lsp' },
-      { 'hrsh7th/cmp-buffer', after = 'cmp-spell' },
-      { 'hrsh7th/cmp-path', after = 'nvim-cmp' },
-      { 'saadparwaiz1/cmp_luasnip', after = 'LuaSnip' },
-      { 'f3fora/cmp-spell', after = 'cmp-path' },
-      { 'kdheepak/cmp-latex-symbols', after = 'cmp-buffer' },
-   },
+   requires = { { 'lukas-reineke/cmp-under-comparator' } },
    config = conf.cmp,
 })
+
+plugin({ 'saadparwaiz1/cmp_luasnip', after = { 'nvim-cmp', 'LuaSnip' } })
+plugin({ 'hrsh7th/cmp-nvim-lsp' })
+plugin({ 'hrsh7th/cmp-nvim-lua', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
+plugin({ 'hrsh7th/cmp-nvim-lsp-signature-help', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
+plugin({ 'hrsh7th/cmp-nvim-lsp-document-symbol', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
+plugin({ 'hrsh7th/cmp-path', after = 'nvim-cmp' })
+plugin({ 'f3fora/cmp-spell', after = 'cmp-path' })
+plugin({ 'hrsh7th/cmp-buffer', after = 'cmp-spell' })
+plugin({ 'kdheepak/cmp-latex-symbols', after = 'cmp-buffer' })
 
 plugin({
    'windwp/nvim-autopairs',
