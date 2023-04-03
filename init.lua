@@ -1,7 +1,8 @@
-local ok, impatient = pcall(require, 'impatient')
-if ok then
-   impatient.enable_profile()
-end
+vim.defer_fn(function()
+   pcall(function()
+      require('impatient').enable_profile()
+   end)
+end, 0)
 
 require('core.lua_globals')
 local fs = require('utils.fs')
