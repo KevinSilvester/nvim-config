@@ -112,7 +112,11 @@ vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 ----------------
 -- Appearance --
 ----------------
-vim.opt.guifont = { "JetBrainsMono NF", ":h9" }
+if HOST.is_win then
+   vim.opt.guifont = { "JetBrainsMono NF", ":h9" }
+elseif HOST.is_mac then
+   vim.opt.guifont = { "JetBrainsMono Nerd Font", ":h12" }
+end
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 vim.opt.winwidth = 30
