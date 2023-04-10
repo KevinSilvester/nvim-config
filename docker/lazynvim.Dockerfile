@@ -2,9 +2,9 @@ FROM alpine:edge
 
 RUN apk update
 RUN apk add --no-cache \
-   git build-base make coreutils curl wget unzip tar gzip \
+   git lazygit build-base make coreutils curl wget unzip tar gzip \
    bash fish neovim file fd sed ripgrep python3-dev nodejs \
-   npm viu go
+   npm viu go alpine-sdk
 
 RUN ln -sf python3 /usr/bin/python
 
@@ -22,5 +22,12 @@ ENV PATH="/root/.npm-global/bin:${PATH}"
 RUN npm i -g neovim ls_emmet tree-sitter-cli
 RUN pip3 install --no-cache-dir --upgrade pip pynvim
 
+# download sample projects to test lsp+cmp
+RUN mkdir /root/projects
+WORKDIR /root/projects
+RUN git clone https://github.com/KevinSilvester/bird.git
+RUN git clone https://github.com/KevinSilvester/mern-movie.git
+
 # setup working directory
+RUN git clone https://github.com/LazyVim/starter /root/.config/nvim
 WORKDIR /root/.config/nvim
