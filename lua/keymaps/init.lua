@@ -49,8 +49,18 @@ nmap({
 
 if HOST.is_mac then
    nmap({
-      { '<D-Up>', cmd('call vm#commands#add_cursor_up(0, v:count1)', opts(noremap, silent)) },
-      { '<D-Down>', cmd('call vm#commands#add_cursor_down(0, v:count1)', opts(noremap, silent)) },
+      -- Resize with arrows
+      { '<D-J>', cmd('resize -2'), opts(noremap, silent) },
+      { '<D-K>', cmd('resize +2'), opts(noremap, silent) },
+      { '<D-H>', cmd('vertical resize -2'), opts(noremap, silent) },
+      { '<D-L>', cmd('vertical resize +2'), opts(noremap, silent) },
+
+      -- Move text up and down
+      { '<D-j>', '<Esc>:m .+1<CR>==', opts(noremap, silent) },
+      { '<D-k>', '<Esc>:m .-2<CR>==', opts(noremap, silent) },
+
+      { '<D-Up>', cmd('call vm#commands#add_cursor_up(0, v:count1)'), opts(noremap, silent) },
+      { '<D-Down>', cmd('call vm#commands#add_cursor_down(0, v:count1)'), opts(noremap, silent) },
    })
 end
 
