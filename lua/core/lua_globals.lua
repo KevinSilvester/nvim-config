@@ -29,7 +29,7 @@ _G.DEFAULT_LSP_SERVERS = {
    'jsonls',
    'pyright',
    'rust_analyzer',
-   'sqls',
+   'sqlls',
    'lua_ls',
    'svelte',
    'tailwindcss',
