@@ -1,4 +1,5 @@
 local fn = vim.fn
+local uv = vim.loop
 
 local M = {}
 
@@ -22,24 +23,25 @@ end
 
 ---print vim.inspect output to a popup window/buffer
 ---@param input any input can by anything that vim.inspect is able to parse
----@param yank boolean|nil wheather to copy the ouput to clipboard
----@param open_split boolean|nil whether to use popup window
----@return nil
-M.inspect = function(input, yank, open_split)
+---@param yank? boolean wheather to copy the ouput to clipboard
+---@param ft? string filetype (default `lua`)
+---@param open_split? boolean whether to use popup window
+M.inspect = function(input, yank, ft, open_split)
    local popup_ok, Popup = pcall(require, 'nui.popup')
    local split_ok, Split = pcall(require, 'nui.split')
 
    if input == nil then
-      vim.notify('No input provided', vim.log.levels.WARN, { title = 'nvim-config' })
+      log.warn('utils.fn.inspect', 'No input provided')
       return
    end
    if not popup_ok or not split_ok then
-      vim.notify("Failed to load 'nui' modules", vim.log.levels.ERROR, { title = 'nvim-config' })
+      log.error('utils.fn.inspect', 'Failed to load plugin `nui`')
       return
    end
 
    open_split = (open_split == nil) and false or open_split
    yank = (yank == nil) and false or yank
+   ft = (ft == nil) and 'lua' or ft
 
    local output = vim.inspect(input)
    local component
@@ -50,7 +52,7 @@ M.inspect = function(input, yank, open_split)
          relative = 'win',
          position = 'bottom',
          size = '20%',
-         buf_options = { modifiable = true, readonly = false },
+         buf_options = { modifiable = true, readonly = false, filetype = ft },
       })
    else
       component = Popup({
@@ -59,17 +61,16 @@ M.inspect = function(input, yank, open_split)
          border = { style = 'rounded' },
          position = '50%',
          size = { width = '80%', height = '60%' },
-         buf_options = { modifiable = true, readonly = false },
+         buf_options = { modifiable = true, readonly = false, filetype = ft },
       })
    end
 
-   ---@diagnostic disable-next-line: param-type-mismatch
-   vim.defer_fn(function()
+   vim.schedule(function()
       component:mount()
 
       component:map('n', 'q', function()
          component:unmount()
-      end, { noremap = true })
+      end, { noremap = true, silent = true })
 
       component:on({ 'BufLeave', 'BufDelete', 'BufWinLeave' }, function()
          vim.schedule(function()
@@ -82,8 +83,172 @@ M.inspect = function(input, yank, open_split)
       if yank then
          vim.cmd(component.bufnr .. 'b +%y')
       end
-      ---@diagnostic disable-next-line: param-type-mismatch
-   end, 750)
+   end)
+end
+
+-- returns the root directory based on:
+-- * lsp workspace folders
+-- * lsp root_dir
+-- * root pattern of filename of the current buffer
+-- * root pattern of cwd
+-- * ref: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/util/init.lua#L49
+---@return string
+M.get_root = function()
+   ---@type string?
+   local path = vim.api.nvim_buf_get_name(0)
+   path = path ~= '' and vim.loop.fs_realpath(path) or nil
+   ---@type string[]
+   local roots = {}
+   if path then
+      for _, client in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
+         local workspace = client.config.workspace_folders
+         local paths = workspace
+               and vim.tbl_map(function(ws)
+                  return vim.uri_to_fname(ws.uri)
+               end, workspace)
+            or client.config.root_dir and { client.config.root_dir }
+            or {}
+         for _, p in ipairs(paths) do
+            local r = vim.loop.fs_realpath(p)
+            if path:find(r, 1, true) then
+               roots[#roots + 1] = r
+            end
+         end
+      end
+   end
+   table.sort(roots, function(a, b)
+      return #a > #b
+   end)
+   ---@type string?
+   local root = roots[1]
+   if not root then
+      path = path and vim.fs.dirname(path) or vim.loop.cwd()
+      ---@type string?
+      root = vim.fs.find({ '.git', 'lua' }, { path = path, upward = true })[1]
+      root = root and vim.fs.dirname(root) or vim.loop.cwd()
+   end
+   ---@cast root string
+   return root
+end
+
+-- this will return a function that calls telescope.
+-- cwd will default to util.get_root
+-- for `files`, git_files or find_files will be chosen depending on .git
+-- ref: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/util/init.lua#L87
+M.telescope = function(builtin, opts)
+   local params = { builtin = builtin, opts = opts }
+   return function()
+      builtin = params.builtin
+      opts = params.opts
+      opts = vim.tbl_deep_extend('force', { cwd = M.get_root() }, opts or {})
+      if builtin == 'files' then
+         if vim.loop.fs_stat((opts.cwd or vim.loop.cwd()) .. '/.git') then
+            opts.show_untracked = true
+            builtin = 'git_files'
+         else
+            builtin = 'find_files'
+         end
+      end
+      require('telescope.builtin')[builtin](opts)
+   end
+end
+
+M.on_very_lazy = function(func)
+   vim.api.nvim_create_autocmd('User', {
+      pattern = 'VeryLazy',
+      callback = function()
+         func()
+      end,
+   })
+end
+
+-- local stdin = uv.new_pipe()
+-- local stdout = uv.new_pipe()
+-- local stderr = uv.new_pipe()
+
+-- print('stdin', stdin)
+-- print('stdout', stdout)
+-- print('stderr', stderr)
+
+-- local handle, pid = uv.spawn('cat', {
+--    stdio = { stdin, stdout, stderr },
+-- }, function(code, signal) -- on exit
+--    print('exit code', code)
+--    print('exit signal', signal)
+-- end)
+
+-- print('process opened', handle, pid)
+
+-- uv.read_start(stdout, function(err, data)
+--    assert(not err, err)
+--    if data then
+--       print('stdout chunk', stdout, data)
+--    else
+--       print('stdout end', stdout)
+--    end
+-- end)
+
+-- uv.read_start(stderr, function(err, data)
+--    assert(not err, err)
+--    if data then
+--       print('stderr chunk', stderr, data)
+--    else
+--       print('stderr end', stderr)
+--    end
+-- end)
+
+-- uv.write(stdin, 'Hello World')
+
+-- uv.shutdown(stdin, function()
+--    print('stdin shutdown', stdin)
+--    uv.close(handle, function()
+--       print('process closed', handle, pid)
+--    end)
+-- end)
+
+---Run shell command and return stderr|stdout
+---@param command string
+---@param args table<integer|string>
+---@param out function<string>
+---@param err function<string>
+M.spawn = function(command, args, out, err)
+   local stdout = uv.new_pipe()
+   local stderr = uv.new_pipe()
+
+   if not stdout or not stderr then
+      log.debug(
+         'utils.fn.spawn',
+         'Command: `' .. command .. '` | StdOut: `' .. type(stdout) .. ' | `StdErr: `' .. type(stderr) .. '`'
+      )
+      return
+   end
+
+   local proc
+   proc = uv.spawn(
+      command,
+      { args = args, stdio = { nil, stdout, stderr } },
+      vim.schedule_wrap(function(code, _signal)
+         stdout:close()
+         stderr:close()
+         proc:close()
+      end)
+   )
+
+   stderr:read_start(function(_, data)
+      if data then
+         local str = data:sub(1, -2)
+         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`')
+         err(str)
+      end
+   end)
+
+   stdout:read_start(function(_, data)
+      if data then
+         local str = data:sub(1, -2)
+         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`')
+         out(str)
+      end
+   end)
 end
 
 return M

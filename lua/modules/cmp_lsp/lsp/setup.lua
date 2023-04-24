@@ -126,7 +126,7 @@ M.on_attach = function(client, bufnr)
    require('illuminate').on_attach(client)
 
    local format_disable = {
-      'sumneko_lua',
+      'lua_ls',
       'rust_analyzer',
       'marksman',
       'tsserver',

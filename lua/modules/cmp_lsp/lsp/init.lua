@@ -78,11 +78,11 @@ for _, server in ipairs(mason_lsp.get_installed_servers()) do
       goto continue
    end
 
-   if server == 'sumneko_lua' then
-      lspconfig.sumneko_lua.setup({
+   if server == 'lua_ls' then
+      lspconfig.lua_ls.setup({
          capabilities = setup.capabilities,
          on_attach = setup.on_attach,
-         settings = require('modules.cmp_lsp.lsp.servers.sumneko_lua').settings,
+         settings = require('modules.cmp_lsp.lsp.servers.lua_ls').settings,
       })
       goto continue
    end

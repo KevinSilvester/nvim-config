@@ -43,8 +43,8 @@ luac.out
 *.x86_64
 *.hex
 
-# Packer compiled
-.plugins
-
+# Plugin lock file
+lazy-lock.json
+my-config-lock.json
 
 # End of https://www.toptal.com/developers/gitignore/api/lua

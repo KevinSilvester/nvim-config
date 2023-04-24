@@ -1,5 +1,5 @@
 local M = {}
-local fn = vim.fn
+local fn, uv = vim.fn, vim.loop
 
 ---The file system path separator for the current platform.
 M.path_separator = '/'
@@ -11,14 +11,18 @@ end
 ---@param path string
 ---@return boolean
 M.is_dir = function(path)
-   return fn.isdirectory(path) == 1
+   -- return fn.isdirectory(path) == 1
+   local stat = uv.fs_stat(path)
+   return stat and stat.type == 'directory' or false
 end
 
 ---check path points to a file
 ---@param path string
 ---@return boolean
 M.is_file = function(path)
-   return fn.filereadable(path) == 1
+   -- return fn.filereadable(path) == 1
+   local stat = uv.fs_stat(path)
+   return stat and stat.type == 'file' or false
 end
 
 ---check if file/directory is a symlink
@@ -29,35 +33,61 @@ M.is_link = function(path)
 end
 
 ---make a new directory
----@param path string
-M.mkdir = function(path)
-   local cmd = function()
-      if HOST.is_win then
-         return 'powershell -NoProfile -c "New-Item -Type directory -Path ' .. path .. ' 2>&1 | Out-Null"'
-      else
-         return 'bash -c "mkdir -p ' .. path .. ' $>/dev/null"'
-      end
-   end
-   os.execute(cmd())
+---@param path string new directory path
+---@param mode number|nil directory permission (default 16895, equivalent of 777)
+M.mkdir = function(path, mode)
+   mode = mode or 16895
+   uv.fs_mkdir(path, mode)
 end
 
 ---list all files in a directory recursively
----@param path string
----@return table list of files
-M.scandir = function(path)
-   local cmd = function()
-      if HOST.is_win then
-         return 'powershell -NoProfile -c "Get-ChildItem -Path '
-            .. path
-            .. ' -File -Recurse | Select-Object -ExpandProperty FullName"'
-      else
-         return 'bash -c "find ' .. path .. ' -type f -exec readlink -f {} \\;"'
+---@param path string source path
+---@param paths table|nil list of paths
+---@return table|nil list of paths
+M.scandir = function(path, paths)
+   local stat = uv.fs_stat(path)
+   paths = paths or {}
+
+   if not stat then
+      return nil
+   end
+
+   if stat.type == 'file' then
+      paths[#paths + 1] = path
+   elseif stat.type == 'directory' then
+      local handle = uv.fs_scandir(path)
+
+      if not handle then
+         return nil
+      end
+
+      while true do
+         local name = uv.fs_scandir_next(handle)
+         if not name then
+            break
+         end
+         local new_path = M.path_join(path, name)
+         M.scandir(new_path, paths)
       end
    end
-   local handle = assert(io.popen(cmd()))
-   local result = handle:read('*a')
-   handle:close()
-   return vim.split(result, '\n', { trimempty = true })
+   return paths
+end
+
+---Write data to a file
+---@param path string can be full or relative to `cwd`
+---@param txt string|table text to be written, uses `vim.inspect` internally for tables
+---@param flag string used to determine access mode, common flags: "w" for `overwrite` or "a" for `append`
+function M.write_file(path, txt, flag)
+   local data = type(txt) == 'string' and txt or vim.inspect(txt)
+   uv.fs_open(path, flag, 438, function(open_err, fd)
+      assert(not open_err, open_err)
+      uv.fs_write(fd, data, 0, function(write_err)
+         assert(not write_err, write_err)
+         uv.fs_close(fd, function(close_err)
+            assert(not close_err, close_err)
+         end)
+      end)
+   end)
 end
 
 ---Split string into a table of strings using a separator.

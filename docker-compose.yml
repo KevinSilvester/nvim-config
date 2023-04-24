@@ -24,3 +24,13 @@ services:
     stdin_open: true
     tty: true
     command: /bin/bash
+
+  lunarvim:
+    build:
+      context: .
+      dockerfile: ./docker/lunarvim.Dockerfile
+    container_name: lunarvim 
+    init: true
+    stdin_open: true
+    tty: true
+    command: /bin/bash

@@ -1,7 +1,18 @@
-local plugin = require('core.pack').register_plugin
-local conf = require('modules._essentials.config')
+return {
+   { 'folke/lazy.nvim', lazy = false, tag = 'stable' },
+   { 'nvim-lua/plenary.nvim', lazy = true },
+   { 'nvim-lua/popup.nvim', lazy = true },
+   { 'MunifTanjim/nui.nvim', lazy = true },
 
-plugin({ 'lewis6991/impatient.nvim', opt = false })
-plugin({ 'nvim-lua/plenary.nvim', opt = false })
-plugin({ 'nvim-lua/popup.nvim', opt = false })
-plugin({ 'MunifTanjim/nui.nvim', opt = false })
+   -- measure startuptime
+   {
+      'dstein64/vim-startuptime',
+      cmd = 'StartupTime',
+      config = function()
+         vim.g.startuptime_tries = 10
+      end,
+   },
+
+   -- makes some plugins dot-repeatable like leap
+   { 'tpope/vim-repeat', event = 'VeryLazy' },
+}
