@@ -1,9 +1,5 @@
-local cmp_nvim_lsp = require('cmp_nvim_lsp')
-local mapper = require('core.mapper')
-local buf_nmap = mapper.buf_nmap
-local silent, noremap = mapper.silent, mapper.noremap
-local opts = mapper.new_opts
-local cmd = mapper.cmd
+local m = require('core.mapper')
+local icons = require('modules.ui.icons').diagnostics
 
 local M = {}
 
@@ -12,118 +8,44 @@ local M = {}
 ---@param bufnr number The buffer number
 M.set_lsp_keymaps = function(bufnr)
    -- stylua: ignore
-   buf_nmap(bufnr, {
-      { "K", cmd("lua vim.lsp.buf.hover()"), opts(noremap, silent) },
-      { "D", cmd("lua vim.lsp.buf.type_definitio()"), opts(noremap, silent) },
-      { "gD", cmd("lua vim.lsp.buf.declaration()"), opts(noremap, silent) },
-      { "gd", cmd("lua vim.lsp.buf.definition()"), opts(noremap, silent) },
-      { "pd", cmd("Lspsaga peek_definition"), opts(noremap, silent) },
-      { "gi", cmd("Lspsaga lsp_finder"), opts(noremap, silent) },
-      { "gl", cmd("Lspsaga show_line_diagnostics"), opts(noremap, silent) },
-      { "gr", cmd("lua vim.lsp.buf.references()"), opts(noremap, silent) },
-      { "gQ", cmd("lua vim.diagnostic.setqflist()"), opts(noremap, silent) },
-      { "<C-[>", cmd("Lspsaga diagnostic_jump_prev"), opts(noremap, silent) },
-      { "<C-]>", cmd("Lspsaga diagnostic_jump_next"), opts(noremap, silent) },
+   m.buf_nmap(bufnr, {
+      { "K",  function() vim.lsp.buf.hover() end,          m.opts(m.noremap, m.silent, 'Hover doc') },
+      { "D",  function() vim.lsp.buf.type_definitio() end, m.opts(m.noremap, m.silent, 'Type Definition') },
+      { "gD", function() vim.lsp.buf.declaration() end,    m.opts(m.noremap, m.silent, 'Goto Declarations') },
+      { "gd", function() vim.lsp.buf.definition() end,     m.opts(m.noremap, m.silent, 'Goto Definitions') },
+      { "gq", function() vim.diagnostic.setqflist() end,   m.opts(m.noremap, m.silent, 'Show QuickFix') },
+      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),       m.opts(m.noremap, m.silent, 'Goto Prev Diagnostics') },
+      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),       m.opts(m.noremap, m.silent, 'Goto Next Diagnostics') },
       {
-         "<A-[>",
-         cmd('lua require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR })'),
-         opts(noremap, silent)
+         "[e",
+         function() require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR }) end,
+         m.opts(m.noremap, m.silent, 'Goto Prev Error')
       },
       {
-         "<A-]>",
-         cmd('lua require("lspsaga.diagnostic").goto_next({ severity = vim.diagnostic.severity.ERROR })'),
-         opts(noremap, silent)
-      },
+         "]e",
+         function() require("lspsaga.diagnostic").goto_next({ severity = vim.diagnostic.severity.ERROR }) end,
+         m.opts(m.noremap, m.silent, 'Goto Next Error')
+      }
    })
-end
-
----Attach nvim-navic
----@private
----@param client table The LSP client
----@param bufnr number The buffer number
-M.attach_navic = function(client, bufnr)
-   vim.g.navic_silence = true
-   local status_ok, navic = pcall(require, 'nvim-navic')
-   if status_ok then
-      navic.attach(client, bufnr)
-      -- vim.opt.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
-   end
-end
-
-M.diagnostics = function()
-   local icons = require('modules.ui.icons').diagnostics
-
-   local signs = {
-      { name = 'DiagnosticSignError', text = icons.Error },
-      { name = 'DiagnosticSignWarn', text = icons.Warning },
-      { name = 'DiagnosticSignHint', text = icons.Hint },
-      { name = 'DiagnosticSignInfo', text = icons.Info },
-   }
-
-   for _, sign in ipairs(signs) do
-      vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = '' })
-   end
-
-   vim.diagnostic.config({
-      virtual_text = true, -- show virtual text
-      signs = { active = signs }, -- show signs
-      update_in_insert = true,
-      underline = true,
-      severity_sort = true,
-      float = {
-         focusable = true,
-         style = 'minimal',
-         border = 'rounded',
-         source = 'always',
-         header = '',
-         prefix = '',
-      },
-   })
-end
-
-M.handlers = function()
-   local h = {
-      -- to disable notifications in vim.lsp.buf.hover
-      -- ref: https://github.com/neovim/neovim/issues/20457#issuecomment-1266782345
-      -- alt: https://github.com/neovim/nvim-lspconfig/issues/1931#issuecomment-1297599534
-      ['textDocument/hover'] = function(_, result, ctx, config)
-         config = config or {}
-         config.focus_id = ctx.method
-         config.border = 'rounded'
-
-         if not (result and result.contents) then
-            return
-         end
-
-         ---@param contents MarkedString|MarkedString[]|lsp.MarkupContent
-         ---@return table
-         local markdown_lines = function(contents)
-            local s = vim.lsp.util.convert_input_to_markdown_lines(contents, {})
-            return vim.lsp.util.trim_empty_lines(s)
-         end
-
-         return vim.lsp.util.open_floating_preview(markdown_lines(result.contents), 'markdown', config)
-      end,
-      ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' }),
-   }
-
-   for k, v in pairs(h) do
-      vim.lsp.handlers[k] = v
-   end
 end
 
 ---Enable completions from lsp
-M.capabilities = vim.lsp.protocol.make_client_capabilities()
-M.capabilities = cmp_nvim_lsp.default_capabilities(M.capabilities)
-M.capabilities.textDocument.completion.completionItem.snippetSupport = true
+M.capabilites = vim.tbl_deep_extend(
+   'force',
+   vim.lsp.protocol.make_client_capabilities(),
+   require('cmp_nvim_lsp').default_capabilities()
+)
 
 ---After attaching to a buffer, set keymaps, attach nvim-navic and vim-illuminate
 ---@param client table
 ---@param bufnr number
 M.on_attach = function(client, bufnr)
    M.set_lsp_keymaps(bufnr)
-   M.attach_navic(client, bufnr)
-   require('illuminate').on_attach(client)
+   require('lsp-inlayhints').on_attach(client, bufnr, false)
+   if client.server_capabilities['documentSymbolProvider'] then
+      require('nvim-navic').attach(client, bufnr)
+   end
+   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
    local format_disable = {
       'lua_ls',
@@ -138,14 +60,6 @@ M.on_attach = function(client, bufnr)
    for _, server in pairs(format_disable) do
       if client.name == server then
          client.server_capabilities.document_formatting = false
-      end
-   end
-
-   if client.name == 'jdtls' then
-      vim.lsp.codelens.refresh()
-      if JAVA_DAP_ACTIVE then
-         require('jdtls').setup_dap({ hotcodereplace = 'auto' })
-         require('jdtls.dap').setup_dap_main_class_configs()
       end
    end
 end

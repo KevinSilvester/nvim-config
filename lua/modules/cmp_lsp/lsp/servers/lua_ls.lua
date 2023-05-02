@@ -1,16 +1,5 @@
 local M = {}
 
-require('neodev').setup({
-   library = {
-      enabled = true,
-      runtime = true,
-      types = true,
-      plugins = true,
-   },
-   setup_jsonls = true,
-   lspconfig = true,
-})
-
 M.settings = {
    Lua = {
       completion = {
@@ -23,7 +12,7 @@ M.settings = {
          },
       },
       diagnostics = {
-         globals = { 'vim', 'packer_plugins' },
+         globals = { 'vim' },
       },
       workspace = {
          library = {

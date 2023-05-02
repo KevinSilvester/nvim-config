@@ -1,6 +1,6 @@
 local mapper = require('core.mapper')
 local silent, noremap = mapper.silent, mapper.noremap
-local opts = mapper.new_opts
+local opts = mapper.opts
 local cmd = mapper.cmd
 local nmap = mapper.nmap
 local imap = mapper.imap
@@ -17,39 +17,30 @@ vim.g.mapleader = ' '
 --
 -- NORMAL MODE --
 nmap({
-   -- -- Better jk
-   -- { 'j', '<Plug>(accelerated_jk_gj)', opts(noremap, silent) },
-   -- { 'k', '<Plug>(accelerated_jk_gk)', opts(noremap, silent) },
+   { '<leader>L', cmd('Lazy'), opts(noremap, silent, 'Lazy') },
 
    -- Better window navigation
-   { '<C-h>', '<C-w>h', opts(noremap, silent) },
-   { '<C-j>', '<C-w>j', opts(noremap, silent) },
-   { '<C-k>', '<C-w>k', opts(noremap, silent) },
-   { '<C-l>', '<C-w>l', opts(noremap, silent) },
+   { '<C-h>', '<C-w>h', opts(noremap, silent, 'Focus window (left)') },
+   { '<C-j>', '<C-w>j', opts(noremap, silent, 'Focus window (below)') },
+   { '<C-k>', '<C-w>k', opts(noremap, silent, 'Focus window (top)') },
+   { '<C-l>', '<C-w>l', opts(noremap, silent, 'Focus window (right)') },
 
    -- Resize with arrows
-   { '<A-J>', cmd('resize -2'), opts(noremap, silent) },
-   { '<A-K>', cmd('resize +2'), opts(noremap, silent) },
-   { '<A-H>', cmd('vertical resize -2'), opts(noremap, silent) },
-   { '<A-L>', cmd('vertical resize +2'), opts(noremap, silent) },
+   { '<A-J>', cmd('resize -2'), opts(noremap, silent, 'Resize -2 (Horizontal)') },
+   { '<A-K>', cmd('resize +2'), opts(noremap, silent, 'Resize +2 (Horizontal)') },
+   { '<A-H>', cmd('vertical resize -2'), opts(noremap, silent, 'Resize -2 (Vertical)') },
+   { '<A-L>', cmd('vertical resize +2'), opts(noremap, silent, 'Resize +2 (Vertical)') },
 
    -- Navigate buffers
-   { '<S-l>', cmd('bnext'), opts(noremap, silent) },
-   { '<S-h>', cmd('bprevious'), opts(noremap, silent) },
+   { '<S-l>', cmd('bnext'), opts(noremap, silent, 'Switch buffer (right)') },
+   { '<S-h>', cmd('bprevious'), opts(noremap, silent, 'Switch buffer (left)') },
 
    -- Move text up and down
-   { '<A-j>', '<Esc>:m .+1<CR>==', opts(noremap, silent) },
-   { '<A-k>', '<Esc>:m .-2<CR>==', opts(noremap, silent) },
-
-   -- Close buffers
-   { '<S-q>', cmd('Bdelete!'), opts(noremap, silent) },
+   { '<A-j>', '<Esc>:m .+1<CR>==', opts(noremap, silent, 'Move line down') },
+   { '<A-k>', '<Esc>:m .-2<CR>==', opts(noremap, silent, 'Move line up') },
 
    -- Delete Word
    { '<C-BS>', '<C-W>', opts(noremap, silent) },
-
-   -- Refresh NvimTree
-   { 'nr', cmd('NvimTreeRefresh'), opts(noremap, silent) },
-   { '<leader>e', cmd('NvimTreeToggle'), opts(noremap, silent) },
 })
 
 if HOST.is_mac then

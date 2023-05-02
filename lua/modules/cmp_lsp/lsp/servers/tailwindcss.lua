@@ -2,32 +2,35 @@
 
 local M = {}
 
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-capabilities.textDocument.colorProvider = { dynamicRegistration = false }
-capabilities.textDocument.foldingRange = {
-   dynamicRegistration = false,
-   lineFoldingOnly = true,
+local capabilities_extension = {
+   textDocument = {
+      colorProvider = { dynamicRegistration = false },
+      foldingRange = {
+         dynamicRegistration = false,
+         lineFoldingOnly = true,
+      },
+   },
 }
 
+M.capabilities =
+   vim.tbl_deep_extend('force', require('cmp_nvim_lsp').default_capabilities(), capabilities_extension)
+
 -- Settings
-local on_attach = function(client, bufnr)
-   if client.server_capabilities.colorProvider then
-      require('colorizer').attach_to_buffer(
-         bufnr,
-         { mode = 'background', css = true, names = false, tailwind = true }
-      )
-   end
+M.on_attach = function(client, bufnr)
+   -- require('colorizer').attach_to_buffer(
+   --    bufnr,
+   --    { mode = 'background', css = true, names = false, tailwind = true }
+   -- )
 end
 
-local init_options = {
+M.init_options = {
    userLanguages = {
       eelixir = 'html-eex',
       eruby = 'erb',
    },
 }
 
-local settings = {
+M.settings = {
    tailwindCSS = {
       classAttributes = { 'class', 'className', 'classList', 'ngClass' },
       lint = {
@@ -53,10 +56,5 @@ local settings = {
       validate = true,
    },
 }
-
-M.on_attach = on_attach
-M.capabilities = capabilities
-M.settings = settings
-M.init_options = init_options
 
 return M

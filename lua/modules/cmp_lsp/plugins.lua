@@ -1,137 +1,119 @@
--- local plugin = require('core.pack').register_plugin
--- local conf = require('modules.cmp_lsp.config')
+return {
+   ---------------------------------
+   --         lsp plugins         --
+   ---------------------------------
+   {
+      'neovim/nvim-lspconfig',
+      event = { 'BufReadPre', 'BufNewFile' },
+      dependencies = {
+         'williamboman/mason.nvim',
+         'williamboman/mason-lspconfig.nvim',
+         'hrsh7th/cmp-nvim-lsp',
+         'lvimuser/lsp-inlayhints.nvim',
+         'b0o/schemastore.nvim',
+         'folke/neodev.nvim',
+         'SmiteshP/nvim-navic',
+      },
+      init = require('modules.cmp_lsp.setup.nvim-lspconfig').init,
+      config = require('modules.cmp_lsp.setup.nvim-lspconfig').config,
+      keys = require('modules.cmp_lsp.setup.nvim-lspconfig').keys,
+   },
+   {
+      'folke/neodev.nvim',
+      event = { 'BufReadPre *.lua', 'BufNewFile *.lua' },
+      opts = require('modules.cmp_lsp.setup.neodev').opts,
+   },
+   {
+      'williamboman/mason.nvim',
+      opts = require('modules.cmp_lsp.setup.mason').opts,
+      keys = require('modules.cmp_lsp.setup.mason').keys,
+   },
+   {
+      'williamboman/mason-lspconfig.nvim',
+      opts = {
+         ensure_installed = DEFAULT_LSP_SERVERS,
+         automatic_installation = true,
+      },
+   },
+   {
+      'nvimdev/lspsaga.nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons', 'nvim-treesitter/nvim-treesitter' },
+      event = 'LspAttach',
+      opts = require('modules.cmp_lsp.setup.lspsaga').opts,
+      keys = require('modules.cmp_lsp.setup.lspsaga').keys,
+   },
+   {
+      'jose-elias-alvarez/typescript.nvim',
+      event = { 'BufReadPre *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
+      config = require('modules.cmp_lsp.setup.typescript').config,
+   },
+   {
+      'simrat39/rust-tools.nvim',
+      event = { 'BufReadPre *.rs', 'BufNewFile *.rs' },
+      dependencies = { 'neovim/nvim-lspconfig' },
+      opts = require('modules.cmp_lsp.setup.rust-tools').opts,
+      config = require('modules.cmp_lsp.setup.rust-tools').config,
+   },
 
--- ---------------------------------
--- --         lsp plugins         --
--- ---------------------------------
--- plugin({
---    'folke/neodev.nvim',
---    opt = true,
---    event = 'BufReadPre',
--- })
+   { 'hrsh7th/cmp-nvim-lsp', dependencies = 'hrsh7th/nvim-cmp' },
 
--- plugin({
---    'neovim/nvim-lspconfig',
---    opt = true,
---    event = 'BufReadPre',
---    after = { 'neodev.nvim' },
---    config = conf.nvim_lspconfig,
--- })
+   ---------------------------------
+   --         cmp plugins         --
+   ---------------------------------
+   {
+      'hrsh7th/nvim-cmp',
+      event = 'InsertEnter',
+      dependencies = {
+         'hrsh7th/cmp-nvim-lsp',
+         'hrsh7th/cmp-nvim-lua',
+         'hrsh7th/cmp-buffer',
+         'hrsh7th/cmp-path',
+         'saadparwaiz1/cmp_luasnip',
+         'f3fora/cmp-spell',
+         'windwp/nvim-autopairs',
+      },
+      opts = require('modules.cmp_lsp.setup.cmp').opts,
+      config = require('modules.cmp_lsp.setup.cmp').config,
+   },
+   {
+      'L3MON4D3/LuaSnip',
+      tag = 'v1.2.1',
+      build = 'make install_jsregexp',
+      event = 'InsertEnter',
+      dependencies = 'rafamadriz/friendly-snippets',
+      config = require('modules.cmp_lsp.setup.luasnip').config,
+   },
+   { 'rafamadriz/friendly-snippets' },
+   {
+      'windwp/nvim-autopairs',
+      opts = {
+         check_ts = true, -- treesitter integration
+         disable_filetype = { 'TelescopePrompt' },
+      },
+   },
 
--- plugin({
---    'glepnir/lspsaga.nvim',
---    branch = 'main',
---    opt = true,
---    after = 'nvim-lspconfig',
---    config = conf.lspsaga,
--- })
+   ---------------------------------
+   --           copilot           --
+   ---------------------------------
+   {
+      'zbirenbaum/copilot.lua',
+      dependencies = 'neovim/nvim-lspconfig',
+      cmd = 'Copilot',
+      opts = require('modules.cmp_lsp.setup.copilot').opts,
+   },
+   {
+      'zbirenbaum/copilot-cmp',
+      dependencies = { 'hrsh7th/nvim-cmp', 'zbirenbaum/copilot.lua' },
+      event = 'InsertEnter',
+      config = require('modules.cmp_lsp.setup.copilot-cmp').config,
+   },
 
--- plugin({ 'b0o/schemastore.nvim' })
--- plugin({ 'simrat39/rust-tools.nvim' })
-
--- plugin({
---    'williamboman/mason.nvim',
---    opt = false,
---    config = conf.mason,
---    requires = {
---       {
---          'williamboman/mason-lspconfig.nvim',
---          config = conf.mason_lspconfig,
---       },
---    },
--- })
-
--- plugin({
---    'jose-elias-alvarez/null-ls.nvim',
---    event = 'BufReadPost',
---    config = conf.null_ls,
--- })
-
--- plugin({
---    'jose-elias-alvarez/typescript.nvim',
--- })
-
--- plugin({
---    'ray-x/lsp_signature.nvim',
---    commit = '055b82b98e3c2e4d3ca3300d0b453674ce166237',
---    after = 'nvim-lspconfig',
---    config = conf.lsp_signature,
--- })
-
--- plugin({
---    'folke/lsp-colors.nvim',
---    event = 'BufReadPre',
--- })
-
--- plugin({
---    'mfussenegger/nvim-jdtls',
---    after = 'nvim-lspconfig',
---    ft = 'java',
--- })
-
--- plugin({
---    'zbirenbaum/copilot.lua',
---    after = 'nvim-lspconfig',
---    config = conf.copilot,
--- })
-
--- plugin({
---    'j-hui/fidget.nvim',
---    event = 'BufReadPost',
---    config = conf.fidget,
--- })
-
--- plugin({ 'lvimuser/lsp-inlayhints.nvim', after = 'nvim-lspconfig' })
-
--- plugin({
---    'SmiteshP/nvim-navic',
---    after = 'nvim-lspconfig',
---    config = conf.nvim_navic,
--- })
-
--- ---------------------------------
--- --         cmp plugins         --
--- ---------------------------------
--- plugin({
---    'L3MON4D3/LuaSnip',
---    -- after = 'nvim-cmp',
---    config = conf.lua_snip,
---    requires = { 'rafamadriz/friendly-snippets' },
--- })
-
--- plugin({
---    'hrsh7th/nvim-cmp',
---    event = 'BufReadPost',
---    requires = { { 'lukas-reineke/cmp-under-comparator' } },
---    config = conf.cmp,
--- })
-
--- plugin({ 'saadparwaiz1/cmp_luasnip', after = { 'nvim-cmp', 'LuaSnip' } })
--- plugin({ 'hrsh7th/cmp-nvim-lsp' })
--- plugin({ 'hrsh7th/cmp-nvim-lua', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
--- plugin({ 'hrsh7th/cmp-nvim-lsp-signature-help', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
--- plugin({ 'hrsh7th/cmp-nvim-lsp-document-symbol', after = { 'nvim-cmp', 'cmp-nvim-lsp' } })
--- plugin({ 'hrsh7th/cmp-path', after = 'nvim-cmp' })
--- plugin({ 'f3fora/cmp-spell', after = 'cmp-path' })
--- plugin({ 'hrsh7th/cmp-buffer', after = 'cmp-spell' })
--- plugin({ 'kdheepak/cmp-latex-symbols', after = 'cmp-buffer' })
-
--- plugin({
---    'windwp/nvim-autopairs',
---    after = 'nvim-cmp',
---    config = conf.nvim_autopairs,
--- })
-
--- plugin({
---    'zbirenbaum/copilot-cmp',
---    after = 'copilot.lua',
---    config = function()
---       require('copilot_cmp').setup()
---    end,
--- })
-
-return { {
-   'folke/neodev.nvim',
-   lazy = true,
-   event = 'BufReadPre',
-} }
+   ---------------------------------
+   --      formatter+linter       --
+   ---------------------------------
+   {
+      'jose-elias-alvarez/null-ls.nvim',
+      event = 'BufReadPost',
+      config = require('modules.cmp_lsp.setup.null-ls').config,
+   },
+}

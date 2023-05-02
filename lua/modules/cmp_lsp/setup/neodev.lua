@@ -1,4 +1,7 @@
-require('neodev').setup({
+local M = {}
+
+M.opts = {
+   experimental = { pathStrict = true },
    library = {
       enabled = true,
       runtime = true,
@@ -7,4 +10,6 @@ require('neodev').setup({
    },
    setup_jsonls = true,
    lspconfig = true,
-})
+}
+
+return M

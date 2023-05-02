@@ -1,26 +1,23 @@
--- -- statusline
--- plugin({
---    'nvim-lualine/lualine.nvim',
---    opt = true,
---    after = { 'gitsigns.nvim', 'null-ls.nvim' },
---    config = conf.statusline,
--- })
-
--- -- command completion
--- plugin({
---    'gelguy/wilder.nvim',
---    config = conf.wilder,
--- })
-
 return {
    -- colorschemes
-   { 'catppuccin/nvim', name = 'catppuccin' },
+   {
+      'catppuccin/nvim',
+      name = 'catppuccin',
+      init = function()
+         vim.g.catppuccin_flavour = 'mocha'
+      end,
+   },
    { 'glepnir/zephyr-nvim' },
    { 'folke/tokyonight.nvim' },
    { 'lunarvim/darkplus.nvim' },
    { 'lunarvim/onedarker.nvim' },
    { 'rebelot/kanagawa.nvim' },
-   { 'marko-cerovac/material.nvim' },
+   {
+      'marko-cerovac/material.nvim',
+      init = function()
+         vim.g.material_style = 'deep ocean'
+      end,
+   },
    { 'olimorris/onedarkpro.nvim' },
    { 'olivercederborg/poimandres.nvim' },
 
@@ -32,13 +29,36 @@ return {
       'akinsho/bufferline.nvim',
       version = 'v3.*',
       dependencies = 'nvim-tree/nvim-web-devicons',
-      event = 'BufReadPost',
+      event = { 'BufReadPost', 'BufNewFile' },
       keys = {
          { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
          { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
       },
-      opts = require('modules.ui.setup.bufferline'),
-      config = true
+      opts = require('modules.ui.setup.bufferline').opts,
+      config = true,
+   },
+
+   -- statusline
+   {
+      'nvim-lualine/lualine.nvim',
+      dependencies = {
+         'lewis6991/gitsigns.nvim',
+         'null-ls.nvim',
+      },
+      event = { 'BufReadPost', 'BufNewFile' },
+      opts = require('modules.ui.setup.lualine').opts,
+      config = require('modules.ui.setup.lualine').config,
+   },
+
+   -- winbar
+   {
+      'utilyre/barbecue.nvim',
+      name = 'barbecue',
+      version = '*',
+      event = 'VeryLazy',
+      dependencies = { 'SmiteshP/nvim-navic', 'catppuccin/nvim' },
+      opts = require('modules.ui.setup.barbecue').opts,
+      config = require('modules.ui.setup.barbecue').config,
    },
 
    -- notifications
@@ -67,24 +87,33 @@ return {
    {
       'folke/noice.nvim',
       event = 'VeryLazy',
-      -- dependencies = {
-      --    -- which key integration
-      --    {
-      --       'folke/which-key.nvim',
-      --       opts = function(_, opts)
-      --          if require('lazyvim.util').has('noice.nvim') then
-      --             opts.defaults['<leader>sn'] = { name = '+noice' }
-      --          end
-      --       end,
-      --    },
-      -- },
-      -- enabled = false,
       opts = require('modules.ui.setup.noice').opts,
       keys = require('modules.ui.setup.noice').keys,
    },
 
+   -- lsp progress
+   {
+      'j-hui/fidget.nvim',
+      event = 'LspAttach',
+      dependencies = 'neovim/nvim-lspconfig',
+      opts = require('modules.ui.setup.fidget').opts,
+   },
+
    -- preview color
-   { 'NvChad/nvim-colorizer.lua', event = 'VeryLazy' },
+   {
+      'NvChad/nvim-colorizer.lua',
+      event = 'VeryLazy',
+      opts = {
+         filetypes = { '*', '!NvimTree', '!lazy', '!toggleterm', '!alpha', '!mason' },
+         mode = 'background',
+         css = true,
+         names = false,
+         tailwind = true,
+      },
+      config = function(_, opts)
+         require('colorizer').setup(opts)
+      end,
+   },
 
    -- inputs
    {
@@ -138,6 +167,6 @@ return {
       dependencies = 'nvim-tree/nvim-web-devicons',
       opts = require('modules.ui.setup.nvim-tree').opts,
       config = require('modules.ui.setup.nvim-tree').config,
-      -- config = true,
+      keys = require('modules.ui.setup.nvim-tree').keys,
    },
 }

@@ -13,6 +13,8 @@ return {
       end,
    },
 
+   { 'stevearc/stickybuf.nvim', event = 'BufReadPre', config = true },
+
    -- makes some plugins dot-repeatable like leap
    { 'tpope/vim-repeat', event = 'VeryLazy' },
 }

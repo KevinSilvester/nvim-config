@@ -3,26 +3,11 @@ local fn = vim.fn
 
 vim.g.mapleader = ' '
 
-------------------------------------------------------------------------
---                      colourscheme variation                        --
-------------------------------------------------------------------------
-vim.g.catppuccin_flavour = 'mocha'
-vim.g.material_style = 'deep ocean'
-
 
 ------------------------------------------------------------------------
 --                     PATH environment variable                      --
 ------------------------------------------------------------------------
 vim.env.PATH = vim.env.PATH .. (HOST.is_win and ';' or ':') .. fn.stdpath('data') .. '/mason/bin'
-
-
-------------------------------------------------------------------------
---                          filetype loader                           --
-------------------------------------------------------------------------
--- if utils.is_latest() then
---    vim.g.did_load_filetypes = 1
---    vim.g.do_filetype_lua = 1
--- end
 
 
 ------------------------------------------------------------------------
@@ -87,16 +72,6 @@ if vim.g.neovide then
    vim.g.neovide_fullscreen = false
    vim.g.neovide_remember_window_size = true
 end
-
-
-------------------------------------------------------------------------
---                         minimap options                            --
-------------------------------------------------------------------------
-vim.g.minimap_width = 20
-vim.g.minimap_auto_start = 0
-vim.g.minimap_auto_start_win_enter = 0
-vim.g.minimap_highlight_range = 0
-vim.g.minimap_git_colors = 1
 
 
 ------------------------------------------------------------------------

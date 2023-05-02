@@ -1,4 +1,6 @@
-require('fidget').setup({
+local M = {}
+
+M.opts = {
    text = {
       spinner = 'pipe', -- animation shown when tasks are ongoing
       done = '✔', -- character shown when all tasks are complete
@@ -38,7 +40,8 @@ require('fidget').setup({
          )
       end,
    },
-   sources = { -- Sources to configure
+   sources = {
+      -- Sources to configure
       ['lua_ls'] = { -- Name of source
          ignore = false, -- Ignore notifications from this source
       },
@@ -47,4 +50,6 @@ require('fidget').setup({
       logging = false, -- whether to enable logging, for debugging
       strict = false, -- whether to interpret LSP strictly
    },
-})
+}
+
+return M

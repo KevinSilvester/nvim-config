@@ -1,33 +1,4 @@
--- local plugin = require('core.pack').register_plugin
-
--- -- hightlight selection
-
--- -- comments
-
--- -- navigation
-
--- -- find + search + replace
-
--- -- project management
--- plugin({
---    'rmagatti/auto-session',
---    opt = true,
---    cmd = { 'SaveSession', 'RestoreSession', 'DeleteSession' },
---    config = conf.auto_session,
--- })
--- plugin({
---    'ahmedkhalf/project.nvim',
---    opt = true,
---    event = 'BufWinEnter',
---    config = conf.project,
--- })
-
-
-
--- -- misc
-
 return {
-
    -- hightlight selection
    {
       'RRethy/vim-illuminate',
@@ -42,16 +13,36 @@ return {
       'echasnovski/mini.bufremove',
       -- stylua: ignore
       keys = {
-         { "<leader>q", function() require("mini.bufremove").delete(0, false) end, desc = "Delete Buffer" },
-         { "<leader>Q", function() require("mini.bufremove").delete(0, true) end,  desc = "Delete Buffer (Force)" },
+         { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = 'Delete Buffer', },
+         { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = 'Delete Buffer (Force)', },
       },
    },
+
+   -- minimap
+   {
+      'echasnovski/mini.map',
+      config = require('modules.editor.setup.mini-map').config,
+      keys = require('modules.editor.setup.mini-map').keys,
+   },
+   -- {
+   --    'wfxr/minimap.vim',
+   --    init = require('modules.editor.setup.minimap').init,
+   --    cmd = {
+   --       'Minimap',
+   --       'MinimapClose',
+   --       'MinimapToggle',
+   --       'MinimapRescan',
+   --       'MinimapRefresh',
+   --       'MinimapUpdateHighlight',
+   --    },
+   -- },
 
    -- git
    {
       'lewis6991/gitsigns.nvim',
       event = { 'BufReadPre', 'BufNewFile' },
       opts = require('modules.editor.setup.gitsigns').opts,
+      keys = require('modules.editor.setup.gitsigns').keys,
    },
    {
       'sindrets/diffview.nvim',
@@ -66,20 +57,7 @@ return {
          'DiffviewToggleFiles',
       },
       opts = require('modules.editor.setup.diffview').opts,
-   },
-
-   -- minimap
-   {
-      'wfxr/minimap.vim',
-      init = require('modules.editor.setup.minimap').init,
-      cmd = {
-         'Minimap',
-         'MinimapClose',
-         'MinimapToggle',
-         'MinimapRescan',
-         'MinimapRefresh',
-         'MinimapUpdateHighlight',
-      },
+      keys = require('modules.editor.setup.diffview').keys,
    },
 
    -- multiple cursors
@@ -142,6 +120,11 @@ return {
       event = 'CursorMoved',
       config = require('modules.editor.setup.specs').config,
    },
+   {
+      'gbprod/stay-in-place.nvim',
+      event = 'VeryLazy',
+      config = true,
+   },
 
    -- syntax hightlighting
    {
@@ -154,6 +137,8 @@ return {
       event = { 'BufReadPost', 'BufNewFile' },
       dependencies = {
          'nvim-treesitter/nvim-treesitter-textobjects',
+         'nvim-treesitter/nvim-treesitter-refactor',
+         'nvim-treesitter/nvim-treesitter-context',
          'windwp/nvim-ts-autotag',
          'JoosepAlviste/nvim-ts-context-commentstring',
       },
@@ -177,6 +162,23 @@ return {
          end
       end,
    },
+
+   {
+      'nvim-treesitter/nvim-treesitter-context',
+      init = function()
+         local plugin = require('lazy.core.config').spec.plugins['nvim-treesitter']
+         local opts = require('lazy.core.plugin').values(plugin, 'opts', false)
+         local enabled = false
+         if opts.context then
+            if opts.context[mod] and opts.context.enable then
+               enabled = true
+            end
+         end
+         if not enabled then
+            require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-context')
+         end
+      end,
+   },
    {
       'andymass/vim-matchup',
       dependencies = 'nvim-treesitter/nvim-treesitter',
@@ -186,11 +188,16 @@ return {
    },
    {
       'Wansmer/treesj',
-      keys = { '<space>m', '<space>j', '<space>s' },
       dependencies = { 'nvim-treesitter/nvim-treesitter' },
       config = function()
          require('treesj').setup({ max_join_length = 480 })
       end,
+      -- stylua: ignore
+      keys = {
+         { '<leader>jt', function() require('treesj').toggle() end, desc = 'Toggle split/join block', },
+         { '<leader>jj', function() require('treesj').join() end,   desc = 'Join block', },
+         { '<leader>js', function() require('treesj').split() end,  desc = 'Split block', },
+      },
    },
 
    -- comments
@@ -199,24 +206,6 @@ return {
       config = require('modules.editor.setup.comment').config,
       dependencies = { 'nvim-treesitter/nvim-treesitter' },
       event = 'VeryLazy',
-      keys = {
-         {
-            '<leader>//',
-            function()
-               require('Comment.api').toggle.linewise.current()
-            end,
-            mode = { 'n' },
-            desc = 'Comment linewise',
-         },
-         {
-            '<leader>/b',
-            function()
-               require('Comment.api').toggle.blockwise.current()
-            end,
-            mode = { 'n' },
-            desc = 'Comment blockwise',
-         },
-      },
    },
    {
       'folke/todo-comments.nvim',
@@ -227,14 +216,22 @@ return {
       config = true,
    },
 
+   -- diagnostics/quickfix
+   {
+      'folke/trouble.nvim',
+      cmd = { 'TroubleToggle', 'Trouble' },
+      opts = require('modules.editor.setup.trouble').opts,
+      keys = require('modules.editor.setup.trouble').keys,
+   },
+
    -- misc
    {
       'abecodes/tabout.nvim',
       event = 'InsertEnter',
       opts = require('modules.editor.setup.tabout').opts,
       keys = {
-         { '<A-l', modes = { 'n' } },
-         { '<A-h', modes = { 'n' } },
+         { '<A-l>', modes = { 'n' } },
+         { '<A-h>', modes = { 'n' } },
       },
    },
 }

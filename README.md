@@ -2,17 +2,13 @@
 **Common**
 - git
 - nodejs
-- cargo/rust
 - ripgrep
 - sed
 - fd
-- find
 - viu
 - ls_emmet
 - go
-- pynvim 
 - tree-sitter-cli
-- code-minimap
 
 **Unix**
 - curl/wget
@@ -24,3 +20,11 @@
 - powershell
 - tar
 - 7zip/peazip/archiver/winzip/WinRaR
+
+### TODO:
+- [ ] Implement global `buf_cache`
+- [ ] Create wrapper for nvim-treesitter commands
+- [ ] Configure 
+    - [ ] nvim-dap
+    - [ ] nvim-dap-ui
+    - [ ] neotest

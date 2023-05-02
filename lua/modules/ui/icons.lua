@@ -24,9 +24,9 @@ icons.git = {
 
 -- stylua: ignore
 icons.os = {
-   Unix = "",         -- ebc6
-   Mac  = "",         -- e302
-   Dos  = "",         -- e70f
+   Unix = "", -- ebc6
+   Mac  = "", -- e302
+   Dos  = "", -- e70f
 }
 
 -- stylua: ignore
@@ -45,45 +45,44 @@ icons.fs = {
 
 -- stylua: ignore
 icons.kind = {
-   File          = "",
-   Module        = "",
-   Namespace     = " ",
-   Package       = "",
-   Class         = "",
-   Method        = "",
-   Field         = "ﰠ",
-   Constructor   = "",
-   Enum          = "練",
-   Interface     = "",
-   Function      = "",
-   Variable      = "",
-   Constant      = "",
-   String        = "",
-   Text          = "",
-   Number        = "",
+   Array         = "",
    Boolean       = "",
-   Array         = "",
-   Object        = "",
-   Key           = "",
-   Keyword       = "",
-   Null          = " ",
-   EnumMember    = "練",
-   Struct        = "",
-   Property      = "",
-   Event         = "",
-   Operator      = "",
-   TypeParameter = "",
-   Unit          = "",
-   Value         = "",
-   Snippet       = "",
+   Class         = "",
    Color         = "",
-   Reference     = "",
-   Folder        = "",
-   -- ccls-specific icons.
-   TypeAlias     = "",
-   Parameter     = "",
-   StaticMethod  = "",
+   Constant      = "",
+   Constructor   = "",
+   Enum          = "",
+   EnumMember    = "",
+   Event         = "",
+   Field         = "",
+   File          = "",
+   Folder        = "",
+   Function      = "",
+   Interface     = "",
+   Key           = "",
+   Keyword       = "",
    Macro         = "",
+   Method        = "",
+   Module        = "",
+   Namespace     = "",
+   Null          = "",
+   Number        = "",
+   Object        = "",
+   Operator      = "",
+   Package       = "",
+   Parameter     = "",
+   Property      = "",
+   Reference     = "",
+   Snippet       = "",
+   String        = "",
+   Struct        = "",
+   Variable      = "",
+   Text          = "",
+   TypeParameter = "",
+   Unit          = "",
+   Value         = "",
+   StaticMethod  = "",
+   TypeAlias     = "",
 }
 
 -- stylua: ignore
@@ -96,31 +95,41 @@ icons.custom = {
 
 -- stylua: ignore
 icons.type = {
-   Array   = "",
-   Number  = "",
+   Array   = "",
+   Number  = "",
    String  = "",
-   Boolean = "蘒",
+   Boolean = "",
    Object  = "",
-   Null    = " ",
+   Null    = "",
 }
 
-icons.misc = {}
+-- stylua: ignore
+icons.misc = {
+   Ghost           = "",
+   SemiCircleLeft  = "",
+   SemiCircleRight = "",
+   Info            = "",
+   Formatter       = "",
+   LSP             = "",
+   FileSize        = "",
+   Location        = ""
+}
 
 -- stylua: ignore
 icons.dap = {
-   Breakpoint           = '',
-   BreakpointCondition  = 'ﳁ',
-   BreakpointRejected   = '',
-   LogPoint             = '',
-   Pause                = '',
-   Play                 = '',
-   RunLast              = '↻',
-   StepBack             = '',
-   StepInto             = '',
-   StepOut              = '',
-   StepOver             = '',
-   Stopped              = '',
-   Terminate            = 'ﱢ',
+   Breakpoint          = '',
+   BreakpointCondition = 'ﳁ',
+   BreakpointRejected  = '',
+   LogPoint            = '',
+   Pause               = '',
+   Play                = '',
+   RunLast             = '↻',
+   StepBack            = '',
+   StepInto            = '',
+   StepOut             = '',
+   StepOver            = '',
+   Stopped             = '',
+   Terminate           = 'ﱢ',
 }
 
 return icons

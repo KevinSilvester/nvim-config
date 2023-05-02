@@ -13,25 +13,27 @@ function Logger:init(logfile, silent)
    self.logfile = logfile or ufs.path_join(PATH.data, 'my-config.log')
    self.silent = silent or false
 
-   _G.log = {}
-   log.trace = function(origin, message)
-      self:log('TRACE', origin, message)
-   end
-   log.debug = function(origin, message)
-      self:log('DEBUG', origin, message)
-   end
-   log.info = function(origin, message)
-      self:log('INFO', origin, message)
-   end
-   log.warn = function(origin, message)
-      self:log('WARN', origin, message)
-   end
-   log.error = function(origin, message)
-      self:log('ERROR', origin, message)
-   end
-   log.off = function(origin, message)
-      self:log('OFF', origin, message)
-   end
+   --stylua: ignore
+   _G.log = {
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      trace = function(origin, message) self:log('TRACE', origin, message) end,
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      debug = function(origin, message) self:log('DEBUG', origin, message) end,
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      info  = function(origin, message) self:log('INFO', origin, message) end,
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      warn  = function(origin, message) self:log('WARN', origin, message) end,
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      error = function(origin, message) self:log('ERROR', origin, message) end,
+      ---@param origin string origin of logged message
+      ---@param message string|table message to be logged
+      off   = function(origin, message) self:log('OFF', origin, message) end,
+   }
 end
 
 ---Log to logfile
@@ -48,7 +50,7 @@ function Logger:log(level, origin, message)
          ufs.write_file(
             self.logfile,
             '[' .. os.date('%X-%a-%x') .. '] - [' .. level .. '] - - [' .. origin .. '] - ' .. message .. '\n',
-           'a'
+            'a'
          )
       end, function()
          vim.notify('Failed writing to logfile', vim.log.levels.ERROR, { title = '[ERROR] core.config' })

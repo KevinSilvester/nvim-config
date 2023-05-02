@@ -52,7 +52,7 @@ function M.nowait(opt)
    end
 end
 
-function M.new_opts(...)
+function M.opts(...)
    local args = { ... }
    local o = Opts:new()
 
@@ -91,7 +91,7 @@ local _set_keymap = function(mode, buffer, mappings)
             log.warn('core.mapper', 'Invalid keymap for `' .. mapping[1] .. '`')
             goto continue
          end
-         local o = mapping[3] or M.new_opts()
+         local o = mapping[3] or M.opts()
          if type(buffer) == 'number' then
             o = vim.tbl_extend('force', o, { buffer = buffer })
          end
@@ -103,7 +103,7 @@ local _set_keymap = function(mode, buffer, mappings)
          log.warn('core.mapper', 'Invalid keymap for `' .. mappings[1] .. '`')
          return
       end
-      local o = mapping[3] or M.new_opts()
+      local o = mapping[3] or M.opts()
       if type(buffer) == 'number' then
          o = vim.tbl_extend('force', o, { buffer = buffer })
       end
@@ -111,10 +111,10 @@ local _set_keymap = function(mode, buffer, mappings)
    end
 end
 
----
+---@private
 ---@param mode MapperMode vim mode
 ---@param buf_map? boolean map key bindings to specific buffer
-M.map = function(mode, buf_map)
+local _map = function(mode, buf_map)
    if buf_map then
       ---@param buffer number
       ---@param mappings MapperMapping|MapperMapping[]
@@ -129,18 +129,18 @@ M.map = function(mode, buf_map)
    end
 end
 
-M.nmap = M.map('n')
-M.imap = M.map('i')
-M.cmap = M.map('c')
-M.vmap = M.map('v')
-M.xmap = M.map('x')
-M.tmap = M.map('t')
+M.nmap = _map('n')
+M.imap = _map('i')
+M.cmap = _map('c')
+M.vmap = _map('v')
+M.xmap = _map('x')
+M.tmap = _map('t')
 
-M.buf_nmap = M.map('n', true)
-M.buf_imap = M.map('i', true)
-M.buf_cmap = M.map('c', true)
-M.buf_vmap = M.map('v', true)
-M.buf_xmap = M.map('x', true)
-M.buf_tmap = M.map('t', true)
+M.buf_nmap = _map('n', true)
+M.buf_imap = _map('i', true)
+M.buf_cmap = _map('c', true)
+M.buf_vmap = _map('v', true)
+M.buf_xmap = _map('x', true)
+M.buf_tmap = _map('t', true)
 
 return M

@@ -1,3 +1,4 @@
+local cmd = require('core.mapper').cmd
 local M = {}
 
 M.opts = function()
@@ -54,6 +55,10 @@ M.opts = function()
             ['<C-w>gf'] = actions.goto_file_tab, -- Open the file in a new tabpage
             ['<leader>e'] = actions.focus_files, -- Bring focus to the files panel
             ['<leader>b'] = actions.toggle_files, -- Toggle the files panel.
+            ['q'] = function()
+               actions.close()
+               vim.cmd('tabclose')
+            end,
          },
          file_panel = {
             ['j'] = actions.next_entry, -- Bring the cursor to the next file entry
@@ -80,11 +85,16 @@ M.opts = function()
             ['f'] = actions.toggle_flatten_dirs, -- Flatten empty subdirectories in tree listing style.
             ['<leader>e'] = actions.focus_files,
             ['<leader>b'] = actions.toggle_files,
+            ['q'] = function()
+               actions.close()
+               vim.cmd('tabclose')
+            end,
          },
+         -- stylua: ignore
          file_history_panel = {
-            ['g!'] = actions.options, -- Open the option panel
+            ['g!'] = actions.options,               -- Open the option panel
             ['<C-A-d>'] = actions.open_in_diffview, -- Open the entry under the cursor in a diffview
-            ['y'] = actions.copy_hash, -- Copy the commit hash of the entry under the cursor
+            ['y'] = actions.copy_hash,              -- Copy the commit hash of the entry under the cursor
             ['L'] = actions.open_commit_log,
             ['zR'] = actions.open_all_folds,
             ['zM'] = actions.close_all_folds,
@@ -104,6 +114,10 @@ M.opts = function()
             ['<C-w>gf'] = actions.goto_file_tab,
             ['<leader>e'] = actions.focus_files,
             ['<leader>b'] = actions.toggle_files,
+            ['q'] = function()
+               actions.close()
+               vim.cmd('tabclose')
+            end,
          },
          option_panel = {
             ['<tab>'] = actions.select_entry,
@@ -112,5 +126,12 @@ M.opts = function()
       },
    }
 end
+
+-- stylua: ignore
+M.keys = {
+   { '<leader>gdh', cmd('DiffviewFileHistory %'), desc = 'Current File History' },
+   { '<leader>gdo', cmd('DiffviewOpen'),          desc = 'Open DiffView' },
+   { '<leader>gdr', cmd('DiffviewRefresh'),       desc = 'Refresh DiffView' },
+}
 
 return M

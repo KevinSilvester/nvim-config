@@ -12,6 +12,17 @@ M.opts = {
    highlight = { enable = true },
    auto_pairs = { enable = true },
    autotag = { enable = false },
+   context = {
+      enable = true,
+      max_lines = 0,
+      min_window_height = 0,
+      line_numbers = true,
+      multiline_threshold = 20,
+      trim_scope = 'outer',
+      mode = 'cursor',
+      separator = nil,
+      zindex = 20,
+   },
    textobjects = {
       select = {
          enable = true,
@@ -77,8 +88,14 @@ M.config = function(_, opts)
    require('nvim-treesitter.ts_utils').is_in_node_range = vim.treesitter.is_in_node_range
    require('nvim-treesitter.ts_utils').get_node_range = vim.treesitter.get_node_range
 
+   vim.api.nvim_create_user_command('TSInstall', function(o)
+      local bang = o.bang and '!' or ''
+      require('nvim-treesitter.install').commands.TSInstall['run' .. bang](o.args)
+   end, { nargs = '+', bang = true, complete = 'custom,nvim_treesitter#installable_parsers' })
+
    vim.api.nvim_command('set foldmethod=expr')
    vim.api.nvim_command('set foldexpr=nvim_treesitter#foldexpr()')
+
    -- vim.cmd([[:e]])
 end
 

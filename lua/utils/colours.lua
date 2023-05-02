@@ -1,16 +1,26 @@
 M = {}
 
+---@param arg number|nil
+local _arg_to_hex = function(arg)
+   log.debug('utils.colours', { arg, type(arg) })
+   if type(arg) == 'number' then
+      return string.format('#%x', arg)
+   end
+   return nil
+end
+
 ---get highlight group fg and bg
 ---@param group string
----@return table|nil
-M.get_highlight = function(group)
-   local hl = vim.api.nvim_get_hl_by_name(group, true)
-   if hl == nil then
-      return nil
-   end
-   local fg = string.format('#%x', hl.foreground)
-   local bg = string.format('#%x', hl.background)
-   return { fg = fg, bg = bg }
+---@return { fg?: string, bg?: string, italic?: string}
+M.get_hl = function(group)
+   local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+   log.debug('utils.colours', { GROUP = group, HL = hl })
+   local fg = _arg_to_hex(hl.fg)
+   local bg = _arg_to_hex(hl.bg)
+   local italic = hl.italic
+   -- log.debug('utils.colours', { fg = fg, bg = bg, italic = italic })
+   return { fg = fg, bg = bg, italic = italic }
+   -- return { fg = nil, bg = nil, italic = nil }
 end
 
 ---convert hex colour to rgb

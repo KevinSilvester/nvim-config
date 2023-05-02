@@ -22,9 +22,7 @@ PATH.cache = vim.fn.stdpath('cache')
 ------------------------------------------------------------------------
 _G.DEFAULT_LSP_SERVERS = {
    'astro',
-   'awk_ls',
    'bashls',
-   'clangd',
    'cmake',
    'cssls',
    'dockerls',
@@ -38,7 +36,6 @@ _G.DEFAULT_LSP_SERVERS = {
    'pyright',
    'rust_analyzer',
    'sqlls',
-   'lua_ls',
    'svelte',
    'tailwindcss',
    'taplo',
@@ -46,6 +43,9 @@ _G.DEFAULT_LSP_SERVERS = {
    'vuels',
    'yamlls',
 }
+if not HOST.is_docker then
+   table.insert(_G.DEFAULT_LSP_SERVERS, 'lua_ls')
+end
 if HOST.is_win then
    table.insert(_G.DEFAULT_LSP_SERVERS, 'powershell_es')
 end
@@ -84,4 +84,18 @@ _G.DEFAULT_TREESITTER_PARSERS = {
    'toml',
    'vim',
    'yaml',
+}
+
+---@alias CacheBlock { lsp: table<string>, fmt: table<string>, treesitter: boolean, copilot: boolean }
+---@type { active: number, buffers: CacheBlock[] }
+_G.buf_cache = {
+   active = 1,
+   buffers = {
+      [1] = {
+         lsp = {},
+         fmt = {},
+         copilot = false,
+         treesitter = false,
+      },
+   },
 }

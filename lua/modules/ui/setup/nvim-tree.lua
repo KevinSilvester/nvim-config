@@ -1,5 +1,6 @@
-local M = {}
+local cmd = require('core.mapper').cmd
 local icons = require('modules.ui.icons')
+local M = {}
 
 M.opts = {
    on_attach = 'disable',
@@ -113,7 +114,7 @@ M.opts = {
 
 M.config = function(_, opts)
    local buf_nmap = require('core.mapper').buf_nmap
-   local k_opts = require('core.mapper').new_opts
+   local k_opts = require('core.mapper').opts
    local silent = require('core.mapper').silent
    local noremap = require('core.mapper').noremap
    local nowait = require('core.mapper').nowait
@@ -161,6 +162,9 @@ M.config = function(_, opts)
    require('nvim-tree').setup(opts)
 end
 
-M.init = function() end
+M.keys = {
+   { '<leader>ne', cmd('NvimTreeToggle'), desc = 'Toggle NvimTree' },
+   { '<leader>nr', cmd('NvimTreeRefresh'), desc =  'Refresh NvimTree' },
+}
 
 return M
