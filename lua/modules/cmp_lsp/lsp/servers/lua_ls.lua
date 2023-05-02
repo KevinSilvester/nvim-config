@@ -1,5 +1,7 @@
 local M = {}
 
+vim.cmd([[packadd neodev.nvim]])
+
 require('neodev').setup({
    library = {
       enabled = true,

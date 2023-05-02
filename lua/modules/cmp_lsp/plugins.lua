@@ -6,8 +6,7 @@ local conf = require('modules.cmp_lsp.config')
 ---------------------------------
 plugin({
    'folke/neodev.nvim',
-   opt = true,
-   event = 'BufReadPre',
+   opt = false,
 })
 
 plugin({

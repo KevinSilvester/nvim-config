@@ -39,7 +39,7 @@ require('fidget').setup({
       end,
    },
    sources = { -- Sources to configure
-      ['sumneko_lua'] = { -- Name of source
+      ['lua_ls'] = { -- Name of source
          ignore = false, -- Ignore notifications from this source
       },
    },
