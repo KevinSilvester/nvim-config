@@ -44,7 +44,6 @@ luac.out
 *.hex
 
 # Plugin lock file
-lazy-lock.json
 my-config-lock.json
 
 # End of https://www.toptal.com/developers/gitignore/api/lua
