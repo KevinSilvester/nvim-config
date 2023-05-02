@@ -61,6 +61,12 @@ return {
       config = require('modules.ui.setup.barbecue').config,
    },
 
+   -- fold/statuscolumn
+   {
+      'luukvbaal/statuscol.nvim',
+      config = require('modules.ui.setup.statuscol').config
+   },
+
    -- notifications
    {
       'rcarriga/nvim-notify',
@@ -168,5 +174,11 @@ return {
       opts = require('modules.ui.setup.nvim-tree').opts,
       config = require('modules.ui.setup.nvim-tree').config,
       keys = require('modules.ui.setup.nvim-tree').keys,
+   },
+
+   -- cure-border
+   {
+      'eandrju/cellular-automaton.nvim',
+      cmd = 'CellularAutomaton',
    },
 }

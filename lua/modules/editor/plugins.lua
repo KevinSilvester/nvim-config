@@ -125,6 +125,11 @@ return {
       event = 'VeryLazy',
       config = true,
    },
+   {
+      'nacro90/numb.nvim',
+      event = 'CmdlineEnter',
+      config = true,
+   },
 
    -- syntax hightlighting
    {
@@ -141,6 +146,7 @@ return {
          'nvim-treesitter/nvim-treesitter-context',
          'windwp/nvim-ts-autotag',
          'JoosepAlviste/nvim-ts-context-commentstring',
+         'andymass/vim-matchup',
       },
    },
    {
@@ -223,6 +229,20 @@ return {
       opts = require('modules.editor.setup.trouble').opts,
       keys = require('modules.editor.setup.trouble').keys,
    },
+
+   -- block folding
+   -- {
+   --    'kevinhwang91/nvim-ufo',
+   --    enable = false,
+   --    event = 'BufReadPre',
+   --    dependencies = {
+   --       'kevinhwang91/promise-async',
+   --       'luukvbaal/statuscol.nvim',
+   --       'nvim-treesitter/nvim-treesitter',
+   --    },
+   --    opts = require('modules.editor.setup.ufo').opts,
+   --    keys = require('modules.editor.setup.ufo').keys,
+   -- },
 
    -- misc
    {
