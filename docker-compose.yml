@@ -5,8 +5,6 @@ services:
     build: .
     container_name: nvim-config-v3
     init: true
-    ports:
-      - 8092:3000
     volumes:
       - .:/root/.config/nvim
     stdin_open: true
