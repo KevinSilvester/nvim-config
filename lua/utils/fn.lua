@@ -23,9 +23,10 @@ end
 ---print vim.inspect output to a popup window/buffer
 ---@param input any input can by anything that vim.inspect is able to parse
 ---@param yank boolean|nil wheather to copy the ouput to clipboard
+---@param ft string filetype (default `lua`)
 ---@param open_split boolean|nil whether to use popup window
 ---@return nil
-M.inspect = function(input, yank, open_split)
+M.inspect = function(input, yank, ft, open_split)
    local popup_ok, Popup = pcall(require, 'nui.popup')
    local split_ok, Split = pcall(require, 'nui.split')
 
@@ -40,6 +41,7 @@ M.inspect = function(input, yank, open_split)
 
    open_split = (open_split == nil) and false or open_split
    yank = (yank == nil) and false or yank
+   ft = (ft == nil) and 'lua' or ft
 
    local output = vim.inspect(input)
    local component
@@ -50,7 +52,7 @@ M.inspect = function(input, yank, open_split)
          relative = 'win',
          position = 'bottom',
          size = '20%',
-         buf_options = { modifiable = true, readonly = false },
+         buf_options = { modifiable = true, readonly = false, filetype = ft },
       })
    else
       component = Popup({
@@ -59,7 +61,7 @@ M.inspect = function(input, yank, open_split)
          border = { style = 'rounded' },
          position = '50%',
          size = { width = '80%', height = '60%' },
-         buf_options = { modifiable = true, readonly = false },
+         buf_options = { modifiable = true, readonly = false, filetype = ft },
       })
    end
 
