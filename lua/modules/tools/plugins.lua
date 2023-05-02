@@ -16,7 +16,7 @@ return {
          dir = PATH.cache .. '/session/',
          options = { 'buffers', 'curdir', 'tabpages', 'winsize', 'help', 'globals' },
          pre_save = function()
-            log.debug('modules.tools.persistence', 'Session saved')
+            log.info('modules.tools.persistence', 'Session saved')
          end,
       },
       -- stylua: ignore
