@@ -7,8 +7,6 @@ local imap = mapper.imap
 local vmap = mapper.vmap
 local xmap = mapper.xmap
 
-local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
-
 --
 -- LEADER
 vim.keymap.set('', '<Space>', '<Nop>', opts(noremap, silent))
@@ -41,6 +39,9 @@ nmap({
 
    -- Delete Word
    { '<C-BS>', '<C-W>', opts(noremap, silent) },
+
+   -- Delete Word
+   { '<leader>h', cmd('nohlsearch'), opts(noremap, silent) },
 })
 
 if HOST.is_mac then
@@ -62,9 +63,6 @@ end
 --
 -- INSERT MODE --
 imap({
-   -- Quicker escape
-   -- { 'jk', '<Esc>', opts(noremap, silent) },
-
    -- Move text up and down
    { '<A-j>', '<Esc>:m .+1<CR>==gi', opts(noremap, silent) },
    { '<A-k>', '<Esc>:m .-2<CR>==gi', opts(noremap, silent) },
@@ -98,22 +96,4 @@ xmap({
    { 'K', cmd("move '<-2<CR>gv-gv"), opts(noremap, silent) },
    { '<A-j>', cmd("move '>+<CR>gv-gv"), opts(noremap, silent) },
    { '<A-k>', cmd("move '<-2<CR>gv-gv"), opts(noremap, silent) },
-
-   -- Comment
-   -- {
-   --    '<leader>//',
-   --    function()
-   --       vim.api.nvim_feedkeys(esc, 'nx', false)
-   --       require('Comment.api').toggle.linewise(vim.fn.visualmode())
-   --    end,
-   --    opts(noremap, silent),
-   -- },
-   -- {
-   --    '<leader>/b',
-   --    function()
-   --       vim.api.nvim_feedkeys(esc, 'nx', false)
-   --       require('Comment.api').toggle.blockwise(vim.fn.visualmode())
-   --    end,
-   --    opts(noremap, silent),
-   -- },
 })

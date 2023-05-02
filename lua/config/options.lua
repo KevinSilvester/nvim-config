@@ -100,13 +100,17 @@ vim.opt.diffopt = "filler,iwhite,internal,algorithm:patience"
 vim.opt.jumpoptions = "stack"
 vim.opt.shortmess:append("Ic")
 vim.opt.iskeyword:append("-")
-vim.opt.foldlevelstart = 99
 vim.opt.smartcase = true
 vim.opt.formatoptions = "1jcroql"
 vim.opt.wrap = true
 vim.opt.linebreak = true
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldcolumn = '0'
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = true
 
 
 ----------------
