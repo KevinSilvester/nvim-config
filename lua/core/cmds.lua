@@ -3,7 +3,6 @@ local colours = require('utils.colours')
 -- command to act as alias for custom inspect function
 vim.api.nvim_create_user_command('Inspect', function(opts)
    vim.cmd("lua require('utils.fn').inspect(" .. opts.args .. ')')
-   -- utils.inspect(opts.args)
 end, {
    nargs = 1,
    complete = function(ArgLead, CmdLine, CursorPo)

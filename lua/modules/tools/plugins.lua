@@ -8,7 +8,8 @@ plugin({
    run = 'make',
 })
 plugin({
-   'nvim-telescope/telescope.nvim',
+   'KevinSilvester/telescope.nvim',
+   branch = 'fix/json_file_preview',
    opt = true,
    cmd = 'Telescope',
    after = { 'plenary.nvim', 'popup.nvim', 'nvim-web-devicons', 'nvim-treesitter', 'nvim-notify' },

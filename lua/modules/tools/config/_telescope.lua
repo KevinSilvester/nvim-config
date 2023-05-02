@@ -30,8 +30,8 @@ local custom_marker = function(filepath, bufnr, opts)
          if mime_type == 'text' then
             previewers.buffer_previewer_maker(filepath, bufnr, opts)
 
-         -- If on Windows, display images using viu as telescope media file extension requires ueberzug
-         -- which is not available on Windows
+            -- If on Windows, display images using viu as telescope media file extension requires ueberzug
+            -- which is not available on Windows
          elseif mime_type == 'image' and HOST.is_win then
             vim.schedule(function()
                previewers_utils.set_preview_message(bufnr, opts.winid, 'Image Loading...')
@@ -58,7 +58,7 @@ local custom_marker = function(filepath, bufnr, opts)
                end
             end)
 
-         -- Don't display binary files
+            -- Don't display binary files
          else
             vim.schedule(function()
                previewers_utils.set_preview_message(bufnr, opts.winid, 'Binary cannot be previewed')
@@ -72,7 +72,7 @@ require('telescope').setup({
    defaults = {
       prompt_prefix = '  ',
       selection_caret = ' ',
-      buffer_previewer_maker = custom_marker,
+      -- buffer_previewer_maker = custom_marker,
       path_display = { 'truncate' },
       file_ignore_patterns = { 'node_modules', '^.git/' },
       sorting_strategy = 'ascending',
@@ -117,15 +117,12 @@ require('telescope').setup({
       grep_previewer = require('telescope.previewers').vim_buffer_vimgrep.new,
       qflist_previewer = require('telescope.previewers').vim_buffer_qflist.new,
    },
-
    pickers = {
       find_files = {
          hidden = true,
          find_command = {
             'rg',
             '--files',
-            '--ignore-file',
-            '.gitignore',
             '--color=never',
             '--no-heading',
             '--line-number',
@@ -133,7 +130,9 @@ require('telescope').setup({
             '--smart-case',
             '--hidden',
             '--glob',
-            '!{.git/*,.svelte-kit/*,target/*}',
+            '!{.git/*,.svelte-kit/*,target/*,node_modules/*}',
+            '--path-separator',
+            '/',
          },
       },
       live_grep = {
@@ -155,7 +154,6 @@ require('telescope').setup({
       },
       colorscheme = { enable_preview = true },
    },
-
    extensions = {
       fzf = {
          fuzzy = true, -- false will only do exact matching
