@@ -2,17 +2,7 @@
 
 local M = {}
 
-local capabilities_extension = {
-   textDocument = {
-      foldingRange = {
-         dynamicRegistration = false,
-         lineFoldingOnly = true,
-      },
-   },
-}
-
-M.capabilities =
-   vim.tbl_deep_extend('force', require('modules.cmp_lsp.lsp.setup').capabilites, capabilities_extension)
+M.capabilities = require('modules.cmp_lsp.lsp.setup').capabilites
 
 local function filter(arr, fn)
    if type(arr) ~= 'table' then

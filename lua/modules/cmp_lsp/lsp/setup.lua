@@ -9,7 +9,16 @@ local M = {}
 M.set_lsp_keymaps = function(bufnr)
    -- stylua: ignore
    m.buf_nmap(bufnr, {
-      { "K",  function() vim.lsp.buf.hover() end,          m.opts(m.noremap, m.silent, 'Hover doc') },
+      {
+         "K",
+         function()
+            -- local winid = require('ufo').peekFoldedLinesUnderCursor()
+            -- if not winid then
+               vim.lsp.buf.hover()
+            -- end
+         end,
+         m.opts(m.noremap, m.silent, 'Hover doc')
+      },
       { "D",  function() vim.lsp.buf.type_definitio() end, m.opts(m.noremap, m.silent, 'Type Definition') },
       { "gD", function() vim.lsp.buf.declaration() end,    m.opts(m.noremap, m.silent, 'Goto Declarations') },
       { "gd", function() vim.lsp.buf.definition() end,     m.opts(m.noremap, m.silent, 'Goto Definitions') },
@@ -29,11 +38,22 @@ M.set_lsp_keymaps = function(bufnr)
    })
 end
 
+
+local capabilities_extension = {
+   textDocument = {
+      foldingRange = {
+         dynamicRegistration = false,
+         lineFoldingOnly = true,
+      },
+   },
+}
+
 ---Enable completions from lsp
 M.capabilites = vim.tbl_deep_extend(
    'force',
    vim.lsp.protocol.make_client_capabilities(),
-   require('cmp_nvim_lsp').default_capabilities()
+   require('cmp_nvim_lsp').default_capabilities(),
+   capabilities_extension
 )
 
 ---After attaching to a buffer, set keymaps, attach nvim-navic and vim-illuminate
