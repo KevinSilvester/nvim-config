@@ -1,8 +1,11 @@
 local ufs = require('utils.fs')
 
----@alias LockValues { cache_created: boolean }
+---@alias LockValues { cache_created: boolean, parsers_deleted: boolean }
 ---@type LockValues
-local LOCK_DEFAULTS = { cache_created = false }
+local LOCK_DEFAULTS = {
+   cache_created = false,
+   parsers_deleted = false,
+}
 
 ---@class CoreBootstrap
 ---@field lockfile string
@@ -21,7 +24,7 @@ function Bootstrap:init(lockfile)
          self.lock_values = self:read_lock()
       else
          self.lock_values = vim.deepcopy(LOCK_DEFAULTS)
-         log.debug('core.bootstrap', 'Writing to lockfile')
+         log.info('core.bootstrap', 'Writing to lockfile')
          self:write_lock(self.lock_values)
       end
 
@@ -35,7 +38,12 @@ function Bootstrap:init(lockfile)
          new_lock_values.cache_created = self:setup_cache()
       end
 
+      if not self.lock_values.parsers_deleted then
+         new_lock_values.parsers_deleted = self:delete_bundled_parsers()
+      end
+
       if not vim.deep_equal(self.lock_values, new_lock_values) then
+         ---@diagnostic disable-next-line: param-type-mismatch
          self:write_lock(vim.tbl_deep_extend('force', self.lock_values, new_lock_values))
       end
    end)
@@ -66,38 +74,30 @@ end
 
 ---Delete bundled treesitter parsers
 function Bootstrap:delete_bundled_parsers()
-   local path = string.gsub(vim.env.VIM, 'share', 'lib')
-   path = ufs.path_join(path, 'parser')
+   return xpcall(function()
+      local path = string.gsub(vim.env.VIM, 'share', 'lib')
+      path = ufs.path_join(path, 'parser')
 
-   if not ufs.is_dir(path) then
-      return
-   end
+      if not ufs.is_dir(path) then
+         log.warn('core.bootstrap', 'Bundled parsers not found')
+         return
+      end
 
-   local files = ufs.scandir(path)
-   ufs.write_file(ufs.path_join(PATH.config, 'file1'), path, 'w')
-   ufs.write_file(ufs.path_join(PATH.config, 'file2'), files, 'w')
+      local files = ufs.scandir(path)
 
-   -- for _, file in ipairs(files) do
-   --    vim.loop.fs_unlink(file, function(err, _)
-   --       if err ~= nil then
-   --          vim.notify(
-   --             'Failed to delete bundled parser: ' .. file .. ' ' .. err,
-   --             vim.log.levels.ERROR,
-   --             { title = 'nvim-config' }
-   --          )
-   --       end
-   --    end)
-   -- end
+      if not files then
+         return
+      end
 
-   -- vim.loop.fs_rmdir(path, function(err, _)
-   --    if err ~= nil then
-   --       vim.notify(
-   --          'Failed to remove bundled Tree-Sitter parsers!',
-   --          vim.log.levels.ERROR,
-   --          { title = 'nvim-config' }
-   --       )
-   --    end
-   -- end)
+      for _, file in ipairs(files) do
+         vim.loop.fs_unlink(file)
+      end
+      vim.loop.fs_rmdir(path)
+
+      log.info('core.bootstrap', 'Bundled parsers deleted')
+   end, function()
+      log.error('core.bootstrap', 'Parser delete failed')
+   end)
 end
 
 ---Create a new lock file if none exists and populate with default value
