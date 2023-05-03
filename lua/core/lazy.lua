@@ -69,7 +69,7 @@ function Lazy:bootstrap()
       },
       install = { colorscheme = { 'catppuccin', 'habamax' } },
       ui = { border = 'rounded' },
-      checker = { enabled = true }, -- automatically check for plugin updates
+      checker = { enabled = false }, -- automatically check for plugin updates
       performance = {
          rtp = {
             disabled_plugins = {
