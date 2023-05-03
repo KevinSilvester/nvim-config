@@ -176,7 +176,7 @@ return {
          local opts = require('lazy.core.plugin').values(plugin, 'opts', false)
          local enabled = false
          if opts.context then
-            if opts.context[mod] and opts.context.enable then
+            if opts.context and opts.context.enable then
                enabled = true
             end
          end
@@ -253,5 +253,11 @@ return {
          { '<A-l>', modes = { 'n' } },
          { '<A-h>', modes = { 'n' } },
       },
+   },
+   {
+      'KevinSilvester/import-cost.nvim',
+      event = { 'BufReadPost *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
+      build = function() return HOST.is_win and 'pwsh install.ps1 npm' or 'sh install.sh' end,
+      config = true,
    },
 }

@@ -30,9 +30,9 @@ end
 
 M.opts = {
    ---@diagnostic disable-next-line: unused-local
-   -- provider_selector = function(bufnr, filetype, buftype)
-   --    return { 'treesitter', 'indent' }
-   -- end,
+   provider_selector = function(bufnr, filetype, buftype)
+      return { 'treesitter', 'indent' }
+   end,
    -- fold_virt_text_handler = handler,
 }
 
