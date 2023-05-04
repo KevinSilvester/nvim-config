@@ -118,7 +118,12 @@ end
 ---@param content LockValues
 function Bootstrap:write_lock(content)
    xpcall(function()
-      ufs.write_file(self.lockfile, vim.json.encode(content), 'w+')
+      local res = {}
+      local tab = '   '
+      for key, value in pairs(content) do
+         table.insert(res, tab .. string.format('"%s": %s', key, value))
+      end
+      ufs.write_file(self.lockfile, '{\n' .. table.concat(res, ',\n') .. '\n}', 'w+')
    end, function()
       log.error('core.bootstrap', 'Failed writing to lockfile')
    end)
