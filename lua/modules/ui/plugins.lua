@@ -56,7 +56,11 @@ return {
       name = 'barbecue',
       version = '*',
       event = 'VeryLazy',
-      dependencies = { 'SmiteshP/nvim-navic', 'catppuccin/nvim' },
+      dependencies = {
+         'SmiteshP/nvim-navic',
+         'nvim-tree/nvim-web-devicons',
+         'catppuccin/nvim',
+      },
       opts = require('modules.ui.setup.barbecue').opts,
       config = require('modules.ui.setup.barbecue').config,
    },
@@ -64,7 +68,7 @@ return {
    -- fold/statuscolumn
    {
       'luukvbaal/statuscol.nvim',
-      config = require('modules.ui.setup.statuscol').config
+      config = require('modules.ui.setup.statuscol').config,
    },
 
    -- notifications

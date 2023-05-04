@@ -17,7 +17,7 @@ M.opts = {
       return vim.bo[bufnr].modified
    end,
    show_navic = true,
-   context_follow_icon_color = false,
+   context_follow_icon_color = true,
    symbols = {
       modified = '●',
       ellipsis = '…',
