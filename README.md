@@ -22,8 +22,15 @@
 - 7zip/peazip/archiver/winzip/WinRaR
 
 ### TODO:
+- [ ] Tab key not working as intended
+- [ ] `tabstop`, `softtabstop`, `shiftwidth` not being set properly
+
+### TODO:
 - [ ] Implement global `buf_cache`
 - [ ] Create wrapper for nvim-treesitter commands
+- [ ] LSP
+   - [ ] Show line diagnostics key-mapping
+   - [ ] Group line diagnostics virtual text
 - [ ] Configure 
     - [ ] nvim-dap
 - [ ] Add
