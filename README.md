@@ -21,9 +21,10 @@
 - tar
 - 7zip/peazip/archiver/winzip/WinRaR
 
-### TODO:
+### FIX:
 - [ ] Tab key not working as intended
 - [ ] `tabstop`, `softtabstop`, `shiftwidth` not being set properly
+- [ ] MardownPreview not working in MacOS
 
 ### TODO:
 - [ ] Implement global `buf_cache`
@@ -50,3 +51,13 @@
     - [ ] refactoring.nvim
     - [x] nvim-ufo (config error)
     - [ ] zen-mode.nvim
+
+### Preview Config
+Preview config using Docker
+```sh
+# start/build the container
+docker compose up -d custom
+
+# launch in to shell within container
+docker compose exec custom bash
+```
