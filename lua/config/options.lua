@@ -152,6 +152,8 @@ if HOST.is_win then
    for option, value in pairs(powershell_options) do
       vim.opt[option] = value
    end
+elseif HOST.is_mac then
+   vim.opt.shell = "zsh"
 else
    vim.opt.shell = "bash"
 end
