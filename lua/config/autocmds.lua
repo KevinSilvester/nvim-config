@@ -1,5 +1,5 @@
 local function augroup(name)
-   return vim.api.nvim_create_augroup('core.autocmd.' .. name, { clear = true })
+   return vim.api.nvim_create_augroup('config.autocmd.' .. name, { clear = true })
 end
 
 -- ---@return CacheBlock
