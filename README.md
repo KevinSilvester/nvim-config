@@ -27,7 +27,7 @@
 - [ ] MardownPreview not working in MacOS
 
 ### TODO:
-- [ ] Implement global `buf_cache`
+- [x] Implement global `buf_cache`
 - [ ] Create wrapper for nvim-treesitter commands
 - [ ] LSP
    - [ ] Show line diagnostics key-mapping
