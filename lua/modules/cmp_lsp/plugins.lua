@@ -97,12 +97,14 @@ return {
    ---------------------------------
    {
       'zbirenbaum/copilot.lua',
+      enabled = not HOST.is_mac,
       dependencies = 'neovim/nvim-lspconfig',
       cmd = 'Copilot',
       opts = require('modules.cmp_lsp.setup.copilot').opts,
    },
    {
       'zbirenbaum/copilot-cmp',
+      enabled = not HOST.is_mac,
       dependencies = { 'hrsh7th/nvim-cmp', 'zbirenbaum/copilot.lua' },
       event = 'InsertEnter',
       config = require('modules.cmp_lsp.setup.copilot-cmp').config,
