@@ -103,7 +103,7 @@ local _set_keymap = function(mode, buffer, mappings)
          log.warn('core.mapper', 'Invalid keymap for `' .. mappings[1] .. '`')
          return
       end
-      local o = mapping[3] or M.opts()
+      local o = mappings[3] or M.opts()
       if type(buffer) == 'number' then
          o = vim.tbl_extend('force', o, { buffer = buffer })
       end
