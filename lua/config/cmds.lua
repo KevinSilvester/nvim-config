@@ -1,3 +1,5 @@
+local ufn = require('utils.fn')
+
 -- command to act as alias for custom inspect function
 vim.api.nvim_create_user_command('Inspect', function(opts)
    local args = vim.split(opts.args, '|')
@@ -24,37 +26,30 @@ end, {
 
 -- set the tab options for specific work repos
 vim.api.nvim_create_user_command('Work', function(opts)
-   local augroup_name = 'config.cmd.work'
-   ---@param val number
-   ---@param bufnr number
-   local set_opts = function(val, bufnr)
-      vim.bo[bufnr].shiftwidth = val
-      vim.bo[bufnr].softtabstop = val
-      vim.bo[bufnr].tabstop = val
-   end
+   local augroup_name = 'config.cmds.work'
 
    if opts.args == 'on' then
-      set_opts(2, vim.api.nvim_get_current_buf())
+      ufn.tab_opts(2, vim.api.nvim_get_current_buf())
       vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufReadPost' }, {
          group = vim.api.nvim_create_augroup(augroup_name, { clear = true }),
          pattern = '*.{js,ts,md,css,json,mjs,cjs}',
          desc = 'Set tabstop, shiftwidth to 2 for js,md,ts files',
          callback = function(args)
-            set_opts(2, args.buf)
+            ufn.tab_opts(2, args.buf)
          end,
       })
    elseif opts.args == 'off' then
-      set_opts(3, vim.api.nvim_get_current_buf())
+      ufn.tab_opts(3, vim.api.nvim_get_current_buf())
       vim.api.nvim_create_autocmd({ 'BufEnter' }, {
          group = vim.api.nvim_create_augroup(augroup_name, { clear = true }),
          pattern = '*.{js,ts,md,css,json,mjs,cjs}',
          desc = 'Revert tabstop, shiftwidth to 3 for js,md,ts files',
          callback = function(args)
-            set_opts(3, args.buf)
+            ufn.tab_opts(3, args.buf)
          end,
       })
    else
-      log.warn('config.cmds', 'Invalid Subcommand!')
+      log.warn('config.cmds.work', 'Invalid Subcommand!')
    end
 end, {
    nargs = 1,
@@ -68,5 +63,24 @@ end, {
       return vim.tbl_filter(function(subcommand)
          return vim.startswith(subcommand, args[2])
       end, subcommands)
+   end,
+})
+
+vim.api.nvim_create_user_command('Tab', function(opts)
+   local val = string.gsub(opts.args, ' ', '')
+   if val:match('^%d+$') then
+      ufn.tab_opts(tonumber(val))
+   else
+      log.error('config.cmds.tab', 'Invalid value!')
+   end
+end, {
+   nargs = 1,
+   complete = function(_, line)
+      local args = vim.split(line, '%s+')
+      if #args ~= 2 then
+         return {}
+      end
+
+      return { tostring(vim.o.tabstop) }
    end,
 })
