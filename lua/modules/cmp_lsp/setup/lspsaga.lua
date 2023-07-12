@@ -157,10 +157,11 @@ M.opts = {
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>lac', cmd('Lspsaga code_action'),     desc = 'Code Action' },
-   { '<leader>lsd', cmd('Lspsaga peek_definition'), desc = 'Show Definitions' },
-   { '<leader>lso', cmd('Lspsaga outline'),         desc = 'Show Document Symbols' },
-   { '<leader>lsr', cmd('Lspsaga lsp_finder'),      desc = 'Show References' },
+   { '<leader>lac', cmd('Lspsaga code_action'),           desc = 'Code Action' },
+   { '<leader>ld',  cmd('Lspsaga show_line_diagnostics'), desc = 'Show Line Diagnostics' },
+   { '<leader>lsd', cmd('Lspsaga peek_definition'),       desc = 'Show Definitions' },
+   { '<leader>lso', cmd('Lspsaga outline'),               desc = 'Show Document Symbols' },
+   { '<leader>lsr', cmd('Lspsaga lsp_finder'),            desc = 'Show References' },
 }
 
 return M
