@@ -3,10 +3,6 @@ local uv = vim.loop
 
 local M = {}
 
-M.is_latest = function()
-   return vim.version().minor <= 8
-end
-
 ---check whether executable is callable
 ---@param name string name of executable
 ---@return boolean
@@ -39,9 +35,7 @@ M.inspect = function(input, yank, ft, open_split)
       return
    end
 
-   open_split = (open_split == nil) and false or open_split
-   yank = (yank == nil) and false or yank
-   ft = (ft == nil) and 'lua' or ft
+   ft = ft or 'lua'
 
    local output = vim.inspect(input)
    local component
@@ -59,6 +53,7 @@ M.inspect = function(input, yank, ft, open_split)
          enter = true,
          focusable = true,
          border = { style = 'rounded' },
+         relative = 'editor',
          position = '50%',
          size = { width = '80%', height = '60%' },
          buf_options = { modifiable = true, readonly = false, filetype = ft },
@@ -249,6 +244,21 @@ M.spawn = function(command, args, out, err)
          out(str)
       end
    end)
+end
+
+---Set the tabstop, softtabstop and shiftwidth for buffer or globally
+---@param val number
+---@param bufnr number|nil
+M.tab_opts = function(val, bufnr)
+   if type(bufnr) == 'number' then
+      vim.bo[bufnr].tabstop = val
+      vim.bo[bufnr].softtabstop = val
+      vim.bo[bufnr].shiftwidth = val
+   else
+      vim.opt.tabstop = val
+      vim.opt.softtabstop = val
+      vim.opt.shiftwidth = val
+   end
 end
 
 return M
