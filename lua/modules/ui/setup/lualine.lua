@@ -54,48 +54,13 @@ M.config = function(_, opts)
       fmt = i.misc.Formatter,
       lsp = i.misc.LSP,
       fileformat = {
-         unix = i.os.Unix .. ' ',
+         unix = i.os.Unix,
          mac = i.os.Mac .. ' ',
          dos = i.os.Dos .. ' ',
       },
       filesize = i.misc.FileSize,
       location = i.misc.Location,
    }
-
-   local ACTIVE_LSP = {}
-   local ACTIVE_FMT = {}
-   local COPILOT_ACTIVE = false
-
-   local function get_active_lsp()
-      local buf_lsp_names = {}
-
-      -- add lsp clients
-      for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
-         if client.name ~= 'copilot' and client.name ~= 'null-ls' then
-            table.insert(buf_lsp_names, client.name)
-         end
-         if client.name == 'copilot' then
-            COPILOT_ACTIVE = true
-         end
-      end
-
-      return vim.fn.uniq(buf_lsp_names)
-   end
-
-   local function get_active_fmt()
-      local buf_ft = vim.bo.filetype
-      local available_sources = require('null-ls.sources').get_available(buf_ft)
-      local buf_fmt_names = {}
-
-      -- add formatter
-      for _, source in ipairs(available_sources) do
-         for _ in pairs(source.methods) do
-            table.insert(buf_fmt_names, source.name)
-         end
-      end
-
-      return vim.fn.uniq(buf_fmt_names)
-   end
 
    ---@param tbl table
    ---@return string
@@ -150,7 +115,7 @@ M.config = function(_, opts)
 
    local info = {
       function()
-         return icons.info
+         return '理'
       end,
       color = { bg = colours.green, fg = colours.black },
       separator = separators.both,
@@ -184,7 +149,7 @@ M.config = function(_, opts)
       end,
       separator = '',
       padding = { right = 1 },
-      color = { fg = COPILOT_ACTIVE and colours.turqouise or colours.red },
+      color = { fg = buf_cache.active.copilot and colours.turqouise or colours.red },
    }
 
    local treesitter = {
@@ -194,25 +159,22 @@ M.config = function(_, opts)
       separator = '',
       padding = 1,
       color = function()
-         local buf = vim.api.nvim_get_current_buf()
-         local ts = vim.treesitter.highlighter.active[buf]
-         return { fg = ts and not vim.tbl_isempty(ts) and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = buf_cache.active.treesitter and colours.turqouise or colours.red, gui = 'bold' }
       end,
    }
 
    local fmt = {
       function()
-         return icons.fmt .. ' ' .. #ACTIVE_FMT
+         return icons.fmt .. ' ' .. #(buf_cache.active.fmt or {})
       end,
       color = function()
-         ACTIVE_FMT = get_active_fmt()
-         return { fg = #ACTIVE_FMT > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = #(buf_cache.active.fmt or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
       end,
       padding = 0,
       separator = '',
       on_click = function()
-         if #ACTIVE_FMT > 0 then
-            local str = table_to_string(ACTIVE_FMT)
+         if #(buf_cache.active.fmt or {}) > 0 then
+            local str = table_to_string(buf_cache.active.fmt)
             vim.notify(str, vim.log.levels.INFO, { title = 'Active Formatter' })
          else
             vim.notify('No formatters active', vim.log.levels.ERROR, { title = 'Active Formatter' })
@@ -222,16 +184,15 @@ M.config = function(_, opts)
 
    local lsp = {
       function()
-         return icons.lsp .. ' ' .. #ACTIVE_LSP
+         return icons.lsp .. ' ' .. #(buf_cache.active.lsp or {})
       end,
       color = function()
-         ACTIVE_LSP = get_active_lsp()
-         return { fg = #ACTIVE_LSP > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = #(buf_cache.active.lsp or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
       end,
       separator = '',
       on_click = function()
-         if #ACTIVE_LSP > 0 then
-            local str = table_to_string(ACTIVE_LSP)
+         if #(buf_cache.active.lsp or {}) > 0 then
+            local str = table_to_string(buf_cache.active.lsp)
             vim.notify(str, vim.log.levels.INFO, { title = 'Active LSP' })
          else
             vim.notify('No LSP active', vim.log.levels.ERROR, { title = 'Active LSP' })
@@ -243,14 +204,14 @@ M.config = function(_, opts)
       'fileformat',
       symbols = icons.fileformat,
       color = { bg = colours.green, fg = colours.black },
-      separator = separators.left,
+      separator = separators.both,
    }
 
    local filesize = {
       'filesize',
-      icon = icons.filesize,
+      icon = ' ' .. icons.filesize,
       color = { bg = colours.grey_bg, fg = colours.grey_fg, gui = 'bold' },
-      separator = separators.left,
+      separator = separators.none,
    }
 
    local filetype = {

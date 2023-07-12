@@ -85,17 +85,3 @@ _G.DEFAULT_TREESITTER_PARSERS = {
    'vim',
    'yaml',
 }
-
----@alias CacheBlock { lsp: table<string>, fmt: table<string>, treesitter: boolean, copilot: boolean }
----@type { active: number, buffers: CacheBlock[] }
-_G.buf_cache = {
-   active = 1,
-   buffers = {
-      [1] = {
-         lsp = {},
-         fmt = {},
-         copilot = false,
-         treesitter = false,
-      },
-   },
-}

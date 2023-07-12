@@ -255,7 +255,7 @@ return {
       },
    },
    {
-      'KevinSilvester/import-cost.nvim',
+      'barrett-ruth/import-cost.nvim',
       event = { 'BufReadPost *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
       build = HOST.is_win and 'pwsh install.ps1 npm' or 'bash install.sh npm',
       config = true,

@@ -33,6 +33,8 @@ return {
       keys = {
          { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
          { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
+         { '<leader>br', buf_cache.refresh, desc = 'Refresh cache block for current buffer' },
+         { '<leader>bs', buf_cache.show, desc = 'Render cache blocks for all buffers' },
       },
       opts = require('modules.ui.setup.bufferline').opts,
       config = true,

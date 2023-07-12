@@ -2,6 +2,7 @@
 require('core.lua_globals')
 require('core.logger'):init()
 require('core.bootstrap'):init()
+require('core.cache'):init()
 require('core.lazy'):init()
 
 -- load config
