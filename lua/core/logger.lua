@@ -16,31 +16,31 @@ function Logger:init(logfile, silent)
    --stylua: ignore
    _G.log = {
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      trace = function(origin, message) self:log('TRACE', origin, message) end,
+      ---@param message any message to be logged
+      trace = function(origin, message) self:__log('TRACE', origin, message) end,
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      debug = function(origin, message) self:log('DEBUG', origin, message) end,
+      ---@param message any message to be logged
+      debug = function(origin, message) self:__log('DEBUG', origin, message) end,
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      info  = function(origin, message) self:log('INFO', origin, message) end,
+      ---@param message any message to be logged
+      info  = function(origin, message) self:__log('INFO', origin, message) end,
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      warn  = function(origin, message) self:log('WARN', origin, message) end,
+      ---@param message any message to be logged
+      warn  = function(origin, message) self:__log('WARN', origin, message) end,
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      error = function(origin, message) self:log('ERROR', origin, message) end,
+      ---@param message any message to be logged
+      error = function(origin, message) self:__log('ERROR', origin, message) end,
       ---@param origin string origin of logged message
-      ---@param message string|table message to be logged
-      off   = function(origin, message) self:log('OFF', origin, message) end,
+      ---@param message any message to be logged
+      off   = function(origin, message) self:__log('OFF', origin, message) end,
    }
 end
 
 ---Log to logfile
 ---@param level 'TRACE'|'DEBUG'|'INFO'|'WARN'|'ERROR'|'OFF' log level
 ---@param origin string origin of logged message
----@param message string|table message to be logged
-function Logger:log(level, origin, message)
+---@param message any message to be logged
+function Logger:__log(level, origin, message)
    if type(message) ~= 'string' then
       message = vim.inspect(message)
    end

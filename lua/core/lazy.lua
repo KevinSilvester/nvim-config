@@ -14,15 +14,20 @@ function Lazy:init(root, lockfile)
    self = setmetatable({}, { __index = Lazy })
    self.root = root or ufs.path_join(PATH.data, 'lazy')
    self.lazypath = ufs.path_join(self.root, 'lazy.nvim')
-   self.lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.json')
    self.spec = {}
 
-   self:load_spec()
-   self:bootstrap()
+   if HOST.is_mac then
+      self.lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.work.json')
+   else
+      self.lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.personal.json')
+   end
+
+   self:__load_spec()
+   self:__bootstrap()
 end
 
 ---Load the plugin specs from modules folder
-function Lazy:load_spec()
+function Lazy:__load_spec()
    local modules_dir = ufs.path_join(PATH.config, 'lua', 'modules')
    local match_pattern = 'lua/(.+).lua$'
    local imports = vim.fs.find('plugins.lua', { path = modules_dir, type = 'file', limit = 10 })
@@ -38,7 +43,7 @@ function Lazy:load_spec()
 end
 
 ---Bootstrap lazy.nvim
-function Lazy:bootstrap()
+function Lazy:__bootstrap()
    if not ufs.is_dir(self.lazypath) then
       vim.fn.system({
          'git',

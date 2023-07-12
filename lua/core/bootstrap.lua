@@ -21,11 +21,11 @@ function Bootstrap:init(lockfile)
 
    vim.schedule(function()
       if ufs.is_file(self.lockfile) then
-         self.lock_values = self:read_lock()
+         self.lock_values = self:__read_lock()
       else
          self.lock_values = vim.deepcopy(LOCK_DEFAULTS)
          log.info('core.bootstrap', 'Writing to lockfile')
-         self:write_lock(self.lock_values)
+         self:__write_lock(self.lock_values)
       end
 
       if self.lock_values == nil then
@@ -35,22 +35,22 @@ function Bootstrap:init(lockfile)
       local new_lock_values = vim.deepcopy(self.lock_values)
 
       if not self.lock_values.cache_created then
-         new_lock_values.cache_created = self:setup_cache()
+         new_lock_values.cache_created = self:__setup_cache()
       end
 
       if not self.lock_values.parsers_deleted then
-         new_lock_values.parsers_deleted = self:delete_bundled_parsers()
+         new_lock_values.parsers_deleted = self:__delete_bundled_parsers()
       end
 
       if not vim.deep_equal(self.lock_values, new_lock_values) then
          ---@diagnostic disable-next-line: param-type-mismatch
-         self:write_lock(vim.tbl_deep_extend('force', self.lock_values, new_lock_values))
+         self:__write_lock(vim.tbl_deep_extend('force', self.lock_values, new_lock_values))
       end
    end)
 end
 
 ---Create cache directories
-function Bootstrap:setup_cache()
+function Bootstrap:__setup_cache()
    return xpcall(function()
       local cache_dir = PATH.cache
       local cache_dirs = {
@@ -73,7 +73,7 @@ function Bootstrap:setup_cache()
 end
 
 ---Delete bundled treesitter parsers
-function Bootstrap:delete_bundled_parsers()
+function Bootstrap:__delete_bundled_parsers()
    return xpcall(function()
       local path = string.gsub(vim.env.VIM, 'share', 'lib')
       path = ufs.path_join(path, 'parser')
@@ -103,7 +103,7 @@ end
 ---Create a new lock file if none exists and populate with default value
 ---If file exists read the file and return content
 ---@return LockValues|nil
-function Bootstrap:read_lock()
+function Bootstrap:__read_lock()
    local ok, content = xpcall(function()
       local file = io.open(self.lockfile, 'r'):read('a')
       return vim.json.decode(file)
@@ -116,7 +116,7 @@ end
 
 ---Write to the lock file
 ---@param content LockValues
-function Bootstrap:write_lock(content)
+function Bootstrap:__write_lock(content)
    xpcall(function()
       local res = {}
       local tab = '   '
