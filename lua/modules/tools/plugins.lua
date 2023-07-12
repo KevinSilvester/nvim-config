@@ -40,8 +40,7 @@ return {
 
    -- fuzzy finder
    {
-      'KevinSilvester/telescope.nvim',
-      branch = 'fix/json_file_preview',
+      'nvim-telescope/telescope.nvim',
       -- tag = '0.1.1',
       dependencies = { 'nvim-lua/plenary.nvim' },
       config = require('modules.tools.setup.telescope').config,
@@ -50,14 +49,14 @@ return {
    },
    {
       'nvim-telescope/telescope-file-browser.nvim',
-      dependencies = { 'KevinSilvester/telescope.nvim' },
+      dependencies = { 'nvim-telescope/telescope.nvim' },
       config = function()
          require('telescope').load_extension('file_browser')
       end,
    },
    {
       'nvim-telescope/telescope-fzf-native.nvim',
-      dependencies = { 'KevinSilvester/telescope.nvim' },
+      dependencies = { 'nvim-telescope/telescope.nvim' },
       build = 'make',
       config = function()
          require('telescope').load_extension('file_browser')
