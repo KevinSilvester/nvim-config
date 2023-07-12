@@ -153,7 +153,7 @@ if HOST.is_win then
       vim.opt[option] = value
    end
 elseif HOST.is_mac then
-   vim.opt.shell = "zsh"
+   vim.opt.shell = "fish"
 else
    vim.opt.shell = "bash"
 end
