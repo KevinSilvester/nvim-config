@@ -57,9 +57,9 @@ M.opts = {
       auto_open = true,
    },
    update_focused_file = {
-      enable = true, -- false
+      enable = true,       -- false
       debounce_delay = 15, -- missing
-      update_root = true, -- false
+      update_root = false,
       update_cwd = true,
    },
    diagnostics = {
@@ -105,7 +105,7 @@ M.opts = {
    },
    trash = {
       cmd = HOST.is_win and 'Remove-ItemSafely' or 'trash-put', -- 'gio trash'
-      require_confirm = true, -- missing
+      require_confirm = true,                                   -- missing
    },
    experimental = {
       git = { async = true },
@@ -113,35 +113,31 @@ M.opts = {
 }
 
 M.config = function(_, opts)
-   local buf_nmap = require('core.mapper').buf_nmap
-   local k_opts = require('core.mapper').opts
-   local silent = require('core.mapper').silent
-   local noremap = require('core.mapper').noremap
-   local nowait = require('core.mapper').nowait
+   local m = require('core.mapper')
    local api = require('nvim-tree.api')
 
    opts.on_attach = function(bufnr)
       api.config.mappings.default_on_attach(bufnr)
 
-      buf_nmap(bufnr, {
+      m.buf_nmap(bufnr, {
          -- { 'A', api.tree.expand_all, k_opts(silent, noremap, nowait, 'Expand All') },
-         { 'h', api.node.navigate.parent_close, k_opts(silent, noremap, nowait, 'Close') },
-         { 'H', api.tree.collapse_all, k_opts(silent, noremap, nowait, 'Collapse All') },
-         { '?', api.tree.toggle_help, k_opts(silent, noremap, nowait, 'Help') },
-         { 't', api.tree.toggle_custom_filter, k_opts(silent, noremap, nowait, 'Toggle Filter') },
-         { 'C', api.tree.change_root_to_node, k_opts(silent, noremap, nowait, 'CD') },
+         { 'h', api.node.navigate.parent_close, m.opts(m.silent, m.noremap, m.nowait, 'Close') },
+         { 'H', api.tree.collapse_all,          m.opts(m.silent, m.noremap, m.nowait, 'Collapse All') },
+         { '?', api.tree.toggle_help,           m.opts(m.silent, m.noremap, m.nowait, 'Help') },
+         { 't', api.tree.toggle_custom_filter,  m.opts(m.silent, m.noremap, m.nowait, 'Toggle Filter') },
+         { 'C', api.tree.change_root_to_node,   m.opts(m.silent, m.noremap, m.nowait, 'CD') },
          {
             'P',
             function()
                require('utils.fn').inspect(api.tree.get_node_under_cursor())
             end,
-            k_opts(silent, noremap, nowait, 'Print Node Path'),
+            m.opts(m.silent, m.noremap, m.nowait, 'Print Node Path'),
          },
-         { 'Z', api.node.run.system, k_opts(silent, noremap, nowait, 'Run System') },
+         { 'Z', api.node.run.system, m.opts(m.silent, m.noremap, m.nowait, 'Run System') },
          {
             'l',
             api.node.open.edit,
-            k_opts(silent, noremap, nowait, 'Edit Or Open'),
+            m.opts(m.silent, m.noremap, m.nowait, 'Edit Or Open'),
          },
          {
             'L',
@@ -154,7 +150,7 @@ M.config = function(_, opts)
                end
                api.tree.focus()
             end,
-            k_opts(silent, noremap, nowait, 'Vsplit Preview'),
+            m.opts(m.silent, m.noremap, m.nowait, 'Vsplit Preview'),
          },
       })
    end
@@ -163,8 +159,8 @@ M.config = function(_, opts)
 end
 
 M.keys = {
-   { '<leader>ne', cmd('NvimTreeToggle'), desc = 'Toggle NvimTree' },
-   { '<leader>nr', cmd('NvimTreeRefresh'), desc =  'Refresh NvimTree' },
+   { '<leader>ne', cmd('NvimTreeToggle'),  desc = 'Toggle NvimTree' },
+   { '<leader>nr', cmd('NvimTreeRefresh'), desc = 'Refresh NvimTree' },
 }
 
 return M
