@@ -1,4 +1,6 @@
+-- stylua: ignore start
 local fn = vim.fn
+
 
 ------------------------------------------------------------------------
 --                            host OS                                 --
@@ -9,6 +11,7 @@ HOST.is_linux = vim.loop.os_uname().sysname == 'Linux'
 HOST.is_mac = vim.loop.os_uname().sysname == 'Darwin'
 HOST.is_docker = fn.filereadable('/.dockerenv') == 1
 
+
 ------------------------------------------------------------------------
 --                         standard paths                             --
 ------------------------------------------------------------------------
@@ -16,6 +19,7 @@ _G.PATH = {}
 PATH.config = vim.fn.stdpath('config')
 PATH.data = vim.fn.stdpath('data')
 PATH.cache = vim.fn.stdpath('cache')
+
 
 ------------------------------------------------------------------------
 --                           lsp servers                              --
@@ -29,8 +33,6 @@ _G.DEFAULT_LSP_SERVERS = {
    'dotls',
    'emmet_ls',
    'eslint',
-   'gopls',
-   'graphql',
    'html',
    'jsonls',
    'pyright',
@@ -49,6 +51,7 @@ end
 if HOST.is_win then
    table.insert(_G.DEFAULT_LSP_SERVERS, 'powershell_es')
 end
+
 
 ------------------------------------------------------------------------
 --                        treesitter parsers                          --
@@ -85,3 +88,4 @@ _G.DEFAULT_TREESITTER_PARSERS = {
    'vim',
    'yaml',
 }
+-- stylua: ignore end
