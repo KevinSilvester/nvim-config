@@ -38,7 +38,6 @@ M.set_lsp_keymaps = function(bufnr)
    })
 end
 
-
 local capabilities_extension = {
    textDocument = {
       foldingRange = {

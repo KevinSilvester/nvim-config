@@ -26,7 +26,7 @@ M.opts = {
 }
 
 M.keys = {
-   { '<leader>lm', cmd('Mason'), desc = 'Open Mason'}
+   { '<leader>lm', cmd('Mason'), desc = 'Open Mason' },
 }
 
 return M

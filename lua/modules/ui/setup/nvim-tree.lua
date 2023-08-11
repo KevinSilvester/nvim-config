@@ -57,7 +57,7 @@ M.opts = {
       auto_open = true,
    },
    update_focused_file = {
-      enable = true,       -- false
+      enable = true, -- false
       debounce_delay = 15, -- missing
       update_root = false,
       update_cwd = true,
@@ -105,7 +105,7 @@ M.opts = {
    },
    trash = {
       cmd = HOST.is_win and 'Remove-ItemSafely' or 'trash-put', -- 'gio trash'
-      require_confirm = true,                                   -- missing
+      require_confirm = true, -- missing
    },
    experimental = {
       git = { async = true },
@@ -119,6 +119,7 @@ M.config = function(_, opts)
    opts.on_attach = function(bufnr)
       api.config.mappings.default_on_attach(bufnr)
 
+      -- stylua: ignore
       m.buf_nmap(bufnr, {
          -- { 'A', api.tree.expand_all, k_opts(silent, noremap, nowait, 'Expand All') },
          { 'h', api.node.navigate.parent_close, m.opts(m.silent, m.noremap, m.nowait, 'Close') },
@@ -158,6 +159,7 @@ M.config = function(_, opts)
    require('nvim-tree').setup(opts)
 end
 
+-- stylua: ignore
 M.keys = {
    { '<leader>ne', cmd('NvimTreeToggle'),  desc = 'Toggle NvimTree' },
    { '<leader>nr', cmd('NvimTreeRefresh'), desc = 'Refresh NvimTree' },
