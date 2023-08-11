@@ -1,6 +1,14 @@
--- local notify = require('notify')
+local M = {}
 
-return {
+M.init = function()
+   if not require('lazy.core.config').plugins['noice.nvim'] ~= nil then
+      require('utils.fn').on_very_lazy(function()
+         vim.notify = require('notify')
+      end)
+   end
+end
+
+M.opts = {
    ---@usage Animation style one of { "fade", "slide", "fade_in_slide_out", "static" }
    stages = 'slide',
 
@@ -37,6 +45,14 @@ return {
       TRACE = '✎',
    },
 }
+
+M.config = function(_, opts)
+   local notify = require('notify')
+   notify.setup(opts)
+   vim.notify = notify
+end
+
+return M
 
 -- no need to configure notifications in headless
 -- if #vim.api.nvim_list_uis() == 0 then

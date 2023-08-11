@@ -77,14 +77,9 @@ return {
    {
       'rcarriga/nvim-notify',
       -- event = 'VeryLazy',
-      opts = require('modules.ui.setup.notify'),
-      init = function()
-         if not require('lazy.core.config').plugins['noice.nvim'] ~= nil then
-            require('utils.fn').on_very_lazy(function()
-               vim.notify = require('notify')
-            end)
-         end
-      end,
+      opts = require('modules.ui.setup.notify').opts,
+      init = require('modules.ui.setup.notify').init,
+      config = require('modules.ui.setup.notify').config,
    },
 
    -- dashboard
