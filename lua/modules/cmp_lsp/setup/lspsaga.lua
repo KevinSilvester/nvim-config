@@ -161,7 +161,7 @@ M.keys = {
    { '<leader>ld',  cmd('Lspsaga show_line_diagnostics'), desc = 'Show Line Diagnostics' },
    { '<leader>lsd', cmd('Lspsaga peek_definition'),       desc = 'Show Definitions' },
    { '<leader>lso', cmd('Lspsaga outline'),               desc = 'Show Document Symbols' },
-   { '<leader>lsr', cmd('Lspsaga lsp_finder'),            desc = 'Show References' },
+   { '<leader>lsr', cmd('Lspsaga finder'),                desc = 'Show References' },
 }
 
 return M
