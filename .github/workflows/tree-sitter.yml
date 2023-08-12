@@ -40,7 +40,10 @@ jobs:
       - name: Setup neovim
         shell: bash
         run: |
-          mkdir -p /root/.config/nvim
-          cp -r ./* /root/.config/nvim
-          nvim --headless -c 'Lazy restore' -c 'q' --startuptime /root/file
-          cat /root/file
+          whoami
+          pwd
+          echo $HOME
+          # mkdir -p /root/.config/nvim
+          # cp -r ./* /root/.config/nvim
+          # nvim --headless -c 'Lazy restore' -c 'q' --startuptime /root/file
+          # cat /root/file
