@@ -15,15 +15,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Zig
+        uses: goto-bus-stop/setup-zig@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.19.x
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
           version: v0.9.1
 
-      - name: print pwd
+      - name: Install Neovim deps
+        shell: bash
+        run:  brew install ripgrep fzf tree-sitter
+
+      - name: Setup neovim
         shell: bash
         run: |
-          pwd
-          ls -la
-          which nvim && nvim -v
+          mkdir -p /root/.config/nvim
+          cp -r ./* /root/.config/nvim
+          nvim --headless -c 'Lazy restore' -c 'q' --startuptime /root/file
+          cat /root/file
