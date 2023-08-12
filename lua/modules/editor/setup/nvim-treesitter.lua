@@ -4,7 +4,7 @@ local M = {}
 
 M.opts = {
    -- ensure_installed = DEFAULT_TREESITTER_PARSERS,
-   -- auto_install = true,
+   auto_install = false,
    indent = {
       enable = true,
       disable = { 'python', 'css', 'yaml' },
