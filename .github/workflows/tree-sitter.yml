@@ -10,6 +10,11 @@ jobs:
   compile:
     name: Tree-Sitter
     runs-on: ubuntu-latest
+    env:
+      HOMEBREW_PREFIX: "/home/linuxbrew/.linuxbrew"
+      HOMEBREW_CELLAR: "/home/linuxbrew/.linuxbrew/Cellar"
+      HOMEBREW_REPOSITORY: "/home/linuxbrew/.linuxbrew/Homebrew"
+      HOMEBREW_NO_AUTO_UPDATE: 1
 
     steps:
       - name: Checkout
@@ -26,6 +31,9 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        run: |
+          echo "$HOMEBREW_PREFIX/bin" >> $GITHUB_PATH
+          echo "$HOMEBREW_PREFIX/sbin" >> $GITHUB_PATH
 
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
@@ -35,7 +43,7 @@ jobs:
 
       - name: Install Neovim deps
         shell: bash
-        run:  brew install ripgrep fzf tree-sitter
+        run: brew install ripgrep fzf tree-sitter
 
       - name: Setup neovim
         shell: bash
