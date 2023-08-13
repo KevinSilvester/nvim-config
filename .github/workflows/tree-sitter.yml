@@ -115,7 +115,7 @@ jobs:
       - name: Set Release Name
         id: set_release
         run: |
-          commit_hash=$(jq -r '."nvim-treesitter".commit' .\lazy-lock.personal.json)
+          commit_hash=$(jq -r '."nvim-treesitter".commit' ./lazy-lock.personal.json)
           echo "name=$commit_hash" >> $GITHUB_OUTPUT
 
       - name: Create Release
