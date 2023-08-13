@@ -15,7 +15,7 @@ const WANTED_TS_PARSER = [
    'c',
    'cmake',
    'comment',
-   'cpp',
+   // 'cpp',
    'css',
    'diff',
    'dot',
