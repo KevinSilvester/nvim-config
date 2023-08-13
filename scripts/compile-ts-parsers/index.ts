@@ -192,6 +192,12 @@ async function compileParser(parser: Parser, target: string, treesitterLock: Tre
          process.chdir(path.join(cwd, `tree-sitter-${parser.language}`.replace('_', '-')))
       }
 
+      // a simple workaround as both parsers are in the same repo
+      // https://github.com/MDeiml/tree-sitter-markdown
+      if (parser.language === 'typescript' || parser.language === 'tsx') {
+         process.chdir(path.join(cwd, parser.language))
+      }
+
       await $$`zig c++ -o out.so ${parser.files.join(' ')} -lc -Isrc -shared -Os -target ${target}`
       await move('out.so', output)
       await writeFile(revision, treesitterLock[parser.language].revision, { encoding: 'utf-8' })
