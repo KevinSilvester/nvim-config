@@ -9,7 +9,7 @@ on:
 jobs:
   compile:
     name: Compile Parsers
-    # if: startsWith(github.event.head_commit.message, 'chore(release)') || startsWith(github.event.head_commit.message, 'ci(treesitter)')
+    if: startsWith(github.event.head_commit.message, 'chore(release)') || startsWith(github.event.head_commit.message, 'ci(treesitter)')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -121,9 +121,10 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
+          draft: false
           files: |
             *.tar.gz
             *.zip
-          name: ${{ steps.set_release.outputs.name }}
+          name: nvim-treesitter-${{ steps.set_release.outputs.name }}
+          tag_name: nvim-treesitter-${{ steps.set_release.outputs.name }}
           generate_release_notes: true
