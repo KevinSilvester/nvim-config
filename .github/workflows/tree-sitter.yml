@@ -83,7 +83,7 @@ jobs:
       - name: Compile Parsers
         shell: bash
         run: |
-          python3 ./scripts/compile-ts-parsers.py
+          python3 ./scripts/compile-ts-parsers.py "${{ matrix.target }}"
 
       - name: Archive Parsers (Linux + Mac)
         if: ${{ matrix.target != 'x86_64-windows' }}
