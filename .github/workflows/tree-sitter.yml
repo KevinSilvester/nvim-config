@@ -76,56 +76,58 @@ jobs:
         run: |
           bash ./scripts/reset.sh && rm -rf ~/.config/nvim
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
-          nvim --headless -c 'Lazy restore' -c 'q'
+          whoami
+          cd ~/.config/nvim && pwd
+          # nvim --headless -c 'Lazy restore' -c 'q'
 
-      - name: Compile Parsers
-        shell: bash
-        env:
-          CONFIG_ROOT: ~/.config/nvim
-        run: |
-          cd ./scripts/compile-ts-parsers
-          pnpm install --frozen-lockfile
-          pnpm compile "${{ matrix.target }}"
+      # - name: Compile Parsers
+      #   shell: bash
+      #   env:
+      #     CONFIG_ROOT: ~/.config/nvim
+      #   run: |
+      #     cd ./scripts/compile-ts-parsers
+      #     pnpm install --frozen-lockfile
+      #     pnpm compile "${{ matrix.target }}"
 
-      - name: Archive Parsers (Linux + Mac)
-        if: ${{ matrix.target != 'x86_64-windows' }}
-        shell: bash
-        run: |
-          name="treesitter-${{ matrix.target }}"
-          mv "/tmp/${name}" ./treesitter
-          tar -cvf "${name}.tar" ./treesitter
-          cat "${name}.tar" | gzip --best > "${name}.tar.gz"
-          rm -r ./treesitter "${name}.tar"
+      # - name: Archive Parsers (Linux + Mac)
+      #   if: ${{ matrix.target != 'x86_64-windows' }}
+      #   shell: bash
+      #   run: |
+      #     name="treesitter-${{ matrix.target }}"
+      #     mv "/tmp/${name}" ./treesitter
+      #     tar -cvf "${name}.tar" ./treesitter
+      #     cat "${name}.tar" | gzip --best > "${name}.tar.gz"
+      #     rm -r ./treesitter "${name}.tar"
 
-      - name: Archive Parsers (Windows)
-        if: ${{ matrix.target == 'x86_64-windows' }}
-        shell: bash
-        run: |
-          name="treesitter-${{ matrix.target }}"
-          mv "/tmp/${name}" ./treesitter
-          7z a "${name}.zip" ./treesitter
-          rm -r ./treesitter
+      # - name: Archive Parsers (Windows)
+      #   if: ${{ matrix.target == 'x86_64-windows' }}
+      #   shell: bash
+      #   run: |
+      #     name="treesitter-${{ matrix.target }}"
+      #     mv "/tmp/${name}" ./treesitter
+      #     7z a "${name}.zip" ./treesitter
+      #     rm -r ./treesitter
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: treesitter-${{ matrix.target }}
-          path: |
-            *.tar.gz
-            *.zip
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: treesitter-${{ matrix.target }}
+      #     path: |
+      #       *.tar.gz
+      #       *.zip
 
-      - name: Set Release Name
-        id: set_release
-        run: |
-          commit_hash=$(jq -r '."nvim-treesitter".commit' .\lazy-lock.personal.json)
-          echo "name=$commit_hash" >> $GITHUB_OUTPUT
+      # - name: Set Release Name
+      #   id: set_release
+      #   run: |
+      #     commit_hash=$(jq -r '."nvim-treesitter".commit' .\lazy-lock.personal.json)
+      #     echo "name=$commit_hash" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          files: |
-            *.tar.gz
-            *.zip
-          name: ${{ steps.set_release.outputs.name }}
-          generate_release_notes: true
+      # - name: Create Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     files: |
+      #       *.tar.gz
+      #       *.zip
+      #     name: ${{ steps.set_release.outputs.name }}
+      #     generate_release_notes: true
