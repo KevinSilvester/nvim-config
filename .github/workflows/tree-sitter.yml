@@ -8,13 +8,19 @@ on:
 
 jobs:
   compile:
-    name: Tree-Sitter
+    name: Compile Parsers
+    # if: startsWith(github.event.head_commit.message, 'chore(release)') || startsWith(github.event.head_commit.message, 'ci(treesitter)')
     runs-on: ubuntu-latest
-    env:
-      HOMEBREW_PREFIX: "/home/linuxbrew/.linuxbrew"
-      HOMEBREW_CELLAR: "/home/linuxbrew/.linuxbrew/Cellar"
-      HOMEBREW_REPOSITORY: "/home/linuxbrew/.linuxbrew/Homebrew"
-      HOMEBREW_NO_AUTO_UPDATE: 1
+    strategy:
+      matrix:
+        target:
+          [
+            'x86_64-windows',
+            'x86_64-linux',
+            'aarch64-linux',
+            'x86_64-macos',
+            'aarch64-macos',
+          ]
 
     steps:
       - name: Checkout
@@ -28,9 +34,17 @@ jobs:
         with:
           node-version: 16.19.x
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: pip
+          cache-dependency-path: "scripts/requirements.txt"
 
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
@@ -38,20 +52,52 @@ jobs:
           neovim: true
           version: v0.9.1
 
-      - name: Install Neovim deps
+      - name: Set pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
-          echo "$HOMEBREW_PREFIX/bin" >> $GITHUB_PATH
-          echo "$HOMEBREW_PREFIX/sbin" >> $GITHUB_PATH
-          brew install ripgrep fzf tree-sitter
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: Setup neovim
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install script deps
         shell: bash
         run: |
-          which rg
-          which fzf
-          which tree-sitter
+          pip3 install -r scripts/requirements.txt
+          pnpm add -g tree-sitter-cli
+
+      - name: Setup Neovim
+        shell: bash
+        run: |
           bash ./scripts/reset.sh && rm -rf ~/.config/nvim
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
-          nvim --headless -c 'Lazy restore' -c 'q' --startuptime ~/file
-          cat ~/file
+          nvim --headless -c 'Lazy restore' -c 'q'
+
+      - name: Compile Parsers
+        shell: bash
+        run: python3 ./scripts/compile-ts-parsers.py
+
+      - name: Archive Parsers (Linux + Mac)
+        if: ${{ matrix.target != 'x86_64-windows' }}
+        shell: bash
+        run: |
+          name="treesitter-${{ matrix.target }}"
+          mv "/tmp/${name}" ./treesitter
+          tar -cvf "${name}.tar" ./treesitter
+          cat "${name}.tar" | gzip --best > "${name}.tar.gz"
+          rm -r ./treesitter "${name}.tar"
+
+      - name: Archive Parsers (Windows)
+        if: ${{ matrix.target == 'x86_64-windows' }}
+        shell: bash
+        run: |
+          name="treesitter-${{ matrix.target }}"
+          mv "/tmp/${name}" ./treesitter
+          7z a "${name}.zip" ./treesitter
+          rm -r ./treesitter

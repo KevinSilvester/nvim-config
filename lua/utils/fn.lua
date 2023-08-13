@@ -261,7 +261,7 @@ M.tab_opts = function(val, bufnr)
    end
 end
 
-M.get_treesitter_parser = function()
+M.get_treesitter_parsers = function()
    local res = {}
    local tab = '  '
 
