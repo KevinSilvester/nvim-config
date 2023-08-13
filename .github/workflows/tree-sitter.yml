@@ -115,8 +115,10 @@ jobs:
       - name: Set Release Name
         id: set_release
         run: |
-          commit_hash=$(jq -r '."nvim-treesitter".commit' ./lazy-lock.personal.json)
-          echo "name=$commit_hash" >> $GITHUB_OUTPUT
+          project_sha=$(git rev-parse --short HEAD)
+          nvim_treesitter_sha=$(jq -r '."nvim-treesitter".commit' ./lazy-lock.personal.json)
+          echo "project_sha=$project_sha" >> $GITHUB_OUTPUT
+          echo "nvim_treesitter_sha=$nvim_treesitter_sha" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -125,6 +127,6 @@ jobs:
           files: |
             *.tar.gz
             *.zip
-          name: nvim-treesitter-${{ steps.set_release.outputs.name }}
-          tag_name: nvim-treesitter-${{ steps.set_release.outputs.name }}
+          name: nvim-treesitter-${{ steps.set_release.outputs.nvim_treesitter_sha }}-${{ steps.set_release.outputs.project_sha }}
+          tag_name: nvim-treesitter-${{ steps.set_release.outputs.nvim_treesitter_sha }}-${{ steps.set_release.outputs.project_sha }}
           generate_release_notes: true

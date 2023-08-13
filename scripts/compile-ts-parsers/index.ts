@@ -15,7 +15,7 @@ const WANTED_TS_PARSER = [
    'c',
    'cmake',
    'comment',
-   // 'cpp',
+   // 'cpp', -- causing github-actions to hang then error
    'css',
    'diff',
    'dot',
@@ -48,6 +48,7 @@ const WANTED_TS_PARSER = [
    'markdown',
    'markdown_inline',
    'nix',
+   'pem',
    'python',
    'regex',
    'rst',
@@ -58,6 +59,8 @@ const WANTED_TS_PARSER = [
    'swift',
    'todotxt',
    'toml',
+   'tsx',
+   'typescript',
    'vim',
    'yaml',
    'zig'
