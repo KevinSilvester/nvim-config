@@ -69,8 +69,6 @@ jobs:
       - name: Install script deps
         shell: bash
         run: |
-          sudo apt install jq
-          pip3 install -r scripts/requirements.txt
           pnpm add -g tree-sitter-cli
 
       - name: Setup Neovim
@@ -83,7 +81,9 @@ jobs:
       - name: Compile Parsers
         shell: bash
         run: |
-          python3 ./scripts/compile-ts-parsers.py "${{ matrix.target }}"
+          cd ./scripts/compile-ts-parsers
+          pnpm install --frozen-lockfile
+          pnpm compile "${{ matrix.target }}"
 
       - name: Archive Parsers (Linux + Mac)
         if: ${{ matrix.target != 'x86_64-windows' }}

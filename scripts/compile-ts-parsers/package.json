@@ -1,0 +1,21 @@
+{
+  "main": "compile-ts-parsers.js",
+  "scripts": {
+    "compile": "tsx index.ts"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "chalk": "^5.3.0",
+    "execa": "^7.2.0",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.3",
+    "simple-git": "^3.19.1",
+    "tsx": "^3.12.7"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.0",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^20.4.10",
+    "typescript": "^5.1.6"
+  }
+}

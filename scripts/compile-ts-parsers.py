@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import platform
 import sys
 import stat
 import shutil
@@ -10,6 +11,7 @@ import tempfile
 import wget
 import json
 import subprocess
+import multiprocessing
 from termcolor import cprint
 
 
@@ -75,8 +77,11 @@ WANTED_TS_PARSERS = [
     "zig",
 ]
 
-TEMP_DIR = tempfile.gettempdir()
+TEMP_DIR = '/tmp'
+if platform.system() == 'Windows':
+    TEMP_DIR = tempfile.gettempdir()
 
+child_pid = None
 
 def onerror(func, path, exc_info):
     if not os.access(path, os.W_OK):
@@ -112,14 +117,22 @@ def cleanup(full=False):
 
 
 def run_command(command):
-    proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    out, err = proc.communicate()
+    output = None
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    global child_pid
+    child_pid = proc.pid
+
+    # Now we can wait for the child to complete
+    (output, error) = proc.communicate()
+
+    if proc.stdout != None:
+        output = proc.stdout.read()
 
     if proc.returncode != 0:
         raise subprocess.CalledProcessError(
-            returncode=proc.returncode, cmd=proc.args, stderr=err
+            returncode=proc.returncode, cmd=proc.args
         )
-    return out.decode("utf-8")
+    return output
 
 
 def read_json(path):
@@ -132,7 +145,7 @@ def download_lockfile(commit_hash):
     wget.download(
         "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/"
         + commit_hash
-        + "/lockfile.json",
+        + /lockfile.json",
         "lockfile.json",
     )
 
@@ -184,6 +197,8 @@ def compile_parser(parser, target, treesitter_lock, index):
             ],
         )
 
+
+
         run_command(
             ["git", "checkout", treesitter_lock[parser["language"]]["revision"]]
         )
@@ -191,6 +206,12 @@ def compile_parser(parser, target, treesitter_lock, index):
         try:
             run_command(["pnpm", "install"])
             run_command(["tree-sitter", "generate"])
+        except KeyboardInterrupt:
+            print('Interrupted')
+            try:
+                sys.exit(130)
+            except SystemExit:
+                os._exit(130)
         except:
             pass
 
@@ -225,15 +246,6 @@ def compile_parser(parser, target, treesitter_lock, index):
         cprint("  FAILED: " + parser["language"], "light_red")
         return parser
 
-
-def handler(signum, frame):
-    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
-    if res == "y":
-        cleanup()
-        os.kill(os.getpid(), signal.SIGINT)
-        exit(1)
-
-
 def validate_argv():
     error = False
     if len(sys.argv) != 2:
@@ -254,7 +266,8 @@ def validate_argv():
 def main():
     target = validate_argv()
     cleanup(True)
-    subprocess.run(
+    
+    result = subprocess.run(
         [
             "nvim",
             "--headless",
@@ -263,9 +276,10 @@ def main():
             "-c",
             "q",
         ],
-        shell=True,
-        capture_output=True,
+        capture_output=True, text=True
     )
+    result.check_returncode()
+    
 
     # load parsers and lazy-lock
     parsers = sorted(read_json("parsers.json"), key=lambda x: x["language"])
@@ -275,19 +289,29 @@ def main():
 
     create_target_dirs(target)
 
+
     retry_list = []
 
     for parser in parsers:
         if parser["language"] in WANTED_TS_PARSERS:
-            p = compile_parser(
-                parser,
-                target,
-                treesitter_lock,
-                WANTED_TS_PARSERS.index(parser["language"]) + 1,
-            )
+            
+            try:
+                p = compile_parser(
+                    parser,
+                    target,
+                    treesitter_lock,
+                    WANTED_TS_PARSERS.index(parser["language"]) + 1,
+                )
 
-            if p != None:
-                retry_list.append(p)
+                if p != None:
+                    retry_list.append(p)
+            except KeyboardInterrupt:
+                os.kill(os.getpid(), signal.SIGTERM)
+                print('Interrupted')
+                try:
+                    sys.exit(130)
+                except SystemExit:
+                    os._exit(130)
 
     if len(retry_list) == 0:
         return
@@ -311,5 +335,27 @@ def main():
     cleanup()
 
 
+def kill_child():
+    if child_pid is None:
+        pass
+    else:
+        os.kill(child_pid, signal.SIGTERM)
+
+
+def handler(signum, frame):
+    cleanup()
+    kill_child()
+    exit(1)
+
 signal.signal(signal.SIGINT, handler)
-main()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('Interrupted')
+        try:
+            sys.exit(130)
+        except SystemExit:
+            os._exit(130)
+# main()

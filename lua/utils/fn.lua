@@ -1,3 +1,4 @@
+local ufs = require('utils.fs')
 local fn = vim.fn
 local uv = vim.loop
 
@@ -98,11 +99,11 @@ M.get_root = function()
       for _, client in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
          local workspace = client.config.workspace_folders
          local paths = workspace
-             and vim.tbl_map(function(ws)
-                return vim.uri_to_fname(ws.uri)
-             end, workspace)
-             or client.config.root_dir and { client.config.root_dir }
-             or {}
+               and vim.tbl_map(function(ws)
+                  return vim.uri_to_fname(ws.uri)
+               end, workspace)
+            or client.config.root_dir and { client.config.root_dir }
+            or {}
          for _, p in ipairs(paths) do
             local r = vim.loop.fs_realpath(p)
             if path:find(r, 1, true) then
@@ -290,7 +291,11 @@ M.get_treesitter_parsers = function()
       table.insert(res, value)
    end
 
-   require('utils.fs').write_file('parsers.json', '[\n' .. table.concat(res, ',\n') .. '\n]', 'w+')
+   ufs.write_file(
+      ufs.path_join(PATH.config, 'parsers.json'),
+      '[\n' .. table.concat(res, ',\n') .. '\n]',
+      'w+'
+   )
 end
 
 return M
