@@ -64,7 +64,7 @@ const WANTED_TS_PARSER = [
 ]
 
 const TEMP_DIR = os.tmpdir()
-const CONFIG_ROOT = path.join(__dirname, '..', '..')
+const CONFIG_ROOT = process.env.CONFIG_ROOT || path.join(__dirname, '..', '..')
 
 type Parser = {
    language: string
