@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import stat
 import shutil
 import signal
@@ -136,12 +137,11 @@ def download_lockfile(commit_hash):
     )
 
 
-def create_target_dirs():
-    for target in ZIG_TARGETS:
-        dir = os.path.join(TEMP_DIR, "treesitter-" + target)
-        os.mkdir(dir)
-        os.mkdir(os.path.join(dir, "parser"))
-        os.mkdir(os.path.join(dir, "parser-info"))
+def create_target_dirs(target):
+    dir = os.path.join(TEMP_DIR, "treesitter-" + target)
+    os.mkdir(dir)
+    os.mkdir(os.path.join(dir, "parser"))
+    os.mkdir(os.path.join(dir, "parser-info"))
 
 
 def ouput_files(target, parser):
@@ -160,7 +160,7 @@ def ouput_files(target, parser):
     return output, revision
 
 
-def compile_parser(parser, treesitter_lock, index):
+def compile_parser(parser, target, treesitter_lock, index):
     try:
         cwd = os.path.join(TEMP_DIR, "tree-sitter-" + parser["language"])
         os.mkdir(cwd)
@@ -197,31 +197,28 @@ def compile_parser(parser, treesitter_lock, index):
         # a simple workaround as both parsers are in the same repo
         # https://github.com/MDeiml/tree-sitter-markdown
         if parser["language"] == "markdown" or parser["language"] == "markdown_inline":
-            os.chdir(os.path.join(cwd, "tree-sitter-" + parser["language"]))
+            os.chdir(os.path.join(cwd, "tree-sitter-" + parser["language"].replace("_", "-")))
 
-        print(cwd)
-
-        for target in ZIG_TARGETS:
-            output, revision = ouput_files(target, parser)
-            run_command(
-                [
-                    "zig",
-                    "c++",
-                    "-o",
-                    "out.so",
-                    *parser["files"],
-                    "-lc",
-                    "-Isrc",
-                    "-shared",
-                    "-Os",
-                    "-target",
-                    target,
-                ]
-            )
-            shutil.move("out.so", output)
-            f = open(revision, "w")
-            f.write(treesitter_lock[parser["language"]]["revision"])
-            f.close()
+        output, revision = ouput_files(target, parser)
+        run_command(
+            [
+                "zig",
+                "c++",
+                "-o",
+                "out.so",
+                *parser["files"],
+                "-lc",
+                "-Isrc",
+                "-shared",
+                "-Os",
+                "-target",
+                target,
+            ]
+        )
+        shutil.move("out.so", output)
+        f = open(revision, "w")
+        f.write(treesitter_lock[parser["language"]]["revision"])
+        f.close()
 
         cprint("  SUCCESS: " + parser["language"], "light_green")
     except:
@@ -237,7 +234,25 @@ def handler(signum, frame):
         exit(1)
 
 
+def validate_argv():
+    error = False
+    if len(sys.argv) != 2:
+        cprint("ERROR: no compile target provided", "light_red")
+        error = True
+
+    if error == False and sys.argv[1] not in ZIG_TARGETS:
+        cprint("ERROR: invalid compile target provided", "light_red")
+        error = True
+
+    if error:
+        cprint("HINT: allowed targets...", "yellow")
+        cprint(str(ZIG_TARGETS), "yellow")
+        exit(1)
+    return sys.argv[1]
+
+
 def main():
+    target = validate_argv()
     cleanup(True)
     subprocess.run(
         [
@@ -258,14 +273,17 @@ def main():
     download_lockfile(lazy_lock["nvim-treesitter"]["commit"])
     treesitter_lock = read_json("lockfile.json")
 
-    create_target_dirs()
+    create_target_dirs(target)
 
     retry_list = []
 
     for parser in parsers:
         if parser["language"] in WANTED_TS_PARSERS:
             p = compile_parser(
-                parser, treesitter_lock, WANTED_TS_PARSERS.index(parser["language"]) + 1
+                parser,
+                target,
+                treesitter_lock,
+                WANTED_TS_PARSERS.index(parser["language"]) + 1,
             )
 
             if p != None:
@@ -277,13 +295,15 @@ def main():
     cprint("\nRetrying failed builds...", "light_blue")
     for parser in retry_list:
         fs_rm(os.path.join(TEMP_DIR, "tree-sitter-" + parser["language"]))
-        for target in ZIG_TARGETS:
-            output, revision = ouput_files(target, parser)
-            fs_rm(output)
-            fs_rm(revision)
+        output, revision = ouput_files(target, parser)
+        fs_rm(output)
+        fs_rm(revision)
 
         p = compile_parser(
-            parser, treesitter_lock, WANTED_TS_PARSERS.index(parser["language"]) + 1
+            parser,
+            target,
+            treesitter_lock,
+            WANTED_TS_PARSERS.index(parser["language"]) + 1,
         )
         if p != None:
             cprint("  RETRY FAILED", "light_red")

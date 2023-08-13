@@ -46,5 +46,6 @@ luac.out
 # Plugin lock file
 my-config-lock.json
 parsers.json
+lockfile.json
 
 # End of https://www.toptal.com/developers/gitignore/api/lua

@@ -15,11 +15,11 @@ jobs:
       matrix:
         target:
           [
-            'x86_64-windows',
-            'x86_64-linux',
-            'aarch64-linux',
-            'x86_64-macos',
-            'aarch64-macos',
+            "x86_64-windows",
+            "x86_64-linux",
+            "aarch64-linux",
+            "x86_64-macos",
+            "aarch64-macos",
           ]
 
     steps:
@@ -69,6 +69,7 @@ jobs:
       - name: Install script deps
         shell: bash
         run: |
+          sudo apt install jq
           pip3 install -r scripts/requirements.txt
           pnpm add -g tree-sitter-cli
 
@@ -81,7 +82,8 @@ jobs:
 
       - name: Compile Parsers
         shell: bash
-        run: python3 ./scripts/compile-ts-parsers.py
+        run: |
+          python3 ./scripts/compile-ts-parsers.py
 
       - name: Archive Parsers (Linux + Mac)
         if: ${{ matrix.target != 'x86_64-windows' }}
@@ -101,3 +103,27 @@ jobs:
           mv "/tmp/${name}" ./treesitter
           7z a "${name}.zip" ./treesitter
           rm -r ./treesitter
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: treesitter-${{ matrix.target }}
+          path: |
+            *.tar.gz
+            *.zip
+
+      - name: Set Release Name
+        id: set_release
+        run: |
+          commit_hash=$(jq -r '."nvim-treesitter".commit' .\lazy-lock.personal.json)
+          echo "name=$commit_hash" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            *.tar.gz
+            *.zip
+          name: ${{ steps.set_release.outputs.name }}
+          generate_release_notes: true
