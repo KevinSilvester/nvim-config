@@ -12,6 +12,7 @@ jobs:
     # if: startsWith(github.event.head_commit.message, 'chore(release)') || startsWith(github.event.head_commit.message, 'ci(treesitter)')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         target:
           [
@@ -78,6 +79,7 @@ jobs:
         shell: bash
         env:
           CONFIG_ROOT: /home/runner/.config/nvim
+        timeout-minutes: 30
         run: |
           cd ./scripts/compile-ts-parsers
           pnpm install --frozen-lockfile
