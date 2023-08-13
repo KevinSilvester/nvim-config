@@ -80,6 +80,8 @@ jobs:
 
       - name: Compile Parsers
         shell: bash
+        env:
+          CONFIG_ROOT: ~/.config/nvim
         run: |
           cd ./scripts/compile-ts-parsers
           pnpm install --frozen-lockfile
