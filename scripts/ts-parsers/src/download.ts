@@ -97,8 +97,9 @@ async function downloadArchive(archiveName: string) {
    )
    console.log(g`Download Complete!`)
    await writeFile(out, archiveData)
-
    await move(out, dest)
+
+   return releaseData.tag_name
 }
 
 async function cleanup(archiveName: string) {
@@ -106,7 +107,7 @@ async function cleanup(archiveName: string) {
    await remove(path.join(DATA_DIR, archiveName))
 }
 
-async function extractArchive(archiveName: string) {
+async function extractArchive(archiveName: string, releaseTag: string) {
    process.chdir(DATA_DIR)
 
    const parsersActive = path.join(DATA_DIR, 'treesitter')
@@ -123,13 +124,14 @@ async function extractArchive(archiveName: string) {
    }
 
    await writeFile(path.join(parsersActive, 'backup-id'), RANDOM_STRING, { encoding: 'utf-8' })
+   await writeFile(path.join(parsersActive, 'release-tag'), releaseTag, { encoding: 'utf-8' })
 }
 
 async function main() {
    const archiveName = getArchiveName()
    await cleanup(archiveName)
-   await downloadArchive(archiveName)
-   await extractArchive(archiveName)
+   const releaseTag = await downloadArchive(archiveName)
+   await extractArchive(archiveName, releaseTag)
    await cleanup(archiveName)
    process.exit()
 }
