@@ -82,7 +82,6 @@ jobs:
         timeout-minutes: 30
         run: |
           cd ./scripts/ts-parsers
-          pnpm install --frozen-lockfile
           pnpm compile "${{ matrix.target }}"
 
       - name: Archive Parsers (Linux + Mac)
