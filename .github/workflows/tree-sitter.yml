@@ -81,7 +81,7 @@ jobs:
           CONFIG_ROOT: /home/runner/.config/nvim
         timeout-minutes: 30
         run: |
-          cd ./scripts/compile-ts-parsers
+          cd ./scripts/ts-parsers
           pnpm install --frozen-lockfile
           pnpm compile "${{ matrix.target }}"
 

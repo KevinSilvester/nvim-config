@@ -28,7 +28,10 @@
 
 ### TODO:
 - [x] Implement global `buf_cache`
-- [ ] Create wrapper for nvim-treesitter commands
+- [ ] Create wrapper for `nvim-treesitter` commands
+- [ ] Create wrapper for `lazy.nvim` commands
+- [ ] Bootstrap
+   - [ ] Add function to create git-hooks for bundling treesitter parser scripts
 - [ ] LSP
    - [ ] Show line diagnostics key-mapping
    - [ ] Group line diagnostics virtual text

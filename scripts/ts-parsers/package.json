@@ -1,0 +1,28 @@
+{
+   "type": "module",
+   "scripts": {
+      "build": "node esbuild.mjs",
+      "compile": "node dist/compile.mjs",
+      "download": "node dist/download.mjs",
+      "compile:dev": "tsx src/compile.ts",
+      "download:dev": "tsx src/download.ts",
+      "format": "prettier -w \"./src/*\" \"./*.json\""
+   },
+   "dependencies": {
+      "axios": "^1.4.0",
+      "chalk": "^5.3.0",
+      "execa": "^7.2.0",
+      "fs-extra": "^11.1.1",
+      "glob": "^10.3.3"
+   },
+   "devDependencies": {
+      "@octokit/types": "^11.1.0",
+      "@tsconfig/node16": "^16.1.0",
+      "@types/fs-extra": "^11.0.1",
+      "@types/node": "^20.5.0",
+      "esbuild": "^0.19.1",
+      "prettier": "^3.0.1",
+      "tsx": "^3.12.7",
+      "typescript": "^5.1.6"
+   }
+}

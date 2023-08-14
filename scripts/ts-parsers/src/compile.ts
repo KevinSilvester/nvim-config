@@ -1,6 +1,7 @@
 import path from 'node:path'
 import os from 'node:os'
 import { writeFile, mkdir, readFile } from 'node:fs/promises'
+import readLine from 'node:readline'
 import { $ } from 'execa'
 import chalk from 'chalk'
 import axios from 'axios'
@@ -66,8 +67,11 @@ const WANTED_TS_PARSER = [
    'zig'
 ]
 
+const is_win = os.platform() === 'win32'
+
+const HOME_DIR = os.userInfo().homedir
 const TEMP_DIR = os.tmpdir()
-const CONFIG_ROOT = path.resolve(process.env.CONFIG_ROOT || path.join(__dirname, '..', '..')) 
+const CONFIG_ROOT = path.join(HOME_DIR, ...(is_win ? ['AppData', 'Local', 'nvim'] : ['.config', 'nvim']))
 
 type Parser = {
    language: string
@@ -89,20 +93,20 @@ const r = chalk.redBright
 const g = chalk.greenBright
 const b = chalk.blueBright
 const y = chalk.yellow
-const $$ = $({ stdio: 'inherit', shell: os.platform() === 'win32' ? false : '/bin/bash' })
+const $$ = $({ stdio: 'inherit', shell: os.platform() === 'win32' ? 'pwsh' : '/bin/bash' })
 
 async function cleanup({ full }: { full: boolean }) {
    await remove(path.join(CONFIG_ROOT, 'parsers.json'))
    await remove(path.join(CONFIG_ROOT, 'lockfile.json'))
 
-   const parserDirs = await glob(path.join(TEMP_DIR, 'tree-sitter-') + '*')
+   const parserDirs = await glob(`${path.join(TEMP_DIR, 'tree-sitter-')}*`.replaceAll('\\', '/'))
    for await (const dir of parserDirs) {
       await remove(dir)
    }
 
    if (!full) return
 
-   const targetDirs = await glob(path.join(TEMP_DIR, 'treesitter-') + '*')
+   const targetDirs = await glob(`${path.join(TEMP_DIR, 'treesitter-')}*`.replaceAll('\\', '/'))
    for await (const dir of targetDirs) {
       await remove(dir)
    }
@@ -128,7 +132,7 @@ function outFiles(target: string, parser: Parser): [string, string] {
    return [output, revision]
 }
 
-async function readJson<T>(path): Promise<T> {
+async function readJson<T>(path: string): Promise<T> {
    const jsonString = await readFile(path, { encoding: 'utf-8' })
    return JSON.parse(jsonString) as T
 }
@@ -249,6 +253,22 @@ async function main() {
 
    cleanup({ full: false })
 }
+
+if (os.platform() === 'win32') {
+   const rlInterface = readLine.createInterface({
+      input: process.stdin,
+      output: process.stdout
+   })
+
+   rlInterface.on('SIGINT', function () {
+      process.emit('SIGINT')
+   })
+}
+process.on('SIGINT', function () {
+   console.log(b('\nCleaning up...'))
+   cleanup({ full: false })
+   process.exit(1)
+})
 
 console.log(TEMP_DIR)
 main()
