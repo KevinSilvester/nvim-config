@@ -16,7 +16,7 @@ const WANTED_TS_PARSER = [
    'c',
    'cmake',
    'comment',
-   'cpp', // causing github-actions to hang then error
+   'cpp',
    'css',
    'diff',
    'dot',
@@ -195,14 +195,11 @@ async function compileParser(parser: Parser, target: string, treesitterLock: Tre
       // https://github.com/MDeiml/tree-sitter-markdown
       // https://github.com/tree-sitter/tree-sitter-typescript
       // https://github.com/ObserverOfTime/tree-sitter-xml
-      if (
-         parser.language === 'markdown' ||
-         parser.language === 'markdown_inline' ||
-         parser.language === 'typescript' ||
-         parser.language === 'tsx' ||
-         parser.language === 'xml'
-      ) {
+      if (parser.language === 'markdown' || parser.language === 'markdown_inline' || parser.language === 'xml') {
          process.chdir(path.join(cwd, `tree-sitter-${parser.language}`.replace('_', '-')))
+      }
+      if (parser.language === 'typescript' || parser.language === 'tsx') {
+         process.chdir(path.join(cwd, parser.language))
       }
 
       await $$`zig c++ -o out.so ${parser.files.join(' ')} -lc -Isrc -shared -Os -target ${target}`
@@ -263,11 +260,11 @@ if (os.platform() === 'win32') {
       output: process.stdout
    })
 
-   rlInterface.on('SIGINT', function () {
+   rlInterface.on('SIGINT', function() {
       process.emit('SIGINT')
    })
 }
-process.on('SIGINT', function () {
+process.on('SIGINT', function() {
    console.log(b('\nCleaning up...'))
    cleanup({ full: false })
    process.exit(1)
