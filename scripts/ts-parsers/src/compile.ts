@@ -16,7 +16,7 @@ const WANTED_TS_PARSER = [
    'c',
    'cmake',
    'comment',
-   // 'cpp', -- causing github-actions to hang then error
+   'cpp', // causing github-actions to hang then error
    'css',
    'diff',
    'dot',
@@ -191,16 +191,18 @@ async function compileParser(parser: Parser, target: string, treesitterLock: Tre
          console.log(y('  WARNING: generate from grammar failed'))
       }
 
-      // a simple workaround as both parsers are in the same repo
+      // a simple workaround as multiple parsers are in the same repo
       // https://github.com/MDeiml/tree-sitter-markdown
-      if (parser.language === 'markdown' || parser.language === 'markdown_inline') {
+      // https://github.com/tree-sitter/tree-sitter-typescript
+      // https://github.com/ObserverOfTime/tree-sitter-xml
+      if (
+         parser.language === 'markdown' ||
+         parser.language === 'markdown_inline' ||
+         parser.language === 'typescript' ||
+         parser.language === 'tsx' ||
+         parser.language === 'xml'
+      ) {
          process.chdir(path.join(cwd, `tree-sitter-${parser.language}`.replace('_', '-')))
-      }
-
-      // a simple workaround as both parsers are in the same repo
-      // https://github.com/MDeiml/tree-sitter-markdown
-      if (parser.language === 'typescript' || parser.language === 'tsx') {
-         process.chdir(path.join(cwd, parser.language))
       }
 
       await $$`zig c++ -o out.so ${parser.files.join(' ')} -lc -Isrc -shared -Os -target ${target}`
