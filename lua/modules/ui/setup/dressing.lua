@@ -1,11 +1,11 @@
 local M = {}
+
 M.opts = {
    input = {
       enabled = true, -- disable default vim.ui.input
       default_prompt = 'Input:',
       prompt_align = 'left', ---@type 'left'|'right'|'center'
       insert_only = true, -- close input if mode changes
-      anchor = 'SW', --see nvim_open_win
       border = 'rounded',
       relative = 'cursor', ---@type 'cursor'|'editor'|'win'
       prefer_width = 20, -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
@@ -51,7 +51,6 @@ M.opts = {
       },
       -- Options for built-in selector
       builtin = {
-         anchor = 'NW',
          border = 'rounded',
          relative = 'editor',
          win_options = {

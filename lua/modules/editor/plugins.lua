@@ -260,4 +260,8 @@ return {
       build = HOST.is_win and 'pwsh install.ps1 npm' or 'bash install.sh npm',
       config = true,
    },
+   {
+      'gbprod/stay-in-place.nvim',
+      config = true,
+   },
 }
