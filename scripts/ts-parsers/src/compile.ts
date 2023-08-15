@@ -63,6 +63,7 @@ const WANTED_TS_PARSER = [
    'tsx',
    'typescript',
    'vim',
+   'xml',
    'yaml',
    'zig'
 ]

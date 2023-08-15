@@ -71,7 +71,21 @@ jobs:
         run: |
           bash ./scripts/reset.sh && rm -rf ~/.config/nvim
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
-          whoami
+
+      - name: Setup Neovim cache
+        id: cache-nvim
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/share/nvim
+            ~/.local/state/nvim
+            ~/.cache/nvim
+          key: ${{ runner.os }}-nvim-${{ hashFiles('lazy-lock.personal.json','lazy-lock.work.json') }}
+
+      - name: Install Neovim plugins
+        if: steps.nvim-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
           cd ~/.config/nvim && pwd
           nvim --headless -c 'Lazy restore' -c 'q'
 
