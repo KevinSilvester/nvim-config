@@ -1,15 +1,15 @@
 local M = {}
 
 M.opts = {
-   experimental = { pathStrict = true },
    library = {
-      enabled = true,
+      enabled = false,
       runtime = true,
       types = true,
       plugins = true,
    },
-   setup_jsonls = true,
+   setup_jsonls = false,
    lspconfig = true,
+   pathStrict = true
 }
 
 return M

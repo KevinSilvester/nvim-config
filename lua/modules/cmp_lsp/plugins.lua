@@ -10,7 +10,7 @@ return {
          'williamboman/mason-lspconfig.nvim',
          'hrsh7th/cmp-nvim-lsp',
          'lvimuser/lsp-inlayhints.nvim',
-         'b0o/schemastore.nvim',
+         { 'b0o/schemastore.nvim', version = false },
          'folke/neodev.nvim',
          'SmiteshP/nvim-navic',
       },
