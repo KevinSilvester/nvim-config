@@ -1,79 +1,28 @@
 ---@alias MapperMode string|string[]
 ---@alias MapperOpts { silent?: boolean, noremap?: boolean, nowait?: boolean, expr?: boolean, desc?: string }
----@alias MapperMapping table<string, string|function, MapperOpts>
+---@alias MapperOptsModifier fun(opts: MapperOpts): function
+---@alias MapperMapping { [1]: string, [2]: string|function, [3]: MapperOpts }
 
 local M = {}
 
----@class MapperOpts
+---@class MapperOptsBuilder
+---@field options MapperOpts
 local Opts = {}
 
-function Opts:new(instance)
-   instance = instance
-      or {
-         options = {
-            silent = false,
-            nowait = false,
-            expr = false,
-            noremap = false,
-         },
-      }
+---@return MapperOptsBuilder
+function Opts:new()
+   local instance = {
+      options = {
+         silent = false,
+         nowait = false,
+         expr = false,
+         noremap = false,
+         desc = nil,
+      },
+   }
    setmetatable(instance, self)
    self.__index = self
    return instance
-end
-
-function M.silent(opt)
-   return function()
-      opt.silent = true
-   end
-end
-
-function M.noremap(opt)
-   return function()
-      opt.noremap = true
-   end
-end
-
-function M.expr(opt)
-   return function()
-      opt.expr = true
-   end
-end
-
-function M.remap(opt)
-   return function()
-      opt.remap = true
-   end
-end
-
-function M.nowait(opt)
-   return function()
-      opt.nowait = true
-   end
-end
-
-function M.opts(...)
-   local args = { ... }
-   local o = Opts:new()
-
-   if #args == 0 then
-      return o.options
-   end
-
-   for _, arg in pairs(args) do
-      if type(arg) == 'string' then
-         o.options.desc = arg
-      else
-         arg(o.options)()
-      end
-   end
-   return o.options
-end
-
----@param str string
----@return string
-M.cmd = function(str)
-   return '<cmd>' .. str .. '<CR>'
 end
 
 ---@private
@@ -99,6 +48,7 @@ local _set_keymap = function(mode, buffer, mappings)
          ::continue::
       end
    else
+      ---@cast mappings MapperMapping
       if #mappings < 2 then
          log.warn('core.mapper', 'Invalid keymap for `' .. mappings[1] .. '`')
          return
@@ -113,9 +63,9 @@ end
 
 ---@private
 ---@param mode MapperMode vim mode
----@param buf_map? boolean map key bindings to specific buffer
-local _map = function(mode, buf_map)
-   if buf_map then
+---@param map_to_buffer? boolean map key bindings to specific buffer
+local _map = function(mode, map_to_buffer)
+   if map_to_buffer then
       ---@param buffer number
       ---@param mappings MapperMapping|MapperMapping[]
       return function(buffer, mappings)
@@ -127,6 +77,67 @@ local _map = function(mode, buf_map)
          _set_keymap(mode, nil, mappings)
       end
    end
+end
+
+---@type MapperOptsModifier
+M.silent = function(opt)
+   return function()
+      opt.silent = true
+   end
+end
+
+---@type MapperOptsModifier
+M.noremap = function(opt)
+   return function()
+      opt.noremap = true
+   end
+end
+
+---@type MapperOptsModifier
+M.expr = function(opt)
+   return function()
+      opt.expr = true
+   end
+end
+
+---@type MapperOptsModifier
+M.remap = function(opt)
+   return function()
+      opt.remap = true
+   end
+end
+
+---@type MapperOptsModifier
+M.nowait = function(opt)
+   return function()
+      opt.nowait = true
+   end
+end
+
+---@param ... string|MapperOptsModifier
+---@return MapperOpts
+M.opts = function(...)
+   local args = { ... }
+   local o = Opts:new()
+
+   if #args == 0 then
+      return o.options
+   end
+
+   for _, arg in pairs(args) do
+      if type(arg) == 'string' then
+         o.options.desc = arg
+      else
+         arg(o.options)()
+      end
+   end
+   return o.options
+end
+
+---@param str string
+---@return string
+M.cmd = function(str)
+   return '<cmd>' .. str .. '<CR>'
 end
 
 M.nmap = _map('n')
