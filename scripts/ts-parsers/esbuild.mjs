@@ -14,7 +14,7 @@ const require = __createRequire(import.meta.url)
 fs.removeSync('dist')
 
 esbuild.buildSync({
-   entryPoints: ['src/compile.ts', 'src/download.ts'],
+   entryPoints: ['src/compile.ts', 'src/download.ts', 'src/compile-local.ts'],
    outExtension: { '.js': '.mjs' },
    banner: { js: banner },
    minify: true,

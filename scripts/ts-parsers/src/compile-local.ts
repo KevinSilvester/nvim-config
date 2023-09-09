@@ -8,7 +8,8 @@ import axios from 'axios'
 import { remove, move } from 'fs-extra'
 import { glob } from 'glob'
 
-import { CONFIG_ROOT, TEMP_DIR, WANTED_TS_PARSER, ZIG_TARGETS } from './constants.js'
+import { CONFIG_ROOT, TEMP_DIR, WANTED_TS_PARSER, RANDOM_STRING, DATA_DIR } from './constants.js'
+import { mkdirp } from 'fs-extra/esm'
 
 type Parser = {
    language: string
@@ -25,6 +26,9 @@ type LazyLock = Record<
 >
 
 type TreesitterLock = Record<string, { revision: string }>
+
+// const is_win = os.platform() === 'win32'
+const is_mac = os.platform() === 'darwin'
 
 const r = chalk.redBright
 const g = chalk.greenBright
@@ -43,10 +47,7 @@ async function cleanup({ full }: { full: boolean }) {
 
    if (!full) return
 
-   const targetDirs = await glob(`${path.join(TEMP_DIR, 'treesitter-')}*`.replaceAll('\\', '/'))
-   for await (const dir of targetDirs) {
-      await remove(dir)
-   }
+   await remove(path.join(TEMP_DIR, 'treesitter-' + RANDOM_STRING))
 }
 
 async function downloadLockfile(commitHash: string) {
@@ -56,16 +57,16 @@ async function downloadLockfile(commitHash: string) {
    await writeFile(out, data, { encoding: 'utf-8' })
 }
 
-async function createTargetDirs(target: string) {
-   const dir = path.join(TEMP_DIR, 'treesitter-' + target)
+async function createTargetDir() {
+   const dir = path.join(TEMP_DIR, 'treesitter-' + RANDOM_STRING)
    await mkdir(dir)
    await mkdir(path.join(dir, 'parser'))
    await mkdir(path.join(dir, 'parser-info'))
 }
 
-function outFiles(target: string, parser: Parser): [string, string] {
-   const output = path.join(TEMP_DIR, `treesitter-${target}`, 'parser', `${parser.language}.so`)
-   const revision = path.join(TEMP_DIR, `treesitter-${target}`, 'parser-info', `${parser.language}.revision`)
+function outFiles(parser: Parser): [string, string] {
+   const output = path.join(TEMP_DIR, `treesitter-${RANDOM_STRING}`, 'parser', `${parser.language}.so`)
+   const revision = path.join(TEMP_DIR, `treesitter-${RANDOM_STRING}`, 'parser-info', `${parser.language}.revision`)
    return [output, revision]
 }
 
@@ -74,37 +75,10 @@ async function readJson<T>(path: string): Promise<T> {
    return JSON.parse(jsonString) as T
 }
 
-function validateArgv(argv: string[]): string {
-   let error = false
-
-   if (argv.length < 1) {
-      console.log(r('ERROR: no compile targets provided'))
-      error = true
-   }
-
-   if (!error && argv.length > 1) {
-      console.log(r('ERROR: expected 1 argument'))
-      error = true
-   }
-
-   if (!error && !ZIG_TARGETS.includes(argv[0])) {
-      console.log(r('ERROR: invalid compile target provided'))
-      error = true
-   }
-
-   if (error) {
-      console.log(y`HINT: allowed targets `)
-      console.log(y('[' + ZIG_TARGETS.join(', ') + ']'))
-      process.exit(1)
-   }
-
-   return argv[0]
-}
-
-async function compileParser(parser: Parser, target: string, treesitterLock: TreesitterLock, index: number) {
+async function compileParser(parser: Parser, treesitterLock: TreesitterLock, index: number) {
    try {
       const cwd = path.join(TEMP_DIR, `tree-sitter-${parser.language}`)
-      const [output, revision] = outFiles(target, parser)
+      const [output, revision] = outFiles(parser)
       await mkdir(cwd)
       process.chdir(cwd)
 
@@ -138,7 +112,20 @@ async function compileParser(parser: Parser, target: string, treesitterLock: Tre
          process.chdir(path.join(cwd, parser.language))
       }
 
-      await $$`zig c++ -o out.so ${parser.files.join(' ')} -lc -Isrc -shared -Os -target ${target}`
+      const buildCmd = [
+         `clang -o out.so -I./src`,
+         parser.files.join(' '),
+         `-Os`,
+         is_mac ? `-bundle` : `-shared`,
+         `-fPIC`
+      ]
+
+      // if any of the files is a c++ file, build with c++ compiler
+      if (parser.files.some(file => file.endsWith('.cpp') || file.endsWith('.cc') || file.endsWith('.cxx'))) {
+         buildCmd.push('-lstdc++')
+      }
+
+      await $$`${buildCmd.join(' ')}`
       await move('out.so', output)
       await writeFile(revision, treesitterLock[parser.language].revision, { encoding: 'utf-8' })
       console.log(g(`  SUCCESS: ${parser.language}`))
@@ -148,8 +135,34 @@ async function compileParser(parser: Parser, target: string, treesitterLock: Tre
    }
 }
 
+async function retryFailedBuilds(retryList: Parser[], treesitterLock: TreesitterLock) {
+   console.log(b('\nRetrying failed builds...'))
+   for await (const parser of retryList) {
+      const result = await compileParser(parser, treesitterLock, WANTED_TS_PARSER.indexOf(parser.language) + 1)
+      if (!result) {
+         console.log(r('  RETRY FAILED'))
+      }
+   }
+}
+
+async function moveParser() {
+   process.chdir(DATA_DIR)
+
+   const parsersNew = path.join(TEMP_DIR, 'treesitter-' + RANDOM_STRING)
+   const parsersActive = path.join(DATA_DIR, 'treesitter')
+   const parsersBackupHome = path.join(DATA_DIR, '.treesitter-bak')
+   const parsersBackupTarget = path.join(parsersBackupHome, `treesitter-${RANDOM_STRING}`)
+
+   await mkdirp(parsersBackupHome)
+   await move(parsersActive, parsersBackupTarget)
+   await move(parsersNew, parsersActive)
+
+   await writeFile(path.join(parsersBackupHome, 'backup-log'), RANDOM_STRING + '\n', { encoding: 'utf-8', flag: 'a' })
+   await writeFile(path.join(parsersActive, 'backup-id'), RANDOM_STRING, { encoding: 'utf-8' })
+   await writeFile(path.join(parsersActive, 'no-release-tag'), '', { encoding: 'utf-8' })
+}
+
 async function main() {
-   const target = validateArgv(process.argv.slice(2))
    await cleanup({ full: true })
    await $$`nvim --headless -c "lua require('utils.fn').get_treesitter_parsers()" -c "q"`
 
@@ -160,7 +173,7 @@ async function main() {
    await downloadLockfile(lazyLock['nvim-treesitter'].commit)
    const treesitterLock = await readJson<TreesitterLock>(path.join(CONFIG_ROOT, 'lockfile.json'))
 
-   await createTargetDirs(target)
+   await createTargetDir()
 
    let retryList: Parser[] = []
 
@@ -169,26 +182,18 @@ async function main() {
          continue
       }
 
-      const result = await compileParser(parser, target, treesitterLock, WANTED_TS_PARSER.indexOf(parser.language) + 1)
+      const result = await compileParser(parser, treesitterLock, WANTED_TS_PARSER.indexOf(parser.language) + 1)
       if (result) {
          retryList.push(result)
       }
    }
-   
-   cleanup({ full: false })
 
-   if (retryList.length === 0) {
-      return
+   if (retryList.length !== 0) {
+      cleanup({ full: false })
+      await retryFailedBuilds(retryList, treesitterLock)
    }
 
-   console.log(b('\nRetrying failed builds...'))
-   for await (const parser of retryList) {
-      const result = await compileParser(parser, target, treesitterLock, WANTED_TS_PARSER.indexOf(parser.language) + 1)
-      if (!result) {
-         console.log(r('  RETRY FAILED'))
-      }
-   }
-
+   await moveParser()
    cleanup({ full: false })
 }
 

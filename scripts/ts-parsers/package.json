@@ -3,8 +3,10 @@
    "scripts": {
       "build": "node esbuild.mjs",
       "compile": "node dist/compile.mjs",
+      "compile-local": "node dist/compile-local.mjs",
       "download": "node dist/download.mjs",
       "compile:dev": "tsx src/compile.ts",
+      "compile-local:dev": "tsx src/compile-local.ts",
       "download:dev": "tsx src/download.ts",
       "format": "prettier -w \"./src/*\" \"./*.json\""
    },
@@ -17,7 +19,7 @@
    },
    "devDependencies": {
       "@octokit/types": "^11.1.0",
-      "@tsconfig/node16": "^16.1.0",
+      "@tsconfig/node18": "^18.2.1",
       "@types/fs-extra": "^11.0.1",
       "@types/node": "^20.5.0",
       "esbuild": "^0.19.1",

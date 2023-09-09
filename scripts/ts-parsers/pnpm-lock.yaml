@@ -25,9 +25,9 @@ devDependencies:
   '@octokit/types':
     specifier: ^11.1.0
     version: 11.1.0
-  '@tsconfig/node16':
-    specifier: ^16.1.0
-    version: 16.1.0
+  '@tsconfig/node18':
+    specifier: ^18.2.1
+    version: 18.2.1
   '@types/fs-extra':
     specifier: ^11.0.1
     version: 11.0.1
@@ -495,8 +495,8 @@ packages:
     dev: false
     optional: true
 
-  /@tsconfig/node16@16.1.0:
-    resolution: {integrity: sha512-cfwhqrdZEKS+Iqu1OPDwmKsOV/eo7q4sPhWzOXc1rU77nnPFV3+77yPg8uKQ2e8eir6mERCvrKnd+EGa4qo4bQ==}
+  /@tsconfig/node18@18.2.1:
+    resolution: {integrity: sha512-RDDZFuofwkcKpl8Vpj5wFbY+H53xOtqK7ckEL1sXsbPwvKwDdjQf3LkHbtt9sxIHn9nWIEwkmCwBRZ6z5TKU2A==}
     dev: true
 
   /@types/fs-extra@11.0.1:

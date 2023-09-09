@@ -2,7 +2,6 @@ import type { Endpoints } from '@octokit/types'
 
 import path from 'node:path'
 import os from 'node:os'
-import crypto from 'node:crypto'
 import readLine from 'node:readline'
 import { writeFile } from 'node:fs/promises'
 import { $ } from 'execa'
@@ -10,11 +9,9 @@ import chalk from 'chalk'
 import axios from 'axios'
 import { remove, move, mkdirp } from 'fs-extra'
 
-const is_win = os.platform() === 'win32'
+import { DATA_DIR, RANDOM_STRING } from './constants.js'
 
-const HOME_DIR = os.userInfo().homedir
-const DATA_DIR = path.join(HOME_DIR, ...(is_win ? ['AppData', 'Local', 'nvim-data'] : ['.local', 'share', 'nvim']))
-const RANDOM_STRING = crypto.randomBytes(8).toString('hex')
+const is_win = os.platform() === 'win32'
 
 type CompileTargets = 'x86_64-windows' | 'x86_64-linux' | 'aarch64-linux' | 'x86_64-macos' | 'aarch64-macos'
 type LatestRelease = Endpoints['GET /repos/{owner}/{repo}/releases/latest']['response']['data']
@@ -22,7 +19,6 @@ type LatestRelease = Endpoints['GET /repos/{owner}/{repo}/releases/latest']['res
 const r = chalk.redBright
 const g = chalk.greenBright
 const b = chalk.blueBright
-const y = chalk.yellow
 const $$ = $({ stdio: 'inherit', shell: os.platform() === 'win32' ? 'pwsh' : '/bin/bash' })
 
 function determineTarget(): CompileTargets {
@@ -123,6 +119,7 @@ async function extractArchive(archiveName: string, releaseTag: string) {
       await $$`tar -xzvf ${archiveName}`
    }
 
+   await writeFile(path.join(parsersBackupHome, 'backup-log'), RANDOM_STRING + '\n', { encoding: 'utf-8', flag: 'a' })
    await writeFile(path.join(parsersActive, 'backup-id'), RANDOM_STRING, { encoding: 'utf-8' })
    await writeFile(path.join(parsersActive, 'release-tag'), releaseTag, { encoding: 'utf-8' })
 }
