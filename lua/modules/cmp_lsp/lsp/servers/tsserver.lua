@@ -2,7 +2,7 @@
 
 local M = {}
 
-M.capabilities = require('modules.cmp_lsp.lsp.setup').capabilites
+M.capabilities = require('modules.cmp_lsp.lsp.setup').capabilities
 
 local function filter(arr, fn)
    if type(arr) ~= 'table' then

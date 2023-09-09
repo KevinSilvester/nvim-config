@@ -14,17 +14,17 @@ M.set_lsp_keymaps = function(bufnr)
          function()
             -- local winid = require('ufo').peekFoldedLinesUnderCursor()
             -- if not winid then
-               vim.lsp.buf.hover()
+            vim.lsp.buf.hover()
             -- end
          end,
          m.opts(m.noremap, m.silent, 'Hover doc')
       },
-      { "D",  function() vim.lsp.buf.type_definitio() end, m.opts(m.noremap, m.silent, 'Type Definition') },
-      { "gD", function() vim.lsp.buf.declaration() end,    m.opts(m.noremap, m.silent, 'Goto Declarations') },
-      { "gd", function() vim.lsp.buf.definition() end,     m.opts(m.noremap, m.silent, 'Goto Definitions') },
-      { "gq", function() vim.diagnostic.setqflist() end,   m.opts(m.noremap, m.silent, 'Show QuickFix') },
-      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),       m.opts(m.noremap, m.silent, 'Goto Prev Diagnostics') },
-      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),       m.opts(m.noremap, m.silent, 'Goto Next Diagnostics') },
+      { "D",  function() vim.lsp.buf.type_definition() end, m.opts(m.noremap, m.silent, 'Type Definition') },
+      { "gD", function() vim.lsp.buf.declaration() end,     m.opts(m.noremap, m.silent, 'Goto Declarations') },
+      { "gd", function() vim.lsp.buf.definition() end,      m.opts(m.noremap, m.silent, 'Goto Definitions') },
+      { "gq", function() vim.diagnostic.setqflist() end,    m.opts(m.noremap, m.silent, 'Show QuickFix') },
+      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),        m.opts(m.noremap, m.silent, 'Goto Prev Diagnostics') },
+      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),        m.opts(m.noremap, m.silent, 'Goto Next Diagnostics') },
       {
          "[e",
          function() require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR }) end,
@@ -48,7 +48,7 @@ local capabilities_extension = {
 }
 
 ---Enable completions from lsp
-M.capabilites = vim.tbl_deep_extend(
+M.capabilities = vim.tbl_deep_extend(
    'force',
    vim.lsp.protocol.make_client_capabilities(),
    require('cmp_nvim_lsp').default_capabilities(),

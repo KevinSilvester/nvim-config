@@ -2,9 +2,8 @@ local M = {}
 
 M.settings = {
    yaml = {
-      schemaStore = {
-         enable = true,
-      },
+      schemaStore = { enable = false, },
+      schemas = require('schemastore').yaml.schemas(),
    },
 }
 

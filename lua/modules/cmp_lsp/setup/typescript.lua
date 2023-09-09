@@ -57,7 +57,7 @@ M.config = function(_, _)
          -- tsserver-capabilities
          capabilities = vim.tbl_deep_extend(
             'force',
-            require('modules.cmp_lsp.lsp.setup').capabilites,
+            require('modules.cmp_lsp.lsp.setup').capabilities,
             capabilities_extension
          ),
          -- tsserver-on_attach

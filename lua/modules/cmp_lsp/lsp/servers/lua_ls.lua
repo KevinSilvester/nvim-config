@@ -1,3 +1,4 @@
+local ufs = require('utils.fs')
 local M = {}
 
 M.settings = {
@@ -13,11 +14,14 @@ M.settings = {
       },
       diagnostics = {
          globals = { 'vim' },
+         unusedLocalExclude = { '_*' },
       },
       workspace = {
          library = {
-            [vim.fn.expand('$VIMRUNTIME/lua')] = true,
-            [vim.fn.stdpath('config') .. '/lua'] = true,
+            'lua',
+            [ufs.path_join(vim.fn.expand('$VIMRUNTIME'), 'lua')] = true,
+            [ufs.path_join(PATH.config, 'lua')] = true,
+            '${3rd}/luv/library',
          },
       },
       telemetry = {

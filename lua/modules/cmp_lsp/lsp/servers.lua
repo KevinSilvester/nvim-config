@@ -1,13 +1,13 @@
 local M = {}
 
 M.default = {
-   capabalities = require('modules.cmp_lsp.lsp.setup').capabilites,
+   capabilities = require('modules.cmp_lsp.lsp.setup').capabilities,
    on_attach = require('modules.cmp_lsp.lsp.setup').on_attach,
 }
 
 M.custom = {
    cssls = {
-      capabalities = M.default.capabalities,
+      capabilities = M.default.capabilities,
       on_attach = require('modules.cmp_lsp.lsp.servers.cssls').on_attach,
       settings = require('modules.cmp_lsp.lsp.servers.cssls').settings,
    },
