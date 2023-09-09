@@ -158,58 +158,15 @@ M.on_very_lazy = function(func)
    })
 end
 
--- local stdin = uv.new_pipe()
--- local stdout = uv.new_pipe()
--- local stderr = uv.new_pipe()
-
--- print('stdin', stdin)
--- print('stdout', stdout)
--- print('stderr', stderr)
-
--- local handle, pid = uv.spawn('cat', {
---    stdio = { stdin, stdout, stderr },
--- }, function(code, signal) -- on exit
---    print('exit code', code)
---    print('exit signal', signal)
--- end)
-
--- print('process opened', handle, pid)
-
--- uv.read_start(stdout, function(err, data)
---    assert(not err, err)
---    if data then
---       print('stdout chunk', stdout, data)
---    else
---       print('stdout end', stdout)
---    end
--- end)
-
--- uv.read_start(stderr, function(err, data)
---    assert(not err, err)
---    if data then
---       print('stderr chunk', stderr, data)
---    else
---       print('stderr end', stderr)
---    end
--- end)
-
--- uv.write(stdin, 'Hello World')
-
--- uv.shutdown(stdin, function()
---    print('stdin shutdown', stdin)
---    uv.close(handle, function()
---       print('process closed', handle, pid)
---    end)
--- end)
-
----Run shell command and return stderr|stdout
+---Run shell command with callbackc for stderr|stdout
 ---@param command string
 ---@param args table<integer|string>
----@param out function<string>
----@param err function<string>
-M.spawn = function(command, args, out, err)
-   local stdout = uv.new_pipe()
-   local stderr = uv.new_pipe()
+---@param on_exit fun(code: number, signal: number)|nil
+---@param out fun(data: string)|nil
+---@param err fun(data: string)|nil
+M.spawn = function(command, args, on_exit, out, err)
+   local stdout = uv.new_pipe(false)
+   local stderr = uv.new_pipe(false)
 
    if not stdout or not stderr then
       log.debug(
@@ -223,28 +180,60 @@ M.spawn = function(command, args, out, err)
    proc = uv.spawn(
       command,
       { args = args, stdio = { nil, stdout, stderr } },
-      vim.schedule_wrap(function(code, _signal)
+      vim.schedule_wrap(function(code, signal)
+         stdout:read_stop()
+         stderr:read_stop()
          stdout:close()
          stderr:close()
          proc:close()
+         if type(on_exit) == 'function' then
+            on_exit(code, signal)
+         end
       end)
    )
 
    stderr:read_start(function(_, data)
       if data then
          local str = data:sub(1, -2)
-         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`')
-         err(str)
+         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`', true)
+         if type(err) == 'function' then
+            err(str)
+         end
       end
    end)
 
    stdout:read_start(function(_, data)
       if data then
          local str = data:sub(1, -2)
-         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`')
-         out(str)
+         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`', true)
+         if type(out) == 'function' then
+            out(str)
+         end
       end
    end)
+   return 'poop'
+end
+
+---Run shell command and return stdout
+---@param cmd string
+---@param opts? {timeout?:number, cwd?:string, env?:table}
+---@return boolean, string[]
+M.exec = function(cmd, opts)
+   opts = opts or {}
+   ---@type string[]
+   local lines
+   local job = vim.fn.jobstart(cmd, {
+      cwd = opts.cwd,
+      pty = false,
+      env = opts.env,
+      stdout_buffered = true,
+      on_stdout = function(_, _lines)
+         lines = _lines
+      end,
+   })
+   local res = vim.fn.jobwait({ job }, opts.timeout or 1000)
+   table.remove(lines, #lines)
+   return res[1] == 0, lines
 end
 
 ---Set the tabstop, softtabstop and shiftwidth for buffer or globally
@@ -269,21 +258,18 @@ M.get_treesitter_parsers = function()
    for k, v in pairs(require('nvim-treesitter.parsers').list) do
       local value = string.format(
          [[%s{
-%s%s"%s": "%s",
-%s%s"%s": "%s",
-%s%s"%s": %s
+%s"%s": "%s",
+%s"%s": "%s",
+%s"%s": %s
 %s}]],
          tab,
-         tab,
-         tab,
+         tab .. tab,
          'language',
          k,
-         tab,
-         tab,
+         tab .. tab,
          'url',
          v.install_info.url,
-         tab,
-         tab,
+         tab .. tab,
          'files',
          vim.json.encode(v.install_info.files),
          tab
