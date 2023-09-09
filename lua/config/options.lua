@@ -157,7 +157,7 @@ if HOST.is_win then
 elseif HOST.is_mac then
    vim.opt.shell = 'fish'
 else
-   vim.opt.shell = 'bash'
+   vim.opt.shell = 'fish'
 end
 
 

@@ -1,10 +1,12 @@
 local ufs = require('utils.fs')
+local ufn = require('utils.fn')
 
----@alias LockValues { cache_created: boolean, parsers_deleted: boolean }
+---@alias LockValues { cache_created: boolean, parsers_deleted: boolean, pasrser_downloaded: boolean }
 ---@type LockValues
-local LOCK_DEFAULTS = {
+local LOCK_INITIALS = {
    cache_created = false,
    parsers_deleted = false,
+   pasrser_downloaded = false,
 }
 
 ---@class CoreBootstrap
@@ -23,28 +25,27 @@ function Bootstrap:init(lockfile)
       if ufs.is_file(self.lockfile) then
          self.lock_values = self:__read_lock()
       else
-         self.lock_values = vim.deepcopy(LOCK_DEFAULTS)
-         log.info('core.bootstrap', 'Writing to lockfile')
+         self.lock_values = vim.deepcopy(LOCK_INITIALS)
+         log.info('core.bootstrap', 'Initialising lockfile')
          self:__write_lock(self.lock_values)
       end
 
-      if self.lock_values == nil then
-         return
-      end
-
-      local new_lock_values = vim.deepcopy(self.lock_values)
+      local old_lock_values = vim.deepcopy(self.lock_values)
 
       if not self.lock_values.cache_created then
-         new_lock_values.cache_created = self:__setup_cache()
+         self.lock_values.cache_created = self:__setup_cache()
       end
 
       if not self.lock_values.parsers_deleted then
-         new_lock_values.parsers_deleted = self:__delete_bundled_parsers()
+         self.lock_values.parsers_deleted = self:__delete_bundled_parsers()
       end
 
-      if not vim.deep_equal(self.lock_values, new_lock_values) then
-         ---@diagnostic disable-next-line: param-type-mismatch
-         self:__write_lock(vim.tbl_deep_extend('force', self.lock_values, new_lock_values))
+      if not self.lock_values.pasrser_downloaded then
+         self:__download_parsers()
+      end
+
+      if not vim.deep_equal(self.lock_values, old_lock_values) then
+         self:__write_lock(self.lock_values)
       end
    end)
 end
@@ -100,12 +101,47 @@ function Bootstrap:__delete_bundled_parsers()
    end)
 end
 
----Create a new lock file if none exists and populate with default value
----If file exists read the file and return content
+---Use the download scrip to download pre-compiled parsers
+function Bootstrap:__download_parsers()
+   return xpcall(function()
+      log.info('core.bootstrap', 'Downloading pre-compiled treesitter parsers...')
+
+      local buffers = vim.api.nvim_list_bufs()
+
+      -- temporarily stop treesitter for all buffers
+      for _, buf in ipairs(buffers) do
+         vim.treesitter.stop(buf)
+      end
+
+      ufn.spawn(
+         'node',
+         { ufs.path_join(PATH.config, 'scripts', 'ts-parsers', 'dist', 'download.mjs') },
+         function(code, _signal)
+            if code == 0 then
+               self.lock_values.pasrser_downloaded = true
+               self:__write_lock(self.lock_values)
+               log.info('core.bootstrap', 'Download complete!')
+            else
+               log.error('core.bootstrap', 'Parser download failed')
+            end
+
+            -- restart treesitter for all buffers
+            for _, buf in ipairs(buffers) do
+               vim.treesitter.start(buf)
+            end
+         end
+      )
+   end, function()
+      log.error('core.bootstrap', 'Parser download failed')
+   end)
+end
+
+---Attempt to read the lock file
 ---@return LockValues|nil
 function Bootstrap:__read_lock()
    local ok, content = xpcall(function()
-      local file = io.open(self.lockfile, 'r'):read('a')
+      local file = ufs.read_file(self.lockfile)
+      assert(file, 'Failed reading lockfile')
       return vim.json.decode(file)
    end, function()
       log.error('core.bootstrap', 'Failed reading lockfile')
