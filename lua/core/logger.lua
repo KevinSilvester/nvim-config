@@ -17,22 +17,28 @@ function Logger:init(logfile, silent)
    _G.log = {
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      trace = function(origin, message) self:__log('TRACE', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      trace = function(origin, message, silent) self:__log('TRACE', origin, message, silent) end,
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      debug = function(origin, message) self:__log('DEBUG', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      debug = function(origin, message, silent) self:__log('DEBUG', origin, message, silent) end,
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      info  = function(origin, message) self:__log('INFO', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      info  = function(origin, message, silent) self:__log('INFO', origin, message, silent) end,
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      warn  = function(origin, message) self:__log('WARN', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      warn  = function(origin, message, silent) self:__log('WARN', origin, message, silent) end,
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      error = function(origin, message) self:__log('ERROR', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      error = function(origin, message, silent) self:__log('ERROR', origin, message, silent) end,
       ---@param origin string origin of logged message
       ---@param message any message to be logged
-      off   = function(origin, message) self:__log('OFF', origin, message) end,
+      ---@param silent? boolean notify log output (default is `false`)
+      off   = function(origin, message, silent) self:__log('OFF', origin, message, silent) end,
    }
 end
 
@@ -40,7 +46,8 @@ end
 ---@param level 'TRACE'|'DEBUG'|'INFO'|'WARN'|'ERROR'|'OFF' log level
 ---@param origin string origin of logged message
 ---@param message any message to be logged
-function Logger:__log(level, origin, message)
+---@param silent? boolean notify log output (default is `false`)
+function Logger:__log(level, origin, message, silent)
    if type(message) ~= 'string' then
       message = vim.inspect(message)
    end
@@ -57,7 +64,15 @@ function Logger:__log(level, origin, message)
       end)
    end)
 
-   if not self.silent then
+   local silent_log = false
+
+   if silent ~= nil then
+      silent_log = silent
+   else
+      silent_log = self.silent
+   end
+
+   if not silent_log then
       vim.notify(message, vim.log.levels[level], { title = '[' .. level .. '] ' .. origin })
    end
 end
