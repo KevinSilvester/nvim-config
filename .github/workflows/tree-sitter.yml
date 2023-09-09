@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.19.x
+          node-version: 18
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -45,7 +45,7 @@ jobs:
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
-          version: v0.9.1
+          version: v0.9.2
 
       - name: Set pnpm store directory
         id: pnpm-cache
