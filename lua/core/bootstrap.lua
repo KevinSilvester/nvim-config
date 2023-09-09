@@ -124,7 +124,7 @@ function Bootstrap:__download_parsers()
                self.lock_values.pasrser_downloaded = true
                self:__write_lock(self.lock_values)
                log.info('core.bootstrap', 'Treesitter parsers download complete!')
-            else 
+            else
                log.error('core.bootstrap', 'Treesitter parsers download failed')
             end
 
