@@ -1,4 +1,4 @@
-local cmd = require('core.mapper').cmd
+local m = require('core.mapper')
 local icons = require('modules.ui.icons')
 local M = {}
 
@@ -104,7 +104,7 @@ M.opts = {
       },
    },
    trash = {
-      cmd = HOST.is_win and 'Remove-ItemSafely' or 'trash-put', -- 'gio trash'
+      cmd = HOST.is_win and 'pwsh -c Remove-ItemSafely' or 'trash-put',
       require_confirm = true, -- missing
    },
    experimental = {
@@ -113,7 +113,6 @@ M.opts = {
 }
 
 M.config = function(_, opts)
-   local m = require('core.mapper')
    local api = require('nvim-tree.api')
 
    opts.on_attach = function(bufnr)
@@ -122,6 +121,8 @@ M.config = function(_, opts)
       -- stylua: ignore
       m.buf_nmap(bufnr, {
          -- { 'A', api.tree.expand_all, k_opts(silent, noremap, nowait, 'Expand All') },
+         { 'd', api.fs.trash,                   m.opts(m.silent, m.noremap, m.nowait, 'Trash') },
+         { 'D', api.fs.remove,                  m.opts(m.silent, m.noremap, m.nowait, 'Remove') },
          { 'h', api.node.navigate.parent_close, m.opts(m.silent, m.noremap, m.nowait, 'Close') },
          { 'H', api.tree.collapse_all,          m.opts(m.silent, m.noremap, m.nowait, 'Collapse All') },
          { '?', api.tree.toggle_help,           m.opts(m.silent, m.noremap, m.nowait, 'Help') },
@@ -161,8 +162,8 @@ end
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>ne', cmd('NvimTreeToggle'),  desc = 'Toggle NvimTree' },
-   { '<leader>nr', cmd('NvimTreeRefresh'), desc = 'Refresh NvimTree' },
+   { '<leader>ne', m.cmd('NvimTreeToggle'),  desc = 'Toggle NvimTree' },
+   { '<leader>nr', m.cmd('NvimTreeRefresh'), desc = 'Refresh NvimTree' },
 }
 
 return M
