@@ -91,6 +91,28 @@ function M.write_file(path, txt, flag, offset)
    end)
 end
 
+---Write data to a file
+---@param path string can be full or relative to `cwd`
+---@param offset number|nil specific number of bytes from the beginning of the file where the data should be read, default is `0` which will not change current file offset
+---@return string|nil
+M.read_file = function(path, offset)
+   offset = offset == nil and 0 or offset
+
+   ---@type string|nil
+   local data
+
+   local fd = assert(uv.fs_open(path, 'r', 438))
+   local stat = assert(uv.fs_fstat(fd))
+   local data = assert(uv.fs_read(fd, stat.size, offset))
+   assert(uv.fs_close(fd))
+
+   if type(data) == 'string' then
+      return data
+   else
+      return nil
+   end
+end
+
 ---Split string into a table of strings using a separator.
 ---@param inputString string The string to split.
 ---@param sep string The separator to use.
