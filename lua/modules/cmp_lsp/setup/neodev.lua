@@ -9,7 +9,7 @@ M.opts = {
    },
    setup_jsonls = false,
    lspconfig = true,
-   pathStrict = true
+   pathStrict = true,
 }
 
 return M
