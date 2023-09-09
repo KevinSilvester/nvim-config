@@ -66,7 +66,10 @@ const is_win = os.platform() === 'win32'
 
 export const HOME_DIR = os.userInfo().homedir
 export const TEMP_DIR = os.tmpdir()
-export const DATA_DIR = path.join(HOME_DIR, ...(is_win ? ['AppData', 'Local', 'nvim-data'] : ['.local', 'share', 'nvim']))
+export const DATA_DIR = path.join(
+   HOME_DIR,
+   ...(is_win ? ['AppData', 'Local', 'nvim-data'] : ['.local', 'share', 'nvim'])
+)
 
 export const CONFIG_ROOT = path.join(HOME_DIR, ...(is_win ? ['AppData', 'Local', 'nvim'] : ['.config', 'nvim']))
 

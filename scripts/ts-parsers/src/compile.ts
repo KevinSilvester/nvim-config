@@ -174,7 +174,7 @@ async function main() {
          retryList.push(result)
       }
    }
-   
+
    cleanup({ full: false })
 
    if (retryList.length === 0) {
@@ -198,11 +198,11 @@ if (os.platform() === 'win32') {
       output: process.stdout
    })
 
-   rlInterface.on('SIGINT', function() {
+   rlInterface.on('SIGINT', function () {
       process.emit('SIGINT')
    })
 }
-process.on('SIGINT', function() {
+process.on('SIGINT', function () {
    console.log(b('\nCleaning up...'))
    cleanup({ full: false })
    process.exit(1)
