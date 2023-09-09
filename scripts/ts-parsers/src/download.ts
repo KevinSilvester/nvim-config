@@ -4,6 +4,7 @@ import path from 'node:path'
 import os from 'node:os'
 import readLine from 'node:readline'
 import { writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { $ } from 'execa'
 import chalk from 'chalk'
 import axios from 'axios'
@@ -111,7 +112,9 @@ async function extractArchive(archiveName: string, releaseTag: string) {
    const parsersBackupTarget = path.join(parsersBackupHome, `treesitter-${RANDOM_STRING}`)
 
    await mkdirp(parsersBackupHome)
-   await move(parsersActive, parsersBackupTarget)
+   if (existsSync(parsersActive)) {
+      await move(parsersActive, parsersBackupTarget)
+   }
 
    if (is_win) {
       await $$`7z x ${archiveName}`

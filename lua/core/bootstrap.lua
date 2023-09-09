@@ -106,11 +106,14 @@ function Bootstrap:__download_parsers()
    return xpcall(function()
       log.info('core.bootstrap', 'Downloading pre-compiled treesitter parsers...')
 
-      local buffers = vim.api.nvim_list_bufs()
+      local buffers = {}
 
       -- temporarily stop treesitter for all buffers
-      for _, buf in ipairs(buffers) do
-         vim.treesitter.stop(buf)
+      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+         if vim.treesitter.highlighter.active[buf] ~= nil then
+            vim.treesitter.stop(buf)
+            table.insert(buffers, buf)
+         end
       end
 
       ufn.spawn(
@@ -120,9 +123,9 @@ function Bootstrap:__download_parsers()
             if code == 0 then
                self.lock_values.pasrser_downloaded = true
                self:__write_lock(self.lock_values)
-               log.info('core.bootstrap', 'Download complete!')
-            else
-               log.error('core.bootstrap', 'Parser download failed')
+               log.info('core.bootstrap', 'Treesitter parsers download complete!')
+            else 
+               log.error('core.bootstrap', 'Treesitter parsers download failed')
             end
 
             -- restart treesitter for all buffers
