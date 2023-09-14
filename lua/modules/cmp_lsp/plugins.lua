@@ -54,6 +54,17 @@ return {
       opts = require('modules.cmp_lsp.setup.rust-tools').opts,
       config = require('modules.cmp_lsp.setup.rust-tools').config,
    },
+   {
+      'ray-x/go.nvim',
+      dependencies = {
+         'ray-x/guihua.lua',
+         'neovim/nvim-lspconfig',
+      },
+      config = true,
+      event = { 'CmdlineEnter' },
+      ft = { 'go', 'gomod' },
+      build = ':lua require("go.install").update_all_sync()',
+   },
 
    { 'hrsh7th/cmp-nvim-lsp', dependencies = 'hrsh7th/nvim-cmp' },
 
