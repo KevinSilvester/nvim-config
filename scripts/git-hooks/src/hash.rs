@@ -56,30 +56,30 @@ impl<'a> Subdir<'a> for TsParsers {
 }
 
 #[derive(Debug)]
-pub struct Hash {
-    hash_dir: PathBuf,
-    hash_subdir: [&'static str; 2],
+pub struct Hash<'b> {
+    pub hash_data_dir: PathBuf,
+    pub hash_data_subdir: [&'b str; 2],
 }
 
-impl Hash {
+impl<'b> Hash<'b> {
     pub fn new(hash_dir: &Path) -> Self {
         let hash_subdir = [GitHooks::NAME, TsParsers::NAME];
 
         Self {
-            hash_dir: hash_dir.clone().to_path_buf(),
-            hash_subdir,
+            hash_data_dir: hash_dir.clone().to_path_buf(),
+            hash_data_subdir: hash_subdir,
         }
     }
 
     pub async fn create_hash_data_dir(&self) -> Result<(), std::io::Error> {
-        if self.hash_dir.exists() {
-            fs::remove_dir_all(&self.hash_dir).await?;
+        if self.hash_data_dir.exists() {
+            fs::remove_dir_all(&self.hash_data_dir).await?;
         }
 
-        fs::create_dir(&self.hash_dir).await?;
+        fs::create_dir(&self.hash_data_dir).await?;
 
-        for subdir in &self.hash_subdir {
-            let path = self.hash_dir.join(subdir);
+        for subdir in &self.hash_data_subdir {
+            let path = self.hash_data_dir.join(subdir);
             fs::create_dir(&path).await?;
         }
 
@@ -107,9 +107,9 @@ impl Hash {
         }
 
         let digest = hex::encode(hasher.finish());
-        let digest_path = PathBuf::from(&self.hash_dir)
+        let digest_path = PathBuf::from(&self.hash_data_dir)
             .join(SD::NAME)
-            .join(file_path.to_str().unwrap().replace(PATH_SEP, "-"));
+            .join(&file_path.to_str().unwrap().replace(PATH_SEP, "-")[1..]); // triming 'C:' and '/' so it doesn't get treated as absolute path
 
         if write {
             fs::write(&digest_path, &digest).await?;
@@ -146,6 +146,9 @@ impl Hash {
         file_path: &Path,
     ) -> Result<bool, std::io::Error> {
         let (digest_path, digest) = self.hash_file(subdir, file_path, false).await?;
+        if !digest_path.is_file() {
+            return Ok(false);
+        }
         let digest_file = fs::read_to_string(&digest_path).await?;
         Ok(digest == digest_file)
     }
@@ -158,6 +161,10 @@ impl Hash {
         let hashes = self.hash_dir(subdir, dir_path, false).await?;
         let mut result = true;
         for (path, digest) in hashes {
+            if !path.is_file() {
+                result = false;
+                break;
+            }
             let digest_file = fs::read_to_string(&path).await?;
             if digest != digest_file {
                 result = false;
