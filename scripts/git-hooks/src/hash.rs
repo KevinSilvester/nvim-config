@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+use cfg_if::cfg_if;
 use jwalk::Parallelism;
 use ring::digest::{Context, SHA256};
 use tokio::fs::{self, File};
@@ -9,11 +10,15 @@ use tokio::sync::mpsc;
 const READ_BUFFER_SIZE: usize = 8 * 1024;
 const HASH_BUFFER_SIZE: usize = 1024;
 
-#[cfg(windows)]
-const PATH_SEP: char = '\\';
-
-#[cfg(unix)]
-const PATH_SEP: char = '/';
+cfg_if! {
+    if #[cfg(windows)] {
+        const PATH_SEP: char = '\\';
+        const STRIP_AMOUNT: usize = 2;
+    } else {
+        const PATH_SEP: char = '/';
+        const STRIP_AMOUNT: usize = 1;
+    }
+}
 
 // https://github.com/clbarnes/recursum/blob/e464cd877953b8d1ebe3eab13763da7572f75f1b/src/main.rs#L43
 fn walk_dir_stream(
@@ -109,7 +114,7 @@ impl<'b> Hash<'b> {
         let digest = hex::encode(hasher.finish());
         let digest_path = PathBuf::from(&self.hash_data_dir)
             .join(SD::NAME)
-            .join(&file_path.to_str().unwrap().replace(PATH_SEP, "-")[1..]); // triming 'C:' and '/' so it doesn't get treated as absolute path
+            .join(&file_path.to_str().unwrap().replace(PATH_SEP, "-")[STRIP_AMOUNT..]); // triming 'C:' and '/' so it doesn't get treated as absolute path
 
         if write {
             fs::write(&digest_path, &digest).await?;
@@ -257,7 +262,6 @@ mod tests {
             .await
             .unwrap();
 
-        dbg!(&path);
         assert!(path.exists());
         assert_eq!(
             digest,
