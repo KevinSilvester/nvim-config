@@ -6,6 +6,12 @@ use git_hooks::{
 };
 use tokio::runtime;
 
+#[cfg(windows)]
+const PNPM: &str = "pnpm.CMD";
+
+#[cfg(unix)]
+const PNPM: &str = "pnpm";
+
 fn main() {
     let paths = Paths::new();
     let hash = Hash::new(&paths.nivm_data.join("hash"));
@@ -45,12 +51,12 @@ fn main() {
             return;
         }
 
-        check_command_exists("pnpm").unwrap();
+        check_command_exists(PNPM).unwrap();
 
         if !(paths.ts_parsers.join("node_modules").is_dir()) {
-            c_println!(blue, "Installing ts-parsers dependencies...");
+            c_println!(blue, "\nInstalling ts-parsers dependencies...");
             run_command(
-                "pnpm",
+                PNPM,
                 &vec!["install", "--frozen-lockfile"],
                 Some(&paths.ts_parsers),
             )
@@ -58,17 +64,17 @@ fn main() {
             .unwrap();
         }
 
-        c_println!(blue, "Building ts-parsers...");
-        run_command("pnpm", &vec!["run", "build"], Some(&paths.ts_parsers))
+        c_println!(blue, "\nBuilding ts-parsers...");
+        run_command(PNPM, &vec!["run", "build"], Some(&paths.ts_parsers))
             .await
             .unwrap();
 
-        c_println!(blue, "Adding changes to git...");
+        c_println!(blue, "\nAdding changes to git...");
         run_command("git", &vec!["add", "."], Some(&paths.ts_parsers))
             .await
             .unwrap();
 
-        c_println!(blue, "Creating new ts-parsers hash...");
+        c_println!(blue, "\nCreating new ts-parsers hash...");
         hash.hash_dir(&TsParsers, &paths.ts_parsers.join("src"), true)
             .await
             .unwrap();
