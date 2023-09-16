@@ -81,10 +81,11 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          components: rustmft
+          components: rustfmt
 
       - name: Build + Lint + Test
         shell: bash
         run: |
+          cd scripts/git-hooks
           cargo fmt --all -- --check
           cargo test
