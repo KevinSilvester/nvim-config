@@ -83,9 +83,22 @@ jobs:
           toolchain: stable
           components: rustfmt
 
-      - name: Build + Lint + Test
+      - name: Build + Lint + Test (Linux + Mac)
+        if: ${{ matrix.target != 'window-latest' }}
         shell: bash
         run: |
+          mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
+          mkdir -p ~/.local/
+          cd scripts/git-hooks
+          cargo fmt --all -- --check
+          cargo test
+
+      - name: Build + Lint + Test (Windows)
+        if: ${{ matrix.target == 'window-latest' }}
+        shell: bash
+        run: |
+          mkdir -p ~/AppData/Local/nvim && cp -r ./* ~/AppData/Local/nvim 
+          mkdir -p ~/AppData/Local/nvim-data
           cd scripts/git-hooks
           cargo fmt --all -- --check
           cargo test
