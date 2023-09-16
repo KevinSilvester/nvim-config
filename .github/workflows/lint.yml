@@ -1,19 +1,90 @@
-name: lint
+name: lint+test
 
 on:
   push:
-    branches: ["lazy"]
+    branches: ['lazy']
   pull_request:
-    branches: ["lazy"]
+    branches: ['lazy']
 
 jobs:
-  lint:
+  lint-lua:
+    name: Lint Neovim Config
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Stylua
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Stylua Lint
         uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: 0.18.1
           args: --check .
+
+  lint-ts:
+    name: Lint TS-Parsers Script
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8
+
+      - name: Set pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Run Prettier Check
+        shell: bash
+        run: |
+          cd ./scripts/ts-parsers
+          pnpm add -g prettier
+          prettier -c "./src/*" "./*.json"
+
+  lint-rust:
+    name: Lint+Test Git-Hooks Scripts
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          [
+            "window-latest",
+            "macos-latest",
+            "ubuntu-latest",
+          ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustmft
+
+      - name: Build + Lint + Test
+        shell: bash
+        run: |
+          cargo fmt --all -- --check
+          cargo test
