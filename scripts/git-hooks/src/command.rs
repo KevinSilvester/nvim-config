@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, path::Path, println, process::Stdio, sync::Mutex};
+use std::{collections::VecDeque, path::Path, println, process::Stdio};
 
 use ansi_term::Colour;
 use strip_ansi_escapes::strip;
