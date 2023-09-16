@@ -83,15 +83,15 @@ jobs:
         shell: bash
         run: |
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
-          mkdir -p ~/.local/
-          cd scripts/git-hooks
+          mkdir -p ~/.local/share/nvim
 
       - name: Test Setup (Windows)
         if: ${{ matrix.target == 'windows-latest' }}
-        shell: bash
+        shell: pwsh
         run: |
-          mkdir -p ~/AppData/Local/nvim && cp -r ./* ~/AppData/Local/nvim 
-          mkdir -p ~/AppData/Local/nvim-data
+          New-Item -ItemType Directory "$env:LOCALAPPDATA\\nvim"
+          New-Item -ItemType Directory "$env:LOCALAPPDATA\\nvim-data"
+          Copy-Item -Force -Recurse ".\*" -Destination "$env:LOCALAPPDATA\\nvim"
 
       - name: Check formating
         shell: bash
@@ -99,7 +99,7 @@ jobs:
           cd scripts/git-hooks
           cargo fmt --all -- --check
 
-      - name: Check formating
+      - name: Run Tests
         shell: bash
         run: |
           cd scripts/git-hooks
