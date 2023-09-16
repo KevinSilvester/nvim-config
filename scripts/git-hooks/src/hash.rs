@@ -20,7 +20,7 @@ fn walk_dir_stream(
     root: PathBuf,
     queue_len: usize,
     parelellism: Parallelism,
-) -> Result<mpsc::Receiver<PathBuf>, std::io::Error> {
+) -> Result<mpsc::Receiver<PathBuf>, Box<dyn std::error::Error>> {
     let (sender, receiver) = mpsc::channel(queue_len);
 
     tokio::spawn(async move {
@@ -71,7 +71,7 @@ impl<'b> Hash<'b> {
         }
     }
 
-    pub async fn create_hash_data_dir(&self) -> Result<(), std::io::Error> {
+    pub async fn create_hash_data_dir(&self) -> Result<(), Box<dyn std::error::Error>> {
         if self.hash_data_dir.exists() {
             fs::remove_dir_all(&self.hash_data_dir).await?;
         }
@@ -92,7 +92,7 @@ impl<'b> Hash<'b> {
         _: &SD,
         file_path: &Path,
         write: bool,
-    ) -> Result<(PathBuf, String), std::io::Error> {
+    ) -> Result<(PathBuf, String), Box<dyn std::error::Error>> {
         let file = File::open(file_path).await?;
         let mut buf_reader = BufReader::with_capacity(READ_BUFFER_SIZE, file);
         let mut hasher = Context::new(&SHA256);
@@ -118,12 +118,24 @@ impl<'b> Hash<'b> {
         Ok((digest_path, digest))
     }
 
+    pub async fn clear_data_subdir<'a, SD: Subdir<'a>>(
+        &self,
+        _: &SD,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let path = self.hash_data_dir.join(SD::NAME);
+        if path.exists() {
+            fs::remove_dir_all(&path).await?;
+            fs::create_dir(&path).await?;
+        }
+        Ok(())
+    }
+
     pub async fn hash_dir<'a, SD: Subdir<'a>>(
         &self,
         subdir: &SD,
         dir_path: &Path,
         write: bool,
-    ) -> Result<Vec<(PathBuf, String)>, std::io::Error> {
+    ) -> Result<Vec<(PathBuf, String)>, Box<dyn std::error::Error>> {
         let workers = num_cpus::get();
         let mut hashes: Vec<(PathBuf, String)> = Vec::new();
         let mut stream = walk_dir_stream(
@@ -131,6 +143,8 @@ impl<'b> Hash<'b> {
             workers * 3,
             Parallelism::RayonNewPool(workers),
         )?;
+
+        self.clear_data_subdir(subdir).await?;
 
         while let Some(path) = stream.recv().await {
             let hash = self.hash_file(subdir, &path, write).await?;
@@ -144,7 +158,7 @@ impl<'b> Hash<'b> {
         &self,
         subdir: &SD,
         file_path: &Path,
-    ) -> Result<bool, std::io::Error> {
+    ) -> Result<bool, Box<dyn std::error::Error>> {
         let (digest_path, digest) = self.hash_file(subdir, file_path, false).await?;
         if !digest_path.is_file() {
             return Ok(false);
@@ -157,20 +171,52 @@ impl<'b> Hash<'b> {
         &self,
         subdir: &SD,
         dir_path: &Path,
-    ) -> Result<bool, std::io::Error> {
-        let hashes = self.hash_dir(subdir, dir_path, false).await?;
+    ) -> Result<bool, Box<dyn std::error::Error>> {
         let mut result = true;
-        for (path, digest) in hashes {
-            if !path.is_file() {
+        let workers = num_cpus::get();
+
+        let mut hash_target_stream = walk_dir_stream(
+            dir_path.to_path_buf(),
+            workers * 3,
+            Parallelism::RayonNewPool(workers),
+        )?;
+        let mut hash_data_stream = walk_dir_stream(
+            self.hash_data_dir.join(SD::NAME),
+            workers * 3,
+            Parallelism::RayonNewPool(workers),
+        )?;
+
+        while let (Some(hash_target), Some(hash_data)) = (
+            hash_target_stream.recv().await,
+            hash_data_stream.recv().await,
+        ) {
+            let current_hash = self.hash_file(subdir, &hash_target, false).await?;
+            if !current_hash.0.is_file() {
                 result = false;
                 break;
             }
-            let digest_file = fs::read_to_string(&path).await?;
-            if digest != digest_file {
+
+            if !hash_data.is_file() {
+                result = false;
+                break;
+            }
+
+            if current_hash.0 != hash_data {
+                result = false;
+                break;
+            }
+
+            if current_hash.1 != fs::read_to_string(&hash_data).await? {
                 result = false;
                 break;
             }
         }
+
+        if (hash_target_stream.recv().await).is_some() || (hash_data_stream.recv().await).is_some()
+        {
+            result = false;
+        }
+
         Ok(result)
     }
 }
@@ -203,7 +249,9 @@ mod tests {
         let (path, digest) = hash
             .hash_file(
                 &GitHooks,
-                &PathBuf::from(&paths.git_hooks).join(".gitignore"),
+                &PathBuf::from(&paths.git_hooks)
+                    .join("test-assets")
+                    .join("file1.txt"),
                 true,
             )
             .await
@@ -213,7 +261,7 @@ mod tests {
         assert!(path.exists());
         assert_eq!(
             digest,
-            "c97ecfda4d205190b973232dcfdb0c29748521c2534dd866bcc782f30b086738" // "1"
+            "ecdc5536f73bdae8816f0ea40726ef5e9b810d914493075903bb90623d97b1d8" // "1"
         );
         fs::remove_dir_all(&hash_dir).await.unwrap();
     }
@@ -231,12 +279,13 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(hashes.len(), 3);
+        assert_eq!(hashes.len(), 4);
 
         let expected_file_hashes = vec![
             "ecdc5536f73bdae8816f0ea40726ef5e9b810d914493075903bb90623d97b1d8".to_string(),
             "67ee5478eaadb034ba59944eb977797b49ca6aa8d3574587f36ebcbeeb65f70e".to_string(),
             "94f6e58bd04a4513b8301e75f40527cf7610c66d1960b26f6ac2e743e108bdac".to_string(),
+            "22923d80f11be7a03b106352027a26b4454a07287bebf62eedbdab54b99ca5b9".to_string(),
         ];
 
         hashes.iter().enumerate().for_each(|(idx, (path, digest))| {
@@ -254,7 +303,9 @@ mod tests {
         hash.create_hash_data_dir().await.unwrap();
         assert!(hash_dir.exists());
 
-        let file_to_hash = PathBuf::from(&paths.git_hooks).join(".gitignore");
+        let file_to_hash = PathBuf::from(&paths.git_hooks)
+            .join("test-assets")
+            .join("file1.txt");
 
         let (_, _) = hash
             .hash_file(&GitHooks, &file_to_hash, true)

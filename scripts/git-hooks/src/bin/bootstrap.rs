@@ -1,6 +1,6 @@
 use git_hooks::{
     hash::{GitHooks, Hash, TsParsers},
-    paths::Paths,
+    paths::Paths, c_println,
 };
 use tokio::runtime;
 
@@ -19,11 +19,17 @@ fn main() {
 
     rt.block_on(async move {
         hash.create_hash_data_dir().await.unwrap();
+        
+        c_println!(blue, "Hashing git-hooks...");
         hash.hash_dir(&GitHooks, &paths.git_hooks.join("src"), true)
             .await
             .unwrap();
+
+        c_println!(blue, "Hashing ts-parsers...");
         hash.hash_dir(&TsParsers, &paths.ts_parsers.join("src"), true)
             .await
             .unwrap();
+
+        c_println!(green, "Hashing Complete! (●'◡'●)")
     });
 }
