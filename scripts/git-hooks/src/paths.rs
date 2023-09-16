@@ -20,12 +20,8 @@ impl Paths {
     pub fn new() -> Self {
         cfg_if! {
             if #[cfg(target_os = "macos")] {
-                let local_config_dir = dirs::home_dir().unwrap().join(".config").join("nvim");
-                let local_data_dir = dirs::home_dir()
-                    .unwrap()
-                    .join(".local")
-                    .join("share")
-                    .join("nvim");
+                let local_config_dir = dirs::home_dir().unwrap().join(".config");
+                let local_data_dir = dirs::home_dir() .unwrap().join(".local").join("share");
             } else {
                 let local_config_dir = dirs::config_local_dir().unwrap();
                 let local_data_dir = dirs::data_local_dir().unwrap();
