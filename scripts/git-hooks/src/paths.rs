@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use cfg_if::cfg_if;
+
 #[derive(Debug, Clone)]
 pub struct Paths {
     pub nvim_config: PathBuf,
@@ -16,8 +18,19 @@ const NVIM_DATA_DIR: &str = "nvim";
 
 impl Paths {
     pub fn new() -> Self {
-        let local_config_dir = dirs::config_local_dir().unwrap();
-        let local_data_dir = dirs::data_local_dir().unwrap();
+        cfg_if! {
+            if #[cfg(target_os = "macos")] {
+                let local_config_dir = dirs::home_dir().unwrap().join(".config").join("nvim");
+                let local_data_dir = dirs::home_dir()
+                    .unwrap()
+                    .join(".local")
+                    .join("share")
+                    .join("nvim");
+            } else {
+                let local_config_dir = dirs::config_local_dir().unwrap();
+                let local_data_dir = dirs::data_local_dir().unwrap();
+            }
+        }
 
         let nvim_config = local_config_dir.join("nvim");
         let nivm_data = local_data_dir.join(NVIM_DATA_DIR);
