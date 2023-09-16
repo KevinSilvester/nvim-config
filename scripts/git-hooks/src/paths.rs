@@ -41,7 +41,7 @@ mod tests {
     fn test_paths() {
         let paths = Paths::new();
         assert!(paths.nvim_config.exists(), "nvim_config not found");
-        assert!(paths.nivm_data.exists(), "nvim_data not found" );
+        assert!(paths.nivm_data.exists(), "nvim_data not found");
         assert!(paths.git_hooks.exists(), "git_hooks not found");
         assert!(paths.ts_parsers.exists(), "ts_parsers not found");
     }
