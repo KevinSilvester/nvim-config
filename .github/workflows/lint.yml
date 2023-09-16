@@ -2,9 +2,9 @@ name: lint+test
 
 on:
   push:
-    branches: ['lazy']
+    branches: ["lazy"]
   pull_request:
-    branches: ['lazy']
+    branches: ["lazy"]
 
 jobs:
   lint-lua:
@@ -65,12 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          [
-            "windows-latest",
-            "macos-latest",
-            "ubuntu-latest",
-          ]
+        os: ["windows-latest", "macos-latest", "ubuntu-latest"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -83,22 +78,29 @@ jobs:
           toolchain: stable
           components: rustfmt
 
-      - name: Build + Lint + Test (Linux + Mac)
+      - name: Test Setup (Linux + Mac)
         if: ${{ matrix.target != 'windows-latest' }}
         shell: bash
         run: |
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
           mkdir -p ~/.local/
           cd scripts/git-hooks
-          cargo fmt --all -- --check
-          cargo test
 
-      - name: Build + Lint + Test (Windows)
+      - name: Test Setup (Windows)
         if: ${{ matrix.target == 'windows-latest' }}
         shell: bash
         run: |
           mkdir -p ~/AppData/Local/nvim && cp -r ./* ~/AppData/Local/nvim 
           mkdir -p ~/AppData/Local/nvim-data
+
+      - name: Check formating
+        shell: bash
+        run: |
           cd scripts/git-hooks
           cargo fmt --all -- --check
+
+      - name: Check formating
+        shell: bash
+        run: |
+          cd scripts/git-hooks
           cargo test
