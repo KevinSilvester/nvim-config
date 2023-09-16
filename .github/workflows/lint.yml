@@ -69,6 +69,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -97,11 +102,6 @@ jobs:
         run: |
           cd scripts/git-hooks
           cargo fmt --all -- --check
-          
-      - if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          cd scripts/git-hooks
-          certutil -hashfile test-assets\file1.txt SHA256
 
       - name: Run Tests
         run: |
