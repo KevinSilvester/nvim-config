@@ -21,6 +21,10 @@ impl Renderer {
     }
 
     pub fn clear_ouput(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        if self.prev_line_count == 0 {
+            return Ok(());
+        }
+
         execute!(
             self.stdout,
             cursor::MoveToPreviousLine(self.prev_line_count as u16)
