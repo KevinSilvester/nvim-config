@@ -67,7 +67,7 @@ jobs:
       matrix:
         os:
           [
-            "window-latest",
+            "windows-latest",
             "macos-latest",
             "ubuntu-latest",
           ]
@@ -84,7 +84,7 @@ jobs:
           components: rustfmt
 
       - name: Build + Lint + Test (Linux + Mac)
-        if: ${{ matrix.target != 'window-latest' }}
+        if: ${{ matrix.target != 'windows-latest' }}
         shell: bash
         run: |
           mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
@@ -94,7 +94,7 @@ jobs:
           cargo test
 
       - name: Build + Lint + Test (Windows)
-        if: ${{ matrix.target == 'window-latest' }}
+        if: ${{ matrix.target == 'windows-latest' }}
         shell: bash
         run: |
           mkdir -p ~/AppData/Local/nvim && cp -r ./* ~/AppData/Local/nvim 
