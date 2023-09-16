@@ -55,7 +55,7 @@ pub async fn run_command(
     let mut failed = false;
 
     println!(
-        "\n{} {} {} {}",
+        "{} {} {} {}",
         turquoise.paint("=>"),
         name,
         args.join(" "),
@@ -78,7 +78,7 @@ pub async fn run_command(
                     out_queue.push_back(format!("   {} {}", red.paint("=>"), clean_string(&err)));
                 }
             }
-            // renderer.render_queue(&out_queue)?;
+            renderer.render_queue(&out_queue)?;
         } else {
             is_finished = true;
             break;
@@ -124,40 +124,6 @@ pub async fn run_command(
             green.paint("(complete!)")
         );
     }
-
-    Ok(())
-}
-
-pub async fn build_ts_parsers(ts_parers_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    check_command_exists("pnpm")?;
-    let mut has_node_modules = false;
-
-    if ts_parers_path.join("node_modules").is_dir() {
-        has_node_modules = true;
-    }
-
-    if !has_node_modules {
-        c_println!(blue, "Installing ts-parsers dependencies...");
-        run_command(
-            "pnpm",
-            &vec![
-                "install",
-                "-C",
-                ts_parers_path.to_str().unwrap(),
-                "--frozen-lockfile",
-            ],
-            None,
-        )
-        .await?;
-    }
-
-    c_println!(blue, "Building ts-parsers...");
-    run_command(
-        "pnpm",
-        &vec!["run", "-C", ts_parers_path.to_str().unwrap(), "build"],
-        None,
-    )
-    .await?;
 
     Ok(())
 }
