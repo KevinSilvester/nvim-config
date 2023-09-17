@@ -1,0 +1,6 @@
+[workspace]
+members = ["nu-lib", "nu-git-hooks", "nu-ts-parsers"]
+resolver = "2"
+
+[profile.release]
+opt-level = 3

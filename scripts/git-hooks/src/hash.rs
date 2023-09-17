@@ -244,7 +244,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_hash_file() {
-        // let paths = Paths::new();
+        let paths = Paths::new();
 
         let hash_dir = PathBuf::from("test-hash-dir2");
         let hash = Hash::new(&hash_dir);
@@ -254,7 +254,7 @@ mod tests {
         let (path, digest) = hash
             .hash_file(
                 &GitHooks,
-                &PathBuf::from("test-assets").join("file1.txt"),
+                &paths.git_hooks.join("test-assets").join("file1.txt"),
                 true,
             )
             .await
@@ -270,15 +270,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_hash_dir() {
-        // let paths = Paths::new();
-
+        let paths = Paths::new();
         let hash_dir = PathBuf::from("test-hash-dir3");
         let hash = Hash::new(&hash_dir);
         hash.create_hash_data_dir().await.unwrap();
         assert!(hash_dir.exists());
 
         let hashes = hash
-            .hash_dir(&GitHooks, &PathBuf::from("test-assets"), true)
+            .hash_dir(&GitHooks, &paths.git_hooks.join("test-assets"), true)
             .await
             .unwrap();
 
