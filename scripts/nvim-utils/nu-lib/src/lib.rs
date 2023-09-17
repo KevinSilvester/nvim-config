@@ -18,4 +18,3 @@ macro_rules! c_println {
 pub mod command;
 pub mod paths;
 mod renderer;
-

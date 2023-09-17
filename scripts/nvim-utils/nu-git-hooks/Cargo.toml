@@ -3,6 +3,26 @@ name = "nu-git-hooks"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "bootstrap"
+
+[[bin]]
+name = "post-merge"
 
 [dependencies]
+cfg-if = "1.0.0"
+hex = "0.4.3"
+jwalk = "0.8.1"
+nu-lib = { path = "../nu-lib" }
+num_cpus = "1.16.0"
+ring = "0.16.20"
+self-replace = { git = "https://github.com/KevinSilvester/self-replace.git" }
+tokio = { version = "1.32.0", features = [
+   "rt-multi-thread",
+   "macros",
+   "sync",
+   "fs",
+   "io-util",
+   "io-std",
+] }
+tokio-stream = "0.1.14"

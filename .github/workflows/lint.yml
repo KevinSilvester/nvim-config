@@ -61,7 +61,7 @@ jobs:
           prettier -c "./src/*" "./*.json"
 
   lint-rust:
-    name: Lint+Test Git-Hooks Scripts
+    name: Lint+Test Nvim-Utils Scripts
     strategy:
       fail-fast: false
       matrix:
@@ -100,10 +100,10 @@ jobs:
 
       - name: Check formating
         run: |
-          cd scripts/git-hooks
+          cd scripts/nvim-utils
           cargo fmt --all -- --check
 
       - name: Run Tests
         run: |
-          cd scripts/git-hooks
+          cd scripts/nvim-utils
           cargo test

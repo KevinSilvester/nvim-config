@@ -26,7 +26,7 @@ fn walk_dir_stream(
     queue_len: usize,
     parelellism: Parallelism,
 ) -> Result<mpsc::Receiver<PathBuf>, Box<dyn std::error::Error>> {
-    let (sender, receiver) = mpsc::channel(queue_len);
+    let (tx, rx) = mpsc::channel(queue_len);
 
     tokio::spawn(async move {
         for entry in jwalk::WalkDir::new(root)
@@ -38,21 +38,22 @@ fn walk_dir_stream(
             .filter_map(|e| e.ok())
         {
             if entry.file_type().is_file() {
-                sender.send(entry.path()).await.unwrap();
+                // TODO: handle send error
+                if let Err(_) = tx.send(entry.path()).await {}
             }
         }
     });
 
-    Ok(receiver)
+    Ok(rx)
 }
 
 pub trait Subdir<'a> {
     const NAME: &'a str;
 }
 
-pub struct GitHooks;
-impl<'a> Subdir<'a> for GitHooks {
-    const NAME: &'a str = "git-hooks";
+pub struct NvimUtils;
+impl<'a> Subdir<'a> for NvimUtils {
+    const NAME: &'a str = "nvim-utils";
 }
 
 pub struct TsParsers;
@@ -68,7 +69,7 @@ pub struct Hash<'b> {
 
 impl<'b> Hash<'b> {
     pub fn new(hash_dir: &Path) -> Self {
-        let hash_subdir = [GitHooks::NAME, TsParsers::NAME];
+        let hash_subdir = [NvimUtils::NAME, TsParsers::NAME];
 
         Self {
             hash_data_dir: hash_dir.clone().to_path_buf(),
@@ -114,7 +115,8 @@ impl<'b> Hash<'b> {
         let digest = hex::encode(hasher.finish());
         let digest_path = PathBuf::from(&self.hash_data_dir)
             .join(SD::NAME)
-            .join(&file_path.to_str().unwrap().replace(PATH_SEP, "-")[STRIP_AMOUNT..]); // triming 'C:' and '/' so it doesn't get treated as absolute path
+            // triming 'C:' and '/' so it doesn't get treated as absolute path
+            .join(&file_path.to_str().unwrap().replace(PATH_SEP, "-")[STRIP_AMOUNT..]);
 
         if write {
             fs::write(&digest_path, &digest).await?;
@@ -135,6 +137,10 @@ impl<'b> Hash<'b> {
         Ok(())
     }
 
+    pub fn contains_dirctory_name(&self, path: &Path, dir_name: &str) -> bool {
+        path.iter().any(|p| p == dir_name)
+    }
+
     pub async fn hash_dir<'a, SD: Subdir<'a>>(
         &self,
         subdir: &SD,
@@ -152,6 +158,12 @@ impl<'b> Hash<'b> {
         self.clear_data_subdir(subdir).await?;
 
         while let Some(path) = stream.recv().await {
+            if self.contains_dirctory_name(&path, "target")
+                || self.contains_dirctory_name(&path, "node_modules")
+                || self.contains_dirctory_name(&path, "dist")
+            {
+                continue;
+            }
             let hash = self.hash_file(subdir, &path, write).await?;
             hashes.push(hash);
         }
@@ -222,13 +234,17 @@ impl<'b> Hash<'b> {
             result = false;
         }
 
+        hash_data_stream.close();
+        hash_target_stream.close();
+
         Ok(result)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::paths::Paths;
+
+    use nu_lib::paths::Paths;
 
     use super::*;
 
@@ -253,8 +269,12 @@ mod tests {
 
         let (path, digest) = hash
             .hash_file(
-                &GitHooks,
-                &paths.git_hooks.join("test-assets").join("file1.txt"),
+                &NvimUtils,
+                &paths
+                    .nvim_utils
+                    .join("nu-git-hooks")
+                    .join("test-assets")
+                    .join("file1.txt"),
                 true,
             )
             .await
@@ -277,7 +297,11 @@ mod tests {
         assert!(hash_dir.exists());
 
         let hashes = hash
-            .hash_dir(&GitHooks, &paths.git_hooks.join("test-assets"), true)
+            .hash_dir(
+                &NvimUtils,
+                &paths.nvim_utils.join("nu-git-hooks").join("test-assets"),
+                true,
+            )
             .await
             .unwrap();
 
@@ -305,16 +329,17 @@ mod tests {
         hash.create_hash_data_dir().await.unwrap();
         assert!(hash_dir.exists());
 
-        let file_to_hash = PathBuf::from(&paths.git_hooks)
+        let file_to_hash = PathBuf::from(&paths.nvim_utils)
+            .join("nu-git-hooks")
             .join("test-assets")
             .join("file1.txt");
 
         let (_, _) = hash
-            .hash_file(&GitHooks, &file_to_hash, true)
+            .hash_file(&NvimUtils, &file_to_hash, true)
             .await
             .unwrap();
 
-        let result = hash.compare_hash(&GitHooks, &file_to_hash).await.unwrap();
+        let result = hash.compare_hash(&NvimUtils, &file_to_hash).await.unwrap();
 
         assert!(result);
         fs::remove_dir_all(&hash_dir).await.unwrap();
@@ -328,12 +353,14 @@ mod tests {
         hash.create_hash_data_dir().await.unwrap();
         assert!(hash_dir.exists());
 
-        let dir_to_hash = PathBuf::from(&paths.git_hooks).join("test-assets");
+        let dir_to_hash = PathBuf::from(&paths.nvim_utils)
+            .join("nu-git-hooks")
+            .join("test-assets");
 
-        let _ = hash.hash_dir(&GitHooks, &dir_to_hash, true).await.unwrap();
+        let _ = hash.hash_dir(&NvimUtils, &dir_to_hash, true).await.unwrap();
 
         let result = hash
-            .compare_dir_hash(&GitHooks, &dir_to_hash)
+            .compare_dir_hash(&NvimUtils, &dir_to_hash)
             .await
             .unwrap();
 
