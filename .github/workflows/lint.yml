@@ -44,6 +44,14 @@ jobs:
           toolchain: stable
           components: rustfmt
 
+      - name: Configure Rust Cache
+        run: |
+          echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+
+      - name: Setup Rust Cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
       - name: Test Setup (Linux + Mac)
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash

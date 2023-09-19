@@ -7,7 +7,6 @@ pub struct Paths {
     pub nvim_config: PathBuf,
     pub nvim_data: PathBuf,
     pub nvim_utils: PathBuf,
-    pub ts_parsers: PathBuf,
 }
 
 #[cfg(windows)]
@@ -31,13 +30,11 @@ impl Paths {
         let nvim_config = local_config_dir.join("nvim");
         let nivm_data = local_data_dir.join(NVIM_DATA_DIR);
         let nvim_utils = nvim_config.join("scripts").join("nvim-utils");
-        let ts_parsers = nvim_config.join("scripts").join("ts-parsers");
 
         Self {
             nvim_config,
             nvim_data: nivm_data,
             nvim_utils,
-            ts_parsers,
         }
     }
 }
@@ -53,6 +50,5 @@ mod tests {
         assert!(paths.nvim_config.exists(), "nvim_config not found");
         assert!(paths.nvim_data.exists(), "nvim_data not found");
         assert!(paths.nvim_utils.exists(), "nvim_utils not found");
-        assert!(paths.ts_parsers.exists(), "ts_parsers not found");
     }
 }

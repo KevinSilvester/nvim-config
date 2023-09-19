@@ -65,7 +65,7 @@ impl Renderer {
         for _line in queue {
             let width = match terminal::size() {
                 Ok((w, _)) if w > 0 => w as usize,
-                _ => 50,
+                _ => 80,
             };
             let mut line = _line.clone();
             line.truncate(width);
