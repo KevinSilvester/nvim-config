@@ -30,6 +30,11 @@ jobs:
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@v2
 
+      - name: Setup Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -89,21 +94,24 @@ jobs:
           cd ~/.config/nvim && pwd
           nvim --headless -c 'Lazy restore' -c 'q'
 
+      - name: Build Rust binaries
+        shell: bash
+        run: |
+          cd ~/.config/nvim/scripts/nvim-utils
+          ./build.sh
+
       - name: Compile Parsers
         shell: bash
-        env:
-          CONFIG_ROOT: /home/runner/.config/nvim
         timeout-minutes: 30
         run: |
-          cd ./scripts/ts-parsers
-          pnpm compile "${{ matrix.target }}"
+          ~/.config/nvim/scripts/bin/ts-parsers compile -t "${{ matrix.target }}"
 
       - name: Archive Parsers (Linux + Mac)
         if: ${{ matrix.target != 'x86_64-windows' }}
         shell: bash
         run: |
           name="treesitter-${{ matrix.target }}"
-          mv "/tmp/${name}" ./treesitter
+          mv "/tmp/ts-parsers-dist/${name}" ./treesitter
           tar -cvf "${name}.tar" ./treesitter
           cat "${name}.tar" | gzip --best > "${name}.tar.gz"
           rm -r ./treesitter "${name}.tar"
@@ -113,7 +121,7 @@ jobs:
         shell: bash
         run: |
           name="treesitter-${{ matrix.target }}"
-          mv "/tmp/${name}" ./treesitter
+          mv "/tmp/ts-parsers-dist/${name}" ./treesitter
           7z a "${name}.zip" ./treesitter
           rm -r ./treesitter
 

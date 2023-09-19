@@ -4,6 +4,7 @@ use nu_lib::{c_println, paths::Paths};
 use nu_ts_parsers::{
     cleanup::Cleanup,
     compile_utils::{compile_parser, read_lazy_lock, read_parsers, read_ts_lock},
+    fs::copy_dir_all,
     parsers::{ParserInfo, WANTED_PARSERS},
 };
 use tokio::{fs, sync::mpsc::UnboundedSender};
@@ -108,6 +109,18 @@ impl SubCommand for Compile {
                     c_println!(red, "FAILED: {}", &parser.language);
                 }
             }
+
+            let dist_dir = std::env::temp_dir()
+                .join("ts-parsers-dist")
+                .join(format!("treesitter-{}", &target));
+            if dist_dir.exists() {
+                fs::remove_dir_all(&dist_dir).await?;
+            }
+            fs::create_dir_all(&dist_dir).await?;
+            copy_dir_all(
+                std::env::temp_dir().join(format!("treesitter-{}", &target)),
+                dist_dir,
+            )?;
             shutdown_tx.send(())?;
             Ok(())
         });
