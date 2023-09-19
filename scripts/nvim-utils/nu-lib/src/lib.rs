@@ -13,6 +13,9 @@ macro_rules! c_println {
     (green, $($arg:tt)*) => {{
         println!("{}", $crate::RGB(57, 219, 57).paint(&format!($($arg)*)))
     }};
+    (amber, $($arg:tt)*) => {{
+        println!("{}", $crate::RGB(245, 181, 61).paint(&format!($($arg)*)))
+    }};
 }
 
 pub mod command;

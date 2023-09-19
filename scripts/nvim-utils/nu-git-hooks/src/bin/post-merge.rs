@@ -4,7 +4,7 @@ use tokio::runtime;
 
 fn main() {
     let paths = Paths::new();
-    let hash = Hash::new(&paths.nivm_data.join("hash"));
+    let hash = Hash::new(&paths.nvim_data.join("hash"));
 
     let threads = num_cpus::get();
     let rt = runtime::Builder::new_multi_thread()

@@ -5,7 +5,7 @@ use cfg_if::cfg_if;
 #[derive(Debug, Clone)]
 pub struct Paths {
     pub nvim_config: PathBuf,
-    pub nivm_data: PathBuf,
+    pub nvim_data: PathBuf,
     pub nvim_utils: PathBuf,
     pub ts_parsers: PathBuf,
 }
@@ -35,7 +35,7 @@ impl Paths {
 
         Self {
             nvim_config,
-            nivm_data,
+            nvim_data: nivm_data,
             nvim_utils,
             ts_parsers,
         }
@@ -51,7 +51,7 @@ mod tests {
         let paths = Paths::new();
         dbg!(&paths);
         assert!(paths.nvim_config.exists(), "nvim_config not found");
-        assert!(paths.nivm_data.exists(), "nvim_data not found");
+        assert!(paths.nvim_data.exists(), "nvim_data not found");
         assert!(paths.nvim_utils.exists(), "nvim_utils not found");
         assert!(paths.ts_parsers.exists(), "ts_parsers not found");
     }

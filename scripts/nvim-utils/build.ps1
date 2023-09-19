@@ -13,6 +13,4 @@ Copy-Item -Path ".\target\release\post-merge.exe" -Destination "$nvim_config\.gi
 
 # copy other binaries
 Copy-Item -Path ".\target\release\bootstrap.exe" -Destination "$nvim_config\scripts\bin\bootstrap.exe"
-# Copy-Item -Path ".\target\release\ts-parsers-download.exe" -Destination "$nvim_config\scripts\bin\ts-parsers-download.exe"
-# Copy-Item -Path ".\target\release\ts-parsers-compile.exe" -Destination "$nvim_config\scripts\bin\ts-parsers-compile.exe"
-# Copy-Item -Path ".\target\release\ts-parsers-compile-local.exe" -Destination "$nvim_config\scripts\bin\ts-parsers-compile-local.exe"
+Copy-Item -Path ".\target\release\ts-parsers.exe" -Destination "$nvim_config\scripts\bin\ts-parsers.exe"

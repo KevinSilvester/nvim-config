@@ -35,7 +35,7 @@ pub async fn run_command(
     name: &str,
     args: &Vec<&str>,
     cwd: Option<&Path>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<bool, Box<dyn std::error::Error>> {
     let mut command = Command::new(name);
     command.args(args);
     if let Some(cwd) = cwd {
@@ -114,16 +114,16 @@ pub async fn run_command(
             args.join(" "),
             red.paint("(failed!)")
         );
-        panic!("{} failed", name);
-    } else {
-        println!(
-            "{} {} {} {}",
-            turquoise.paint("=>"),
-            name,
-            args.join(" "),
-            green.paint("(complete!)")
-        );
+        return Ok(false);
     }
 
-    Ok(())
+    println!(
+        "{} {} {} {}",
+        turquoise.paint("=>"),
+        name,
+        args.join(" "),
+        green.paint("(complete!)")
+    );
+
+    Ok(true)
 }

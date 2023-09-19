@@ -1,10 +1,10 @@
-use nu_git_hooks::hash::{Hash, NvimUtils, TsParsers};
+use nu_git_hooks::hash::{Hash, NvimUtils};
 use nu_lib::{c_println, paths::Paths};
 use tokio::runtime;
 
 fn main() {
     let paths = Paths::new();
-    let hash = Hash::new(&paths.nivm_data.join("hash"));
+    let hash = Hash::new(&paths.nvim_data.join("hash"));
 
     let threads = num_cpus::get();
     let rt = runtime::Builder::new_multi_thread()
@@ -20,11 +20,6 @@ fn main() {
 
         c_println!(blue, "Hashing nvim-utils...");
         hash.hash_dir(&NvimUtils, &paths.nvim_utils, true)
-            .await
-            .unwrap();
-
-        c_println!(blue, "Hashing ts-parsers...");
-        hash.hash_dir(&TsParsers, &paths.ts_parsers, true)
             .await
             .unwrap();
 

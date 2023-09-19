@@ -56,20 +56,20 @@ impl<'a> Subdir<'a> for NvimUtils {
     const NAME: &'a str = "nvim-utils";
 }
 
-pub struct TsParsers;
-impl<'a> Subdir<'a> for TsParsers {
-    const NAME: &'a str = "ts-parsers";
-}
+// pub struct TsParsers;
+// impl<'a> Subdir<'a> for TsParsers {
+//     const NAME: &'a str = "ts-parsers";
+// }
 
 #[derive(Debug)]
 pub struct Hash<'b> {
     pub hash_data_dir: PathBuf,
-    pub hash_data_subdir: [&'b str; 2],
+    pub hash_data_subdir: [&'b str; 1],
 }
 
 impl<'b> Hash<'b> {
     pub fn new(hash_dir: &Path) -> Self {
-        let hash_subdir = [NvimUtils::NAME, TsParsers::NAME];
+        let hash_subdir = [NvimUtils::NAME, /* TsParsers::NAME */];
 
         Self {
             hash_data_dir: hash_dir.clone().to_path_buf(),
