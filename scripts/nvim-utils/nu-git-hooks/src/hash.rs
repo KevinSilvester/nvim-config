@@ -69,7 +69,7 @@ pub struct Hash<'b> {
 
 impl<'b> Hash<'b> {
     pub fn new(hash_dir: &Path) -> Self {
-        let hash_subdir = [NvimUtils::NAME, /* TsParsers::NAME */];
+        let hash_subdir = [NvimUtils::NAME /* TsParsers::NAME */];
 
         Self {
             hash_data_dir: hash_dir.clone().to_path_buf(),

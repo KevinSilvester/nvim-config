@@ -1,7 +1,7 @@
 use nu_ts_parsers::cleanup::Cleanup;
 use tokio::sync::mpsc::UnboundedSender;
 
-use crate::subcommands::{Compile, Download, SubCommand, CompileLocal};
+use crate::subcommands::{Compile, CompileLocal, Download, SubCommand};
 
 #[derive(clap::Parser, Debug)]
 pub enum SubCommands {
