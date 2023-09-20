@@ -1,3 +1,11 @@
+#[allow(unused_assignments)]
+
+#[cfg(unix)]
+const PNPM: &str = "pnpm";
+
+#[cfg(windows)]
+const PNPM: &str = "pnpm.CMD";
+
 pub mod fs {
     use std::fs;
     use std::path::Path;
@@ -135,7 +143,7 @@ pub mod compile_utils {
     use nu_lib::{c_println, command::run_command, paths::Paths};
     use tokio::fs;
 
-    use crate::parsers::{LazyLockEntry, ParserInfo, TSLockEntry};
+    use crate::{parsers::{LazyLockEntry, ParserInfo, TSLockEntry}, PNPM};
 
     pub async fn read_parsers(paths: &Paths) -> serde_json::Result<Vec<ParserInfo>> {
         run_command(
@@ -192,7 +200,7 @@ pub mod compile_utils {
     async fn build_from_grammar() -> anyhow::Result<()> {
         let mut tree_sitter_cli = true;
 
-        run_command("pnpm", &vec!["install"], None).await.unwrap();
+        run_command(PNPM, &vec!["install"], None).await.unwrap();
         if !run_command("tree-sitter", &vec!["generate"], None)
             .await
             .unwrap()
@@ -266,11 +274,15 @@ pub mod compile_utils {
             build_cmd = "clang";
             build_args.append(&mut vec!["-o", "out.so", "-I./src"]);
             build_args.append(&mut files.iter().map(|p| p.as_str()).collect());
+            
             #[cfg(target_os = "macos")]
-            build_args.append(&mut vec!["-Os", "-bundle", "-fPIC"]);
-
+            build_args.append(&mut vec!["-Os", "-bundle"]);
+            
             #[cfg(not(target_os = "macos"))]
-            build_args.append(&mut vec!["-Os", "-shared", "-fPIC"]);
+            build_args.append(&mut vec!["-Os", "-shared"]);
+            
+            #[cfg(not(target_os = "windows"))]
+            build_args.append(&mut vec!["-fPIC"]);
 
             // if any of the files is a c++ file, build with c++ compiler
             if files
