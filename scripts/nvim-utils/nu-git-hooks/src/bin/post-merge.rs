@@ -29,7 +29,9 @@ fn main() {
 
         if paths.nvim_utils.join("target").is_dir() {
             c_println!(blue, "\nDeleting target directory...");
-            fs::remove_dir_all(paths.nvim_utils.join("target")).await.unwrap();
+            fs::remove_dir_all(paths.nvim_utils.join("target"))
+                .await
+                .unwrap();
             c_println!(green, "Deleted target directory!");
         }
 

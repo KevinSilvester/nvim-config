@@ -1,5 +1,4 @@
 #[allow(unused_assignments)]
-
 #[cfg(unix)]
 const PNPM: &str = "pnpm";
 
@@ -143,7 +142,10 @@ pub mod compile_utils {
     use nu_lib::{c_println, command::run_command, paths::Paths};
     use tokio::fs;
 
-    use crate::{parsers::{LazyLockEntry, ParserInfo, TSLockEntry}, PNPM};
+    use crate::{
+        parsers::{LazyLockEntry, ParserInfo, TSLockEntry},
+        PNPM,
+    };
 
     pub async fn read_parsers(paths: &Paths) -> serde_json::Result<Vec<ParserInfo>> {
         run_command(
@@ -274,13 +276,13 @@ pub mod compile_utils {
             build_cmd = "clang";
             build_args.append(&mut vec!["-o", "out.so", "-I./src"]);
             build_args.append(&mut files.iter().map(|p| p.as_str()).collect());
-            
+
             #[cfg(target_os = "macos")]
             build_args.append(&mut vec!["-Os", "-bundle"]);
-            
+
             #[cfg(not(target_os = "macos"))]
             build_args.append(&mut vec!["-Os", "-shared"]);
-            
+
             #[cfg(not(target_os = "windows"))]
             build_args.append(&mut vec!["-fPIC"]);
 
