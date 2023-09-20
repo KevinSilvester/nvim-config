@@ -11,7 +11,7 @@ use crate::renderer::Renderer;
 pub fn check_command_exists(command: &str) -> Result<(), std::io::Error> {
     match std::process::Command::new(command)
         .stdout(Stdio::null())
-        .spawn()
+        .output()
     {
         Ok(_) => Ok(()),
         Err(e) => {
@@ -38,6 +38,9 @@ pub async fn run_command(
 ) -> Result<bool, Box<dyn std::error::Error>> {
     let mut command = Command::new(name);
     command.args(args);
+    if name == "cargo" && check_command_exists("sccache").is_ok() {
+        command.env("RUSTC_WRAPPER", "sccache");
+    }
     if let Some(cwd) = cwd {
         command.current_dir(cwd);
     }

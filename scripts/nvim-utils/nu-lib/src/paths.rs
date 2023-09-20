@@ -46,7 +46,6 @@ mod tests {
     #[test]
     fn test_paths() {
         let paths = Paths::new();
-        dbg!(&paths);
         assert!(paths.nvim_config.exists(), "nvim_config not found");
         assert!(paths.nvim_data.exists(), "nvim_data not found");
         assert!(paths.nvim_utils.exists(), "nvim_utils not found");
