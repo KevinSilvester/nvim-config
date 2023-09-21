@@ -106,19 +106,18 @@ impl SubCommand for Compile {
                         c_println!(red, "FAILED: {}", &parser.language);
                     }
                 }
-
-                let dist_dir = std::env::temp_dir()
-                    .join("ts-parsers-dist")
-                    .join(format!("treesitter-{}", &target));
-                if dist_dir.exists() {
-                    fs::remove_dir_all(&dist_dir).await?;
-                }
-                fs::create_dir_all(&dist_dir).await?;
-                copy_dir_all(
-                    std::env::temp_dir().join(format!("treesitter-{}", &target)),
-                    dist_dir,
-                )?;
             }
+            let dist_dir = std::env::temp_dir()
+                .join("ts-parsers-dist")
+                .join(format!("treesitter-{}", &target));
+            if dist_dir.exists() {
+                fs::remove_dir_all(&dist_dir).await?;
+            }
+            fs::create_dir_all(&dist_dir).await?;
+            copy_dir_all(
+                std::env::temp_dir().join(format!("treesitter-{}", &target)),
+                dist_dir,
+            )?;
 
             shutdown_tx.send(())?;
             Ok(())
