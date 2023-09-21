@@ -1,5 +1,4 @@
 local ufn = require('utils.fn')
-local cache_dir = vim.fn.stdpath('cache')
 
 
 -------------
@@ -18,7 +17,8 @@ vim.opt.encoding = 'utf-8'
 vim.opt.viewoptions = 'folds,cursor,curdir,slash,unix'
 vim.opt.wildignore =
 '.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**'
-vim.opt.runtimepath:append(vim.fn.stdpath('data') .. '/treesitter')
+vim.opt.runtimepath:append(PATH.data .. '/treesitter')
+vim.opt.runtimepath:append(PATH.config .. '/scripts/bin')
 vim.opt.spell = true
 vim.opt.spelllang = { 'en_gb' }
 
@@ -53,11 +53,11 @@ vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.undofile = true
-vim.opt.directory = cache_dir .. '/swap/'
-vim.opt.undodir = cache_dir .. '/undo/'
-vim.opt.backupdir = cache_dir .. '/backup/'
-vim.opt.viewdir = cache_dir .. '/view/'
-vim.opt.spellfile = cache_dir .. '/spell/en.uft-8.add'
+vim.opt.directory = PATH.cache .. '/swap/'
+vim.opt.undodir = PATH.cache .. '/undo/'
+vim.opt.backupdir = PATH.cache .. '/backup/'
+vim.opt.viewdir = PATH.cache .. '/view/'
+vim.opt.spellfile = PATH.cache .. '/spell/en.uft-8.add'
 vim.opt.history = 2000
 vim.opt.shada = "!,'300,<50,@100,s10,h"
 vim.opt.backupskip = '/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*,/private/var/*,.vault.vim'

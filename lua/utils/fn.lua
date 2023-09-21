@@ -162,8 +162,8 @@ end
 ---@param command string
 ---@param args table<integer|string>
 ---@param on_exit fun(code: number, signal: number)|nil
----@param out fun(data: string)|nil
----@param err fun(data: string)|nil
+---@param out {fn?: fun(data: string), log?: boolean}|nil
+---@param err {fn?: fun(data: string), log?: boolean}|nil
 M.spawn = function(command, args, on_exit, out, err)
    local stdout = uv.new_pipe(false)
    local stderr = uv.new_pipe(false)
@@ -193,20 +193,24 @@ M.spawn = function(command, args, on_exit, out, err)
    )
 
    stderr:read_start(function(_, data)
-      if data then
+      if data and type(err) ~= 'nil' then
          local str = data:sub(1, -2)
-         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`', true)
-         if type(err) == 'function' then
+         if err.log then
+            log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`', true)
+         end
+         if type(err.fn) == 'function' then
             err(str)
          end
       end
    end)
 
    stdout:read_start(function(_, data)
-      if data then
+      if data and type(out) ~= 'nil' then
          local str = data:sub(1, -2)
-         log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`', true)
-         if type(out) == 'function' then
+         if out.log then
+            log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`', true)
+         end
+         if type(out.fn) == 'function' then
             out(str)
          end
       end
