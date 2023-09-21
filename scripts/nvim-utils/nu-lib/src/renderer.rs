@@ -20,7 +20,7 @@ impl Renderer {
         }
     }
 
-    pub fn clear_ouput(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn clear_ouput(&mut self) -> anyhow::Result<()> {
         if self.prev_line_count == 0 {
             return Ok(());
         }
@@ -37,7 +37,7 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn clear_output_final(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn clear_output_final(&mut self) -> anyhow::Result<()> {
         execute!(
             self.stdout,
             cursor::MoveToPreviousLine(self.prev_line_count as u16 + 1)
@@ -50,10 +50,7 @@ impl Renderer {
         Ok(())
     }
 
-    pub fn render_queue(
-        &mut self,
-        queue: &VecDeque<String>,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn render_queue(&mut self, queue: &VecDeque<String>) -> anyhow::Result<()> {
         self.line_count = queue.len();
 
         if self.is_first_render {
@@ -65,7 +62,7 @@ impl Renderer {
         for _line in queue {
             let width = match terminal::size() {
                 Ok((w, _)) if w > 0 => w as usize,
-                _ => 80,
+                _ => 100,
             };
             let mut line = _line.clone();
             line.truncate(width);

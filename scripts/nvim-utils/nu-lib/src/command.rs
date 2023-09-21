@@ -8,7 +8,7 @@ use tokio_stream::StreamExt;
 
 use crate::renderer::Renderer;
 
-pub fn check_command_exists(command: &str) -> Result<(), std::io::Error> {
+pub fn check_command_exists(command: &str) -> anyhow::Result<()> {
     match std::process::Command::new(command)
         .stdout(Stdio::null())
         .output()
@@ -17,7 +17,7 @@ pub fn check_command_exists(command: &str) -> Result<(), std::io::Error> {
         Err(e) => {
             if let std::io::ErrorKind::NotFound = e.kind() {
                 c_println!(red, "ERROR: `{}` not found", command);
-                Err(e)
+                anyhow::bail!(e)
             } else {
                 Ok(())
             }
@@ -31,16 +31,9 @@ fn clean_string(s: &str) -> String {
     String::from_utf8(Vec::from(bytes)).unwrap()
 }
 
-pub async fn run_command(
-    name: &str,
-    args: &Vec<&str>,
-    cwd: Option<&Path>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+pub async fn run_command(name: &str, args: &Vec<&str>, cwd: Option<&Path>) -> anyhow::Result<bool> {
     let mut command = Command::new(name);
     command.args(args);
-    if name == "cargo" && check_command_exists("sccache").is_ok() {
-        command.env("RUSTC_WRAPPER", "sccache");
-    }
     if let Some(cwd) = cwd {
         command.current_dir(cwd);
     }

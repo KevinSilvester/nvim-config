@@ -871,6 +871,7 @@ name = "nu-lib"
 version = "0.1.0"
 dependencies = [
  "ansi_term",
+ "anyhow",
  "cfg-if",
  "crossterm",
  "dirs",
