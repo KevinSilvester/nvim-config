@@ -2,6 +2,7 @@
 
 **Common**
 
+-  rust toolchain (cargo, rustc, ...)
 -  git
 -  nodejs
 -  ripgrep
@@ -9,7 +10,7 @@
 -  fd
 -  ls_emmet
 -  go
--  tree-sitter-cli
+-  tree-sitter-cli (preferably not as npm package)
 
 **Unix**
 
@@ -20,7 +21,7 @@
 
 **Windows**
 
--  powershell
+-  pwsh
 -  tar
 -  7zip/peazip/archiver/winzip/WinRaR
 
