@@ -117,39 +117,44 @@ async fn extract_archive(
     let parsers_backup_target =
         parsers_backup_home.join(format!("treesitter-{}", (*RANDOM_STRING).as_ref()));
 
-    fs::create_dir_all(&parsers_backup_home).await?;
+    if !parsers_backup_home.exists() {
+        fs::create_dir_all(&parsers_backup_home).await?;
+    }
+
     if parsers_active.exists() {
         copy_dir_all(&parsers_active, &parsers_backup_target)?;
         fs::remove_dir_all(&parsers_active).await?;
+    } else {
+        fs::create_dir_all(&parsers_active).await?;
     }
 
     #[cfg(unix)]
-    run_command("tar", &vec!["-xzvf", archive_name], Some(nvim_data))
-        .await
-        .unwrap();
+    run_command("tar", &vec!["-xzvf", archive_name], Some(nvim_data)).await?;
 
     #[cfg(windows)]
-    run_command("7z", &vec!["x", archive_name], Some(nvim_data))
-        .await
-        .unwrap();
+    run_command("7z", &vec!["x", archive_name], Some(nvim_data)).await?;
 
-    let mut backup_log = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(&parsers_backup_home.join("backup-log"))
-        .await
-        .unwrap();
-    backup_log
-        .write_all(
-            format!(
-                "[{}] -- {}\n",
-                chrono::offset::Utc::now(),
-                (*RANDOM_STRING).as_ref()
+    if !parsers_backup_home.join("backup-log").is_file() {
+        fs::write(&parsers_backup_home.join("backup-log"), "").await?;
+    } else {
+        let mut backup_log = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(&parsers_backup_home.join("backup-log"))
+            .await
+            .unwrap();
+        backup_log
+            .write_all(
+                format!(
+                    "[{}] -- {}\n",
+                    chrono::offset::Utc::now(),
+                    (*RANDOM_STRING).as_ref()
+                )
+                .as_bytes(),
             )
-            .as_bytes(),
-        )
-        .await?;
-    fs::write(&parsers_active.join("backup-id"), (*RANDOM_STRING).as_ref()).await?;
+            .await?;
+        fs::write(&parsers_active.join("backup-id"), (*RANDOM_STRING).as_ref()).await?;
+    }
     fs::write(&parsers_active.join("release-tag"), release_tag).await?;
     Ok(())
 }
@@ -171,7 +176,7 @@ impl SubCommand for Download {
         Ok(())
     }
 
-    async fn cleanup(mut c: Cleanup) -> anyhow::Result<()> {
+    async fn cleanup(&self, mut c: Cleanup) -> anyhow::Result<()> {
         let archive_name = get_archive_name();
         let paths = Paths::new();
 

@@ -53,10 +53,15 @@ async fn copy_parsers(nvim_data: &Path) -> anyhow::Result<()> {
     let parsers_backup_target =
         parsers_backup_home.join(format!("treesitter-{}", (*RANDOM_STRING).as_ref()));
 
-    fs::create_dir_all(&parsers_backup_home).await?;
+    if !parsers_backup_home.exists() {
+        fs::create_dir_all(&parsers_backup_home).await?;
+    }
+
     if parsers_active.exists() {
         copy_dir_all(&parsers_active, &parsers_backup_target)?;
         fs::remove_dir_all(&parsers_active).await?;
+    } else {
+        fs::create_dir_all(&parsers_active).await?;
     }
 
     copy_dir_all(
@@ -64,23 +69,27 @@ async fn copy_parsers(nvim_data: &Path) -> anyhow::Result<()> {
         &parsers_active,
     )?;
 
-    let mut backup_log = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(&parsers_backup_home.join("backup-log"))
-        .await
-        .unwrap();
-    backup_log
-        .write_all(
-            format!(
-                "[{}] -- {}\n",
-                chrono::offset::Utc::now(),
-                (*RANDOM_STRING).as_ref()
+    if !parsers_backup_home.join("backup-log").is_file() {
+        fs::write(&parsers_backup_home.join("backup-log"), "").await?;
+    } else {
+        let mut backup_log = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(&parsers_backup_home.join("backup-log"))
+            .await
+            .unwrap();
+        backup_log
+            .write_all(
+                format!(
+                    "[{}] -- {}\n",
+                    chrono::offset::Utc::now(),
+                    (*RANDOM_STRING).as_ref()
+                )
+                .as_bytes(),
             )
-            .as_bytes(),
-        )
-        .await?;
-    fs::write(&parsers_active.join("backup-id"), (*RANDOM_STRING).as_ref()).await?;
+            .await?;
+        fs::write(&parsers_active.join("backup-id"), (*RANDOM_STRING).as_ref()).await?;
+    }
     fs::write(&parsers_active.join("release-tag"), "no-release-tag").await?;
     Ok(())
 }
@@ -126,29 +135,27 @@ impl SubCommand for CompileLocal {
 
             cleanup_partial().await?;
 
-            if retry_list.is_empty() {
-                return Ok(());
-            }
-
-            c_println!(blue, "\nRetrying failed parsers");
-            for parser in &retry_list {
-                c_println!(
-                    blue,
-                    "Compiling parser {} of {}: {}",
-                    &retry_list
-                        .iter()
-                        .position(|p| p.language == parser.language)
-                        .unwrap()
-                        + 1,
-                    &retry_list.len(),
-                    parser.language
-                );
-                if (compile_parser(true, &(*RANDOM_STRING).to_string(), parser, &ts_lock).await)
-                    .is_ok()
-                {
-                    c_println!(green, "SUCCESS: {}", &parser.language);
-                } else {
-                    c_println!(red, "FAILED: {}", &parser.language);
+            if !retry_list.is_empty() {
+                c_println!(blue, "\nRetrying failed parsers");
+                for parser in &retry_list {
+                    c_println!(
+                        blue,
+                        "Compiling parser {} of {}: {}",
+                        &retry_list
+                            .iter()
+                            .position(|p| p.language == parser.language)
+                            .unwrap()
+                            + 1,
+                        &retry_list.len(),
+                        parser.language
+                    );
+                    if (compile_parser(true, &(*RANDOM_STRING).to_string(), parser, &ts_lock).await)
+                        .is_ok()
+                    {
+                        c_println!(green, "SUCCESS: {}", &parser.language);
+                    } else {
+                        c_println!(red, "FAILED: {}", &parser.language);
+                    }
                 }
             }
 
@@ -161,7 +168,7 @@ impl SubCommand for CompileLocal {
         Ok(())
     }
 
-    async fn cleanup(mut c: Cleanup) -> anyhow::Result<()> {
+    async fn cleanup(&self, mut c: Cleanup) -> anyhow::Result<()> {
         let paths = Paths::new();
         c.add_target(paths.nvim_config.join("parsers.json"));
         c.add_target(paths.nvim_config.join("lockfile.json"));

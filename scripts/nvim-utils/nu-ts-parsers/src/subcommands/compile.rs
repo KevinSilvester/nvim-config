@@ -86,41 +86,40 @@ impl SubCommand for Compile {
 
             cleanup_partial().await?;
 
-            if retry_list.is_empty() {
-                return Ok(());
-            }
-
-            c_println!(blue, "\nRetrying failed parsers");
-            for parser in &retry_list {
-                c_println!(
-                    blue,
-                    "Compiling parser {} of {}: {}",
-                    &retry_list
-                        .iter()
-                        .position(|p| p.language == parser.language)
-                        .unwrap()
-                        + 1,
-                    &retry_list.len(),
-                    parser.language
-                );
-                if (compile_parser(false, &target, parser, &ts_lock).await).is_ok() {
-                    c_println!(green, "SUCCESS: {}", &parser.language);
-                } else {
-                    c_println!(red, "FAILED: {}", &parser.language);
+            if !retry_list.is_empty() {
+                c_println!(blue, "\nRetrying failed parsers");
+                for parser in &retry_list {
+                    c_println!(
+                        blue,
+                        "Compiling parser {} of {}: {}",
+                        &retry_list
+                            .iter()
+                            .position(|p| p.language == parser.language)
+                            .unwrap()
+                            + 1,
+                        &retry_list.len(),
+                        parser.language
+                    );
+                    if (compile_parser(false, &target, parser, &ts_lock).await).is_ok() {
+                        c_println!(green, "SUCCESS: {}", &parser.language);
+                    } else {
+                        c_println!(red, "FAILED: {}", &parser.language);
+                    }
                 }
+
+                let dist_dir = std::env::temp_dir()
+                    .join("ts-parsers-dist")
+                    .join(format!("treesitter-{}", &target));
+                if dist_dir.exists() {
+                    fs::remove_dir_all(&dist_dir).await?;
+                }
+                fs::create_dir_all(&dist_dir).await?;
+                copy_dir_all(
+                    std::env::temp_dir().join(format!("treesitter-{}", &target)),
+                    dist_dir,
+                )?;
             }
 
-            let dist_dir = std::env::temp_dir()
-                .join("ts-parsers-dist")
-                .join(format!("treesitter-{}", &target));
-            if dist_dir.exists() {
-                fs::remove_dir_all(&dist_dir).await?;
-            }
-            fs::create_dir_all(&dist_dir).await?;
-            copy_dir_all(
-                std::env::temp_dir().join(format!("treesitter-{}", &target)),
-                dist_dir,
-            )?;
             shutdown_tx.send(())?;
             Ok(())
         });
@@ -129,7 +128,7 @@ impl SubCommand for Compile {
         Ok(())
     }
 
-    async fn cleanup(mut c: Cleanup) -> anyhow::Result<()> {
+    async fn cleanup(&self, mut c: Cleanup) -> anyhow::Result<()> {
         let paths = Paths::new();
         c.add_target(paths.nvim_config.join("parsers.json"));
         c.add_target(paths.nvim_config.join("lockfile.json"));

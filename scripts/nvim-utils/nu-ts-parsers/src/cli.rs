@@ -30,9 +30,9 @@ impl SubCommands {
     pub async fn cleanup(&self) -> anyhow::Result<()> {
         let c = Cleanup::new(vec![]);
         match self {
-            SubCommands::Download(_) => Ok(Download::cleanup(c).await?),
-            SubCommands::Compile(_) => Ok(Compile::cleanup(c).await?),
-            SubCommands::CompileLocal(_) => Ok(Compile::cleanup(c).await?),
+            SubCommands::Download(cmd) => Ok(cmd.cleanup(c).await?),
+            SubCommands::Compile(cmd) => Ok(cmd.cleanup(c).await?),
+            SubCommands::CompileLocal(cmd) => Ok(cmd.cleanup(c).await?),
         }
     }
 }
