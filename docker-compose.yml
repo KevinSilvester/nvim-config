@@ -9,8 +9,6 @@ services:
     init: true
     ports:
       - 8092:3000
-    volumes:
-      - .:/root/.config/nvim
     stdin_open: true
     tty: true
     command: /bin/bash
