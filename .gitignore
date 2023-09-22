@@ -44,10 +44,11 @@ luac.out
 *.hex
 
 # Plugin lock file
-my-config-lock.json
+bootstrap-lock.json
 parsers.json
 lockfile.json
 
+# rust binaries
 scripts/bin/*
 !scripts/bin/.gitkeep
 

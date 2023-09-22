@@ -6,13 +6,13 @@ local augroup = vim.api.nvim_create_augroup('core.bootstrap', { clear = true })
 ---@class LockValues
 ---@field cache_created boolean
 ---@field bundled_parsers_deleted boolean
----@field pasrser_downloaded boolean
+---@field parsers_downloaded boolean
 ---@field scripts_built boolean
 ---@field git_hooks_bootstrap boolean
 local LOCK_INITIALS = {
    cache_created = false,
    bundled_parsers_deleted = false,
-   pasrser_downloaded = false,
+   parsers_downloaded = false,
    scripts_built = false,
    git_hooks_bootstrap = false,
 }
@@ -26,7 +26,7 @@ local Bootstrap = {}
 ---@param lockfile? string
 function Bootstrap:init(lockfile)
    self = setmetatable({}, { __index = Bootstrap })
-   self.lockfile = lockfile or ufs.path_join(PATH.config, 'my-config-lock.json')
+   self.lockfile = lockfile or ufs.path_join(PATH.config, 'bootstrap-lock.json')
    self.lock_values = {}
 
    vim.schedule(function()
@@ -56,7 +56,7 @@ function Bootstrap:init(lockfile)
          self:__bootstrap_git_hooks()
       end
 
-      if self.lock_values.git_hooks_bootstrap and not self.lock_values.pasrser_downloaded then
+      if self.lock_values.git_hooks_bootstrap and not self.lock_values.parsers_downloaded then
          self:__download_parsers()
       end
 
@@ -162,7 +162,6 @@ function Bootstrap:__build_scritps()
 end
 
 function Bootstrap:__bootstrap_git_hooks()
-   log.info('', ufn.executable('bootstrap'))
    return xpcall(function()
       log.info('core.bootstrap', 'Bootstrapping git hooks...')
 
@@ -183,6 +182,20 @@ end
 
 ---Use the download scrip to download pre-compiled parsers
 function Bootstrap:__download_parsers()
+   vim.api.nvim_create_autocmd('User', {
+      once = true,
+      group = augroup,
+      pattern = 'warn-ts-parsers',
+      callback = function()
+         log.warn(
+            'core.bootstrap',
+            'Pre-compiled tree-sitter parsers often times are broken for linux (compiled with `zig`).\n'
+               .. 'If so they could be compiled locally by running the `./scripts/bin/ts-parsers compile-local`.\n'
+               .. 'Please not `clang`, `pnpm` and `tree-sitter-cli` is required for the script to run.'
+         )
+      end,
+   })
+
    return xpcall(function()
       log.info('core.bootstrap', 'Downloading pre-compiled treesitter parsers...')
 
@@ -199,9 +212,12 @@ function Bootstrap:__download_parsers()
       local bin = HOST.is_win and 'ts-parsers.exe' or 'ts-parsers'
       ufn.spawn(PATH.config .. '/scripts/bin/' .. bin, { 'download' }, function(code, _signal)
          if code == 0 then
-            self.lock_values.pasrser_downloaded = true
+            self.lock_values.parsers_downloaded = true
             self:__write_lock(self.lock_values)
             log.info('core.bootstrap', 'Treesitter parsers download complete!')
+            if HOST.is_linux and not HOST.is_docker then
+               vim.api.nvim_exec_autocmds('User', { group = augroup, pattern = 'warn-ts-parsers' })
+            end
          else
             log.error('core.bootstrap', 'Treesitter parsers download failed')
          end
