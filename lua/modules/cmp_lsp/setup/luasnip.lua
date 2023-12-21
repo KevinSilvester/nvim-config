@@ -7,13 +7,13 @@ M.config = function()
       history = true,
       enable_autosnippets = true,
       updateevents = 'TextChanged,TextChangedI',
-      ext_opts = {
-         [types.choiceNode] = {
-            active = {
-               virt_text = { { '<- choiceNode', 'Comment' } },
-            },
-         },
-      },
+      -- ext_opts = {
+      --    [types.choiceNode] = {
+      --       active = {
+      --          virt_text = { { '<- choiceNode', 'Comment' } },
+      --       },
+      --    },
+      -- },
    })
 
    require('luasnip.loaders.from_lua').lazy_load()

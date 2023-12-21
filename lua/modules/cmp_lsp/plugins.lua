@@ -88,13 +88,12 @@ return {
    },
    {
       'L3MON4D3/LuaSnip',
-      tag = 'v1.2.1',
+      tag = 'v2.*',
       build = 'make install_jsregexp',
       event = 'InsertEnter',
       dependencies = 'rafamadriz/friendly-snippets',
       config = require('modules.cmp_lsp.setup.luasnip').config,
    },
-   { 'rafamadriz/friendly-snippets' },
    {
       'windwp/nvim-autopairs',
       opts = {
