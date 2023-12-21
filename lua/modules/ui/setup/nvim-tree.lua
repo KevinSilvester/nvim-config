@@ -59,7 +59,7 @@ M.opts = {
    update_focused_file = {
       enable = true, -- false
       debounce_delay = 15, -- missing
-      update_root = false,
+      update_root = true,
       update_cwd = true,
    },
    diagnostics = {
