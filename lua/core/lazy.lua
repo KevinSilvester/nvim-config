@@ -67,7 +67,6 @@ function Lazy:__bootstrap()
       lockfile = self.lockfile,
       -- spec = { { 'LazyVim/LazyVim', import = 'lazyvim.plugins' } },
       spec = self.spec,
-      -- spec = { { import = 'modules._essentials.plugins' } },
       defaults = {
          lazy = true,
          version = false,

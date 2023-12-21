@@ -2,64 +2,6 @@ local function augroup(name)
    return vim.api.nvim_create_augroup('config.autocmd.' .. name, { clear = true })
 end
 
--- ---@return CacheBlock
--- local function cach_init()
---    return { lsp = {}, fmt = {}, copilot = false, treesitter = false }
--- end
-
--- vim.api.nvim_create_autocmd('LspAttach', {
---    group = augroup('cache-lsp'),
---    desc = 'Cache buf LSP+copilot',
---    callback = vim.schedule_wrap(function(event)
---       if buf_cache.buffers[event.buf] == nil then
---          buf_cache.buffers[event.buf] = cach_init()
---       end
-
---       for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = event.buf })) do
---          if client.name ~= 'copilot' and client.name ~= 'null-ls' then
---             table.insert(buf_cache.buffers[event.buf].lsp, client.name)
---          elseif client.name == 'copilot' then
---             buf_cache.buffers[event.buf].copilot = true
---          end
---       end
---       log.info('core.autocmd.lsp', buf_cache)
---    end),
--- })
-
--- vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
---    group = augroup('cache-treesitter'),
---    desc = 'Cache buf treesitter',
---    callback = vim.schedule_wrap(function(event)
---       -- buf_cache.active = event.buf
---       local ts = vim.treesitter.highlighter.active[event.buf] ~= nil
---       if buf_cache.buffers[event.buf] == nil then
---          buf_cache.buffers[event.buf] = cach_init()
---       end
---       buf_cache.buffers[event.buf].treesitter = ts
---       log.info('core.autocmd.lsp', buf_cache)
---    end),
--- })
-
--- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
---    group = augroup('cache-active-buffer'),
---    desc = 'Update active buffer',
---    callback = function(event)
---       buf_cache.active = event.buf
---       if buf_cache.buffers[event.buf] == nil then
---          buf_cache.buffers[event.buf] = cach_init()
---       end
---    end
--- })
-
--- vim.api.nvim_create_autocmd({ 'BufDelete' }, {
---    group = augroup('cache-clear'),
---    desc = 'Update active buffer',
---    callback = function(event)
---       buf_cache.buffers[event.buf] = nil
---       log.info('core.autocmd.lsp', buf_cache)
---    end,
--- })
-
 -- resize splits if window got resized
 vim.api.nvim_create_autocmd({ 'VimResized' }, {
    group = augroup('resize'),
@@ -100,6 +42,19 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
    callback = function(event)
       vim.bo[event.buf].buflisted = false
       vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = event.buf, silent = true })
+   end,
+})
+
+-- Set `filetype` to `license` for `LICENSE*` files (for cmp snippets to appear)
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+   group = augroup('license'),
+   desc = 'Set `filetype` to `license` for `LICENSE*` files',
+   pattern = { 'text', 'markdown' },
+   callback = function(event)
+      local filename = vim.fn.expand('%:t')
+      if filename:match('^LICENSE') then
+         vim.bo[event.buf].filetype = 'license'
+      end
    end,
 })
 
