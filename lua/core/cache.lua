@@ -27,16 +27,12 @@ function BufCache:init()
 
    ---Refresh buf cache for active buffer
    buf_cache.refresh = function()
-      local bufnr = vim.api.nvim_get_current_buf()
+      self:__refresh()
+   end
 
-      self.buffers[bufnr].lsp = {}
-      self.buffers[bufnr].fmt = {}
-      self.buffers[bufnr].copilot = false
-
-      self:__check_treesitter(bufnr)
-      self:__check_lsp(bufnr)
-      self:__check_fmt(bufnr)
-      self:__update_active(bufnr)
+   ---Refresh buf cache for all buffers
+   buf_cache.refresh_all = function()
+      self:__refresh_all()
    end
 
    ---Retrieve info buffer(s) from cache block
@@ -57,7 +53,7 @@ end
 ---@param bufnr number bufnr of entered buffer
 ---@param file string path to buffer file
 function BufCache:__create_block(bufnr, file)
-   if not self.buffers[bufnr] then
+   if not self.buffers[bufnr] and file ~= '' then
       self.buffers[bufnr] = { lsp = {}, fmt = {}, file = file, copilot = false, treesitter = false }
    end
 end
@@ -71,10 +67,7 @@ end
 ---Deleted cache blocks for excluded filetypes
 ---@param bufnr number
 function BufCache:__delete_excluded_ft(bufnr)
-   if
-      self.buffers[bufnr]
-      and (vim.tbl_contains(self.excluded, vim.bo[bufnr].filetype) or self.buffers[bufnr].file == '')
-   then
+   if self.buffers[bufnr] and vim.tbl_contains(self.excluded, vim.bo[bufnr].filetype) then
       self:__delete_block(bufnr)
    end
 end
@@ -147,7 +140,7 @@ function BufCache:__create_autocmds()
       end,
    })
 
-   vim.api.nvim_create_autocmd({ 'BufLeave' }, {
+   vim.api.nvim_create_autocmd({ 'BufLeave', 'BufHidden', 'BufDelete' }, {
       group = augroup('delete-excluded'),
       desc = 'Delete cache block for excluded filetypes',
       callback = function(event)
@@ -228,6 +221,12 @@ function BufCache:__render()
       return Tree.Node({ id = bufnr .. '-' .. key, key = key, value = cache_block[key] })
    end
 
+   ---@param node NuiTreeNode
+   ---@param cache_block CacheBlock
+   local update_child_node = function(node, cache_block)
+      node.value = cache_block[node.key]
+   end
+
    ---@param bufnr number
    ---@param buffer_count number
    ---@param cache_block CacheBlock
@@ -272,7 +271,8 @@ function BufCache:__render()
    local popup = Popup({
       enter = true,
       focusable = true,
-      border = { style = 'rounded', text = { top = 'Buffer Info' } },
+      zindex = 1000,
+      border = { style = 'rounded', text = { top = 'BufCache', bottom = "'?' for help" } },
       relative = 'editor',
       position = '50%',
       size = { height = '50%', width = '45%' },
@@ -316,7 +316,7 @@ function BufCache:__render()
          if node:has_children() then
             line:append(node:is_expanded() and '' or '', hlgroup('arrows'))
             line:append(' [ ', hlgroup('brackets'))
-            line:append('', node.active and hlgroup('active') or hlgroup('brackets'))
+            line:append('󰈸', node.active and hlgroup('active') or hlgroup('brackets'))
             line:append(' ] ', hlgroup('brackets'))
             line:append('Buffer ' .. string.format('%-3s', node.text))
 
@@ -454,7 +454,166 @@ function BufCache:__render()
       end)
    end, { noremap = true, silent = true })
 
+   -- Open buffer
+   popup:map('n', 'o', function()
+      local node = tree:get_node()
+      if node == nil then
+         return
+      end
+
+      if not node:has_children() then
+         node = tree:get_node(node:get_parent_id())
+      end
+
+      if node and node.file then
+         vim.schedule(function()
+            popup:unmount()
+            vim.api.nvim_set_current_buf(tonumber(node.text))
+         end)
+      end
+   end, { noremap = true, silent = true })
+
+   -- Delete buffer
+   popup:map('n', 'd', function()
+      local node = tree:get_node()
+      if node == nil then
+         return
+      end
+
+      if not node:has_children() then
+         node = tree:get_node(node:get_parent_id())
+      end
+
+      if node and node.file then
+         vim.schedule(function()
+            popup:unmount()
+            vim.api.nvim_buf_delete(tonumber(node.text))
+         end)
+      end
+   end, { noremap = true, silent = true })
+
+   -- Force delete buffer
+   popup:map('n', 'D', function()
+      local node = tree:get_node()
+      if node == nil then
+         return
+      end
+
+      if not node:has_children() then
+         node = tree:get_node(node:get_parent_id())
+      end
+
+      if node and node.file then
+         vim.schedule(function()
+            popup:unmount()
+            vim.api.nvim_buf_delete(tonumber(node.text), { force = true })
+         end)
+      end
+   end, { noremap = true, silent = true })
+
+   -- Refresh
+   popup:map('n', 'r', function()
+      self:__refresh_all()
+      local all_nodes = tree:get_nodes()
+      ---@type { id: string, text: string}[]
+      local parent_nodes = {}
+
+      for _, node in ipairs(all_nodes) do
+         if node:has_children() then
+            table.insert(parent_nodes, { id = node:get_id(), text = node.text })
+         end
+      end
+
+      vim.schedule(function()
+         for _, parent in ipairs(parent_nodes) do
+            local children = tree:get_nodes(parent.id)
+            for _, child in ipairs(children) do
+               update_child_node(child, self.buffers[tonumber(parent.text)])
+            end
+         end
+         tree:render()
+      end)
+   end, { noremap = true, silent = true })
+
+   -- Print Keybingings Help
+   popup:map('n', '?', function()
+      local help_text = {
+         'Buffer Info',
+         '',
+         'Keybindings:',
+         '',
+         '  <esc> or q: Close',
+         '  l: Expand',
+         '  L: Expand all',
+         '  h: Collapse',
+         '  H: Collapse all',
+         '  o: Open buffer',
+         '  r: Refresh all buffer info',
+         '  d: Delete buffer',
+         '  D: Force delete buffer',
+      }
+      local help_popup = Popup({
+         enter = true,
+         focusable = true,
+         zindex = 2000,
+         border = { style = 'rounded', text = { top = 'BufCache Help' } },
+         relative = 'editor',
+         position = '50%',
+         size = { height = #help_text + 2, width = '35%' },
+         buf_options = { modifiable = true, readonly = true },
+      })
+
+      help_popup:on({ 'BufLeave', 'BufDelete', 'BufWinLeave' }, function()
+         vim.schedule(function()
+            help_popup:unmount()
+         end)
+      end, { once = true })
+
+      help_popup:map('n', { 'q', '<esc>' }, function()
+         help_popup:unmount()
+      end, { noremap = true, silent = true })
+
+      vim.schedule(function()
+         help_popup:mount()
+
+         vim.api.nvim_buf_set_lines(help_popup.bufnr, 0, -1, false, help_text)
+         vim.api.nvim_buf_set_option(help_popup.bufnr, 'modifiable', false)
+      end)
+   end, { noremap = true, silent = true })
+
    tree:render()
+end
+
+---Refresh buf cache for active buffer
+function BufCache:__refresh()
+   ---@type number
+   local bufnr = vim.api.nvim_get_current_buf()
+
+   self.buffers[bufnr].lsp = {}
+   self.buffers[bufnr].fmt = {}
+   self.buffers[bufnr].copilot = false
+
+   self:__check_treesitter(bufnr)
+   self:__check_lsp(bufnr)
+   self:__check_fmt(bufnr)
+   self:__update_active(bufnr)
+end
+
+---Refresh buf cache for all buffers
+function BufCache:__refresh_all()
+   ---@type number[]
+   local bufnr_list = vim.tbl_keys(self.buffers)
+
+   for _, bufnr in ipairs(bufnr_list) do
+      self.buffers[bufnr].lsp = {}
+      self.buffers[bufnr].fmt = {}
+      self.buffers[bufnr].copilot = false
+
+      self:__check_treesitter(bufnr)
+      self:__check_lsp(bufnr)
+      self:__check_fmt(bufnr)
+      self:__update_active(bufnr)
+   end
 end
 
 return BufCache
