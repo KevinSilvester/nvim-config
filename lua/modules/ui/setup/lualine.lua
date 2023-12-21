@@ -115,7 +115,7 @@ M.config = function(_, opts)
 
    local info = {
       function()
-         return '理'
+         return '󰓥'
       end,
       color = { bg = colours.green, fg = colours.black },
       separator = separators.both,
@@ -149,7 +149,9 @@ M.config = function(_, opts)
       end,
       separator = '',
       padding = { right = 1 },
-      color = { fg = buf_cache.active.copilot and colours.turqouise or colours.red },
+      color = function()
+         return { fg = buf_cache.active.copilot and colours.turqouise or colours.red }
+      end,
    }
 
    local treesitter = {

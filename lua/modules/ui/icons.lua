@@ -4,7 +4,7 @@ local icons = {}
 icons.diagnostics = {
    Error   = "",
    Warning = "",
-   Hint    = "",
+   Hint    = "󰌵",
    Info    = "",
 }
 
@@ -96,20 +96,20 @@ icons.custom = {
 -- stylua: ignore
 icons.type = {
    Array   = "",
-   Number  = "",
-   String  = "",
+   Number  = "󰎠",
+   String  = "󰉿",
    Boolean = "",
-   Object  = "",
+   Object  = "󰅩",
    Null    = "",
 }
 
 -- stylua: ignore
 icons.misc = {
-   Ghost           = "",
+   Ghost           = "󰊠",
    SemiCircleLeft  = "",
    SemiCircleRight = "",
-   Info            = "",
-   Formatter       = "",
+   Info            = "󰋼",
+   Formatter       = "󰉢",
    LSP             = "",
    FileSize        = "",
    Location        = ""
@@ -117,19 +117,19 @@ icons.misc = {
 
 -- stylua: ignore
 icons.dap = {
-   Breakpoint          = '',
-   BreakpointCondition = 'ﳁ',
+   Breakpoint          = '󰝥',
+   BreakpointCondition = '󰟃',
    BreakpointRejected  = '',
    LogPoint            = '',
    Pause               = '',
    Play                = '',
    RunLast             = '↻',
    StepBack            = '',
-   StepInto            = '',
-   StepOut             = '',
-   StepOver            = '',
+   StepInto            = '󰆹',
+   StepOut             = '󰆸',
+   StepOver            = '󰆷',
    Stopped             = '',
-   Terminate           = 'ﱢ',
+   Terminate           = '󰝤',
 }
 
 return icons
