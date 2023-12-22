@@ -2,6 +2,7 @@ use std::path::{Path, PathBuf};
 
 use cfg_if::cfg_if;
 use jwalk::Parallelism;
+use nu_lib::c_println;
 use ring::digest::{Context, SHA256};
 use tokio::fs::{self, File};
 use tokio::io::{AsyncReadExt, BufReader};
@@ -37,9 +38,12 @@ fn walk_dir_stream(
             .into_iter()
             .filter_map(|e| e.ok())
         {
-            if entry.file_type().is_file() {
-                // TODO: handle send error
-                if let Err(_) = tx.send(entry.path()).await {}
+            if entry.file_type().is_file() && tx.send(entry.path()).await.is_err() {
+                c_println!(
+                    red,
+                    "ERROR: failed to send path {} to channel",
+                    entry.path().display()
+                );
             }
         }
     });
@@ -72,7 +76,7 @@ impl<'b> Hash<'b> {
         let hash_subdir = [NvimUtils::NAME /* TsParsers::NAME */];
 
         Self {
-            hash_data_dir: hash_dir.clone().to_path_buf(),
+            hash_data_dir: PathBuf::from(hash_dir),
             hash_data_subdir: hash_subdir,
         }
     }
