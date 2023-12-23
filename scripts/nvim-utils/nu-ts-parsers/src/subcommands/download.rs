@@ -48,21 +48,6 @@ fn get_archive_name() -> String {
     return format!("treesitter-{}.zip", ZIG_TARGET);
 }
 
-// async fn cleanup(archive_name: &str, nvim_data: &Path) -> anyhow::Result<()> {
-//     let tmp_archive =
-//         std::env::temp_dir().join(format!("{archive_name}-{}", (*RANDOM_STRING).as_ref()));
-//     let dat_archive = nvim_data.join(archive_name);
-
-//     if dat_archive.exists() {
-//         fs::remove_file(dat_archive).await?;
-//     }
-
-//     if tmp_archive.exists() {
-//         fs::remove_file(tmp_archive).await?;
-//     }
-//     Ok(())
-// }
-
 async fn download_archive(archive_name: &str, nvim_data: &Path) -> anyhow::Result<String> {
     let out = std::env::temp_dir().join(format!("{archive_name}-{}", (*RANDOM_STRING).as_ref()));
     let dest = nvim_data.join(archive_name);
@@ -146,7 +131,7 @@ async fn extract_archive(
         backup_log
             .write_all(
                 format!(
-                    "[{}] -- {}\n",
+                    "[{}] -- [DOWNLOAD] -- {}\n",
                     chrono::offset::Utc::now(),
                     (*RANDOM_STRING).as_ref()
                 )

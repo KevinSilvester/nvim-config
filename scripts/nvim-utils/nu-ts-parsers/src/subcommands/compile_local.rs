@@ -81,7 +81,7 @@ async fn copy_parsers(nvim_data: &Path) -> anyhow::Result<()> {
         backup_log
             .write_all(
                 format!(
-                    "[{}] -- {}\n",
+                    "[{}] -- [COMPILED] -- {}\n",
                     chrono::offset::Utc::now(),
                     (*RANDOM_STRING).as_ref()
                 )
@@ -123,13 +123,12 @@ impl SubCommand for CompileLocal {
                     WANTED_PARSERS.len(),
                     parser.language
                 );
-                if (compile_parser(true, &(*RANDOM_STRING).to_string(), &parser, &ts_lock).await)
-                    .is_ok()
-                {
-                    c_println!(green, "SUCCESS: {}", &parser.language);
-                } else {
-                    c_println!(red, "FAILED: {}", &parser.language);
-                    retry_list.push(parser.clone());
+                match compile_parser(true, &(*RANDOM_STRING).to_string(), &parser, &ts_lock).await {
+                    Ok(_) => c_println!(green, "SUCCESS: {}", &parser.language),
+                    Err(_) => {
+                        c_println!(red, "FAILED: {}", &parser.language);
+                        retry_list.push(parser.clone());
+                    }
                 }
             }
 
@@ -149,12 +148,11 @@ impl SubCommand for CompileLocal {
                         &retry_list.len(),
                         parser.language
                     );
-                    if (compile_parser(true, &(*RANDOM_STRING).to_string(), parser, &ts_lock).await)
-                        .is_ok()
+                    match compile_parser(true, &(*RANDOM_STRING).to_string(), parser, &ts_lock)
+                        .await
                     {
-                        c_println!(green, "SUCCESS: {}", &parser.language);
-                    } else {
-                        c_println!(red, "FAILED: {}", &parser.language);
+                        Ok(_) => c_println!(green, "SUCCESS: {}", &parser.language),
+                        Err(_) => c_println!(red, "FAILED: {}", &parser.language),
                     }
                 }
             }

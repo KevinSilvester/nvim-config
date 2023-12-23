@@ -76,11 +76,12 @@ impl SubCommand for Compile {
                     WANTED_PARSERS.len(),
                     parser.language
                 );
-                if (compile_parser(false, &target, &parser, &ts_lock).await).is_ok() {
-                    c_println!(green, "SUCCESS: {}", &parser.language);
-                } else {
-                    c_println!(red, "FAILED: {}", &parser.language);
-                    retry_list.push(parser.clone());
+                match compile_parser(false, &target, &parser, &ts_lock).await {
+                    Ok(_) => c_println!(green, "SUCCESS: {}", &parser.language),
+                    Err(_) => {
+                        c_println!(red, "FAILED: {}", &parser.language);
+                        retry_list.push(parser.clone());
+                    }
                 }
             }
 
@@ -100,10 +101,9 @@ impl SubCommand for Compile {
                         &retry_list.len(),
                         parser.language
                     );
-                    if (compile_parser(false, &target, parser, &ts_lock).await).is_ok() {
-                        c_println!(green, "SUCCESS: {}", &parser.language);
-                    } else {
-                        c_println!(red, "FAILED: {}", &parser.language);
+                    match compile_parser(false, &target, parser, &ts_lock).await {
+                        Ok(_) => c_println!(green, "SUCCESS: {}", &parser.language),
+                        Err(_) => c_println!(red, "FAILED: {}", &parser.language),
                     }
                 }
             }
