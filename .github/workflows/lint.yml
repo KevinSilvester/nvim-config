@@ -18,7 +18,7 @@ jobs:
         uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: 0.18.1
+          version: 0.19.1
           args: --check .
 
   lint-rust:

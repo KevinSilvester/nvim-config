@@ -60,7 +60,7 @@ M.opts = {
       extended_mode = true, -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
       max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
    },
-   context_commentstring = { enable = true, enable_autocmd = true },
+   -- context_commentstring = { enable = true, enable_autocmd = true },
    matchup = { enable = true },
    parser_install_dir = ufs.path_join(PATH.data, 'treesitter'),
    incremental_selection = {

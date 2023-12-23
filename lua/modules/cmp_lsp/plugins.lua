@@ -88,7 +88,7 @@ return {
    },
    {
       'L3MON4D3/LuaSnip',
-      tag = 'v2.*',
+      tag = 'v2.1.1',
       build = 'make install_jsregexp',
       event = 'InsertEnter',
       dependencies = 'rafamadriz/friendly-snippets',
