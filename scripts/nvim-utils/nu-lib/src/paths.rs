@@ -28,12 +28,12 @@ impl Paths {
         }
 
         let nvim_config = local_config_dir.join("nvim");
-        let nivm_data = local_data_dir.join(NVIM_DATA_DIR);
+        let nvim_data = local_data_dir.join(NVIM_DATA_DIR);
         let nvim_utils = nvim_config.join("scripts").join("nvim-utils");
 
         Self {
             nvim_config,
-            nvim_data: nivm_data,
+            nvim_data,
             nvim_utils,
         }
     }
@@ -44,10 +44,32 @@ mod tests {
     use super::*;
 
     #[test]
+    #[allow(unused_variables)]
     fn test_paths() {
         let paths = Paths::new();
-        assert!(paths.nvim_config.exists(), "nvim_config not found");
-        assert!(paths.nvim_data.exists(), "nvim_data not found");
-        assert!(paths.nvim_utils.exists(), "nvim_utils not found");
+        let home_dir = dirs::home_dir().unwrap();
+        let app_data_dir = dirs::data_local_dir().unwrap();
+
+        cfg_if! {
+            if #[cfg(unix)] {
+                let valid_nvim_config = PathBuf::from(&format!("{}/.config/nvim", &home_dir.display()));
+                let valid_nvim_data = PathBuf::from(&format!("{}/.local/share/nvim", &home_dir.display()));
+                let valid_nvim_utils = PathBuf::from(&format!(
+                    "{}/scripts/nvim-utils",
+                    &valid_nvim_config.display()
+                ));
+            } else {
+                let valid_nvim_config = PathBuf::from(&format!("{}/nvim", &app_data_dir.display()));
+                let valid_nvim_data = PathBuf::from(&format!("{}/nvim-data", &app_data_dir.display()));
+                let valid_nvim_utils = PathBuf::from(&format!(
+                    "{}/scripts/nvim-utils",
+                    &valid_nvim_config.display()
+                ));
+            }
+        }
+
+        assert_eq!(paths.nvim_config, valid_nvim_config);
+        assert_eq!(paths.nvim_data, valid_nvim_data);
+        assert_eq!(paths.nvim_utils, valid_nvim_utils);
     }
 }

@@ -45,7 +45,7 @@ pub async fn run_command(name: &str, args: &Vec<&str>, cwd: Option<&Path>) -> an
 
     let max_lines: usize = 20;
 
-    let mut renderer = Renderer::new();
+    let mut renderer = Renderer::new(std::io::stdout());
     let mut out_queue: VecDeque<String> = VecDeque::with_capacity(max_lines);
     let mut is_finished = false;
     let mut failed = false;
