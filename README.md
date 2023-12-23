@@ -36,8 +36,8 @@
 -  [x] Implement global `buf_cache`
 -  [ ] Create wrapper for `nvim-treesitter` commands
 -  [ ] Create wrapper for `lazy.nvim` commands
--  [ ] Bootstrap
-   -  [ ] Add function to create git-hooks
+-  [x] Bootstrap
+   -  [x] Add function to create git-hooks
    -  [x] Add function to download pre-compiled treesitter parsers
 -  [ ] LSP
    -  [x] Show line diagnostics key-mapping
