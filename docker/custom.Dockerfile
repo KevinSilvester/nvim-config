@@ -2,9 +2,9 @@ FROM alpine:edge
 
 RUN apk update
 RUN apk add --no-cache --update \
-   git build-base make coreutils curl wget unzip tar gzip \
+   git build-base make coreutils curl wget unzip tar \
    bash fish neovim file fd sed ripgrep nodejs \
-   npm viu go perl pkgconfig openssl-dev
+   npm go perl
 
 # setup rust
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -17,6 +17,12 @@ ENV PATH="/root/.npm-global/bin:${PNPM_HOME}:${PATH}"
 RUN npm i -g pnpm
 
 # setup working directory
-COPY ../ /root/.config/nvim
-RUN /root/.config/nvim/scripts/reset.sh
 WORKDIR /root/.config/nvim
+COPY ../ .
+RUN scripts/reset.sh
+
+WORKDIR /root/.config/nvim/scripts/nvim-utils
+RUN cargo build --release
+
+WORKDIR /root/.config/nvim
+
