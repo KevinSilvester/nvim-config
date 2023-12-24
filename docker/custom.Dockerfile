@@ -4,7 +4,7 @@ RUN apk update
 RUN apk add --no-cache --update \
    git build-base make coreutils curl wget unzip tar \
    bash fish neovim file fd sed ripgrep nodejs \
-   npm go perl
+   npm go
 
 # setup rust
 ENV PATH="/root/.cargo/bin:${PATH}"
@@ -25,4 +25,3 @@ WORKDIR /root/.config/nvim/scripts/nvim-utils
 RUN cargo build --release
 
 WORKDIR /root/.config/nvim
-
