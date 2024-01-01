@@ -6,24 +6,28 @@ local ufs = require('utils.fs')
 ---@field lockfile string
 ---@field spec { import: string }[]
 local Lazy = {}
+Lazy.__index = Lazy
 
 ---Initialise Lazy
 ---@param root? string directory where plugins will be installed
 ---@param lockfile? string lockfile generated after running update.
 function Lazy:init(root, lockfile)
-   self = setmetatable({}, { __index = Lazy })
-   self.root = root or ufs.path_join(PATH.data, 'lazy')
-   self.lazypath = ufs.path_join(self.root, 'lazy.nvim')
-   self.spec = {}
+   local lazy_root = root or ufs.path_join(PATH.data, 'lazy')
+   local lazy_lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.personal.json')
 
    if HOST.is_mac then
-      self.lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.work.json')
-   else
-      self.lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.personal.json')
+      lazy_lockfile = lockfile or ufs.path_join(PATH.config, 'lazy-lock.work.json')
    end
 
-   self:__load_spec()
-   self:__bootstrap()
+   local lazy = setmetatable({
+      root = lazy_root,
+      lazypath = ufs.path_join(lazy_root, 'lazy.nvim'),
+      lockfile = lazy_lockfile,
+      spec = {},
+   }, self)
+
+   lazy:__load_spec()
+   lazy:__bootstrap()
 end
 
 ---Load the plugin specs from modules folder

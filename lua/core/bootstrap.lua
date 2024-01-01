@@ -21,47 +21,53 @@ local LOCK_INITIALS = {
 ---@field lockfile string
 ---@field lock_values LockValues|nil
 local Bootstrap = {}
+Bootstrap.__index = Bootstrap
 
 ---Initialise Bootstrap object
 ---@param lockfile? string
 function Bootstrap:init(lockfile)
-   self = setmetatable({}, { __index = Bootstrap })
-   self.lockfile = lockfile or ufs.path_join(PATH.config, 'bootstrap-lock.json')
-   self.lock_values = {}
+   local bootstrap = setmetatable({
+      lockfile = lockfile or ufs.path_join(PATH.config, 'bootstrap-lock.json'),
+      lock_values = vim.deepcopy(LOCK_INITIALS),
+   }, self)
 
    vim.schedule(function()
-      if ufs.is_file(self.lockfile) then
-         self.lock_values = self:__read_lock()
+      if ufs.is_file(bootstrap.lockfile) then
+         bootstrap.lock_values = bootstrap:__read_lock()
       else
-         self.lock_values = vim.deepcopy(LOCK_INITIALS)
          log.info('core.bootstrap', 'Initialising lockfile')
-         self:__write_lock(self.lock_values)
+         bootstrap:__write_lock(bootstrap.lock_values)
       end
 
-      local old_lock_values = vim.deepcopy(self.lock_values)
+      local old_lock_values = vim.deepcopy(bootstrap.lock_values)
 
-      if not self.lock_values.cache_created then
-         self.lock_values.cache_created = self:__setup_cache()
+      --  setup cache
+      if not bootstrap.lock_values.cache_created then
+         bootstrap.lock_values.cache_created = bootstrap:__setup_cache()
       end
 
-      if not self.lock_values.bundled_parsers_deleted then
-         self.lock_values.bundled_parsers_deleted = self:__delete_bundled_parsers()
+      -- delete treesitter bundled parsers
+      if not bootstrap.lock_values.bundled_parsers_deleted then
+         bootstrap.lock_values.bundled_parsers_deleted = bootstrap:__delete_bundled_parsers()
       end
 
-      if not self.lock_values.scripts_built then
-         self:__build_scritps()
+      -- run rust build scripts
+      if not bootstrap.lock_values.scripts_built then
+         bootstrap:__build_scritps()
       end
 
-      if self.lock_values.scripts_built and not self.lock_values.git_hooks_bootstrap then
-         self:__bootstrap_git_hooks()
+      -- bootstrap git hooks
+      if bootstrap.lock_values.scripts_built and not bootstrap.lock_values.git_hooks_bootstrap then
+         bootstrap:__bootstrap_git_hooks()
       end
 
-      if self.lock_values.git_hooks_bootstrap and not self.lock_values.parsers_downloaded then
-         self:__download_parsers()
+      -- download pre-compiled parsers
+      if bootstrap.lock_values.scripts_build and not bootstrap.lock_values.parsers_downloaded then
+         bootstrap:__download_parsers()
       end
 
-      if not vim.deep_equal(self.lock_values, old_lock_values) then
-         self:__write_lock(self.lock_values)
+      if not vim.deep_equal(bootstrap.lock_values, old_lock_values) then
+         bootstrap:__write_lock(bootstrap.lock_values)
       end
    end)
 end
@@ -117,6 +123,7 @@ function Bootstrap:__delete_bundled_parsers()
    end)
 end
 
+---Run the build scripts
 function Bootstrap:__build_scritps()
    vim.api.nvim_create_autocmd('User', {
       once = true,
@@ -135,6 +142,7 @@ function Bootstrap:__build_scritps()
          self:__download_parsers()
       end,
    })
+
    return xpcall(function()
       log.info('core.bootstrap', 'Building scripts...')
 
@@ -161,6 +169,7 @@ function Bootstrap:__build_scritps()
    end)
 end
 
+---Bootstrap git hooks
 function Bootstrap:__bootstrap_git_hooks()
    return xpcall(function()
       log.info('core.bootstrap', 'Bootstrapping git hooks...')
@@ -191,7 +200,7 @@ function Bootstrap:__download_parsers()
             'core.bootstrap',
             'Pre-compiled tree-sitter parsers often times are broken for linux (compiled with `zig`).\n'
                .. 'If so they could be compiled locally by running the `./scripts/bin/ts-parsers compile-local`.\n'
-               .. 'Please not `clang`, `pnpm` and `tree-sitter-cli` is required for the script to run.'
+               .. 'Please note `clang`, `pnpm` and `tree-sitter-cli` is required for the script to run.'
          )
       end,
    })

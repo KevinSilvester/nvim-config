@@ -8,6 +8,7 @@ local M = {}
 ---@class MapperOptsBuilder
 ---@field options MapperOpts
 local Opts = {}
+Opts.__index = Opts
 
 ---@return MapperOptsBuilder
 function Opts:new()
@@ -21,7 +22,6 @@ function Opts:new()
       },
    }
    setmetatable(instance, self)
-   self.__index = self
    return instance
 end
 

@@ -1,12 +1,3 @@
----@alias CacheBlock { file: string, lsp: string[], fmt: string[], treesitter: boolean, copilot: boolean }
----@alias ActiveCacheBlock { number: number, file: string, lsp: string[], fmt: string[], treesitter: boolean, copilot: boolean }
----@type { active: number, buffers: CacheBlock[] }
-
----@class CoreBufCache
----@field active ActiveCacheBlock
----@field buffers CacheBlock[]
-local BufCache = {}
-
 local function augroup(name)
    return vim.api.nvim_create_augroup('core.cache.' .. name, { clear = true })
 end
@@ -15,33 +6,31 @@ local function hlgroup(name)
    return 'core.cache.' .. name
 end
 
+---@alias CacheBlock { file: string, lsp: string[], fmt: string[], treesitter: boolean, copilot: boolean }
+---@alias ActiveCacheBlock { number: number, file: string, lsp: string[], fmt: string[], treesitter: boolean, copilot: boolean }
+---@type { active: number, buffers: CacheBlock[] }
+
+---@class CoreBufCache
+---@field active ActiveCacheBlock
+---@field buffers CacheBlock[]
+local BufCache = {}
+BufCache.__index = BufCache
+
 ---Initialise BufCache
 function BufCache:init()
-   self = setmetatable({}, { __index = BufCache })
-   self.active = {}
-   self.buffers = {}
-   self.excluded = { 'help', 'netrw', 'NvimTree', 'mason', 'lazy', 'toggleterm', 'alpha', 'TelescopePropmt' }
-   self:__create_autocmds()
-   self:__create_hl()
-   _G.buf_cache = self
+   local buf_cache_ = setmetatable({
+      active = {},
+      buffers = {},
+      excluded = { 'help', 'netrw', 'NvimTree', 'mason', 'lazy', 'toggleterm', 'alpha', 'TelescopePropmt' },
+   }, self)
 
-   ---Refresh buf cache for active buffer
-   buf_cache.refresh = function()
-      self:__refresh()
-   end
-
-   ---Refresh buf cache for all buffers
-   buf_cache.refresh_all = function()
-      self:__refresh_all()
-   end
-
-   ---Retrieve info buffer(s) from cache block
-   buf_cache.show = function()
-      self:__render()
-   end
+   buf_cache_:__create_autocmds()
+   buf_cache_:__create_hl()
+   _G.buf_cache = buf_cache_
 end
 
 ---Update active buffer info
+---@private
 ---@param bufnr number bufnr of new active buffer
 function BufCache:__update_active(bufnr)
    if self.buffers[bufnr] then
@@ -50,6 +39,7 @@ function BufCache:__update_active(bufnr)
 end
 
 ---Create new `CacheBlock`
+---@private
 ---@param bufnr number bufnr of entered buffer
 ---@param file string path to buffer file
 function BufCache:__create_block(bufnr, file)
@@ -59,12 +49,14 @@ function BufCache:__create_block(bufnr, file)
 end
 
 ---Delete `CacheBlock`
+---@private
 ---@param bufnr number bufnr of cache block
 function BufCache:__delete_block(bufnr)
    self.buffers[bufnr] = nil
 end
 
 ---Deleted cache blocks for excluded filetypes
+---@private
 ---@param bufnr number
 function BufCache:__delete_excluded_ft(bufnr)
    if self.buffers[bufnr] and vim.tbl_contains(self.excluded, vim.bo[bufnr].filetype) then
@@ -73,6 +65,7 @@ function BufCache:__delete_excluded_ft(bufnr)
 end
 
 ---Check if treesitter highlighting is active in buffer
+---@private
 ---@param bufnr number
 function BufCache:__check_treesitter(bufnr)
    if not self.buffers[bufnr] then
@@ -82,6 +75,7 @@ function BufCache:__check_treesitter(bufnr)
 end
 
 ---Check if a LSP is attached to buffer
+---@private
 ---@param bufnr number
 function BufCache:__check_lsp(bufnr)
    if not self.buffers[bufnr] then
@@ -104,6 +98,7 @@ function BufCache:__check_lsp(bufnr)
 end
 
 ---Check if a formatter is available to the buffer
+---@private
 ---@param bufnr number
 function BufCache:__check_fmt(bufnr)
    if not self.buffers[bufnr] then
@@ -130,6 +125,7 @@ function BufCache:__check_fmt(bufnr)
 end
 
 ---Create autocmd to track buffers
+---@private
 function BufCache:__create_autocmds()
    vim.api.nvim_create_autocmd({ 'BufEnter' }, {
       group = augroup('active-buffer'),
@@ -183,6 +179,8 @@ function BufCache:__create_autocmds()
    })
 end
 
+---Create highlight groups
+---@private
 function BufCache:__create_hl()
    local hl_groups = {
       text = { link = 'Normal' },
@@ -201,7 +199,7 @@ function BufCache:__create_hl()
 end
 
 ---Render BufCache info to popup window
-function BufCache:__render()
+function BufCache:render()
    local popup_ok, Popup = pcall(require, 'nui.popup')
    local tree_ok, Tree = pcall(require, 'nui.tree')
    local line_ok, Line = pcall(require, 'nui.line')
@@ -487,7 +485,8 @@ function BufCache:__render()
       if node and node.file then
          vim.schedule(function()
             popup:unmount()
-            vim.api.nvim_buf_delete(tonumber(node.text))
+            popup:mount()
+            vim.api.nvim_buf_delete(tonumber(node.text), { force = false })
          end)
       end
    end, { noremap = true, silent = true })
@@ -505,7 +504,7 @@ function BufCache:__render()
 
       if node and node.file then
          vim.schedule(function()
-            popup:unmount()
+            -- popup:unmount()
             vim.api.nvim_buf_delete(tonumber(node.text), { force = true })
          end)
       end
@@ -513,7 +512,7 @@ function BufCache:__render()
 
    -- Refresh
    popup:map('n', 'r', function()
-      self:__refresh_all()
+      self:refresh_all()
       local all_nodes = tree:get_nodes()
       ---@type { id: string, text: string}[]
       local parent_nodes = {}
@@ -585,7 +584,7 @@ function BufCache:__render()
 end
 
 ---Refresh buf cache for active buffer
-function BufCache:__refresh()
+function BufCache:refresh()
    ---@type number
    local bufnr = vim.api.nvim_get_current_buf()
 
@@ -600,7 +599,7 @@ function BufCache:__refresh()
 end
 
 ---Refresh buf cache for all buffers
-function BufCache:__refresh_all()
+function BufCache:refresh_all()
    ---@type number[]
    local bufnr_list = vim.tbl_keys(self.buffers)
 
