@@ -1,4 +1,3 @@
-local cmd = require('core.mapper').cmd
 local inspect = require('utils.fn').inspect
 local M = {}
 

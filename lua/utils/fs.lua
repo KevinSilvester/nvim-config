@@ -98,9 +98,6 @@ end
 M.read_file = function(path, offset)
    offset = offset == nil and 0 or offset
 
-   ---@type string|nil
-   local data
-
    local fd = assert(uv.fs_open(path, 'r', 438))
    local stat = assert(uv.fs_fstat(fd))
    local data = assert(uv.fs_read(fd, stat.size, offset))

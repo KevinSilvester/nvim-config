@@ -1,5 +1,4 @@
 local m = require('core.mapper')
-local icons = require('modules.ui.icons').diagnostics
 
 local M = {}
 

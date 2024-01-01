@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 ---@param arg number|nil
 local _arg_to_hex = function(arg)

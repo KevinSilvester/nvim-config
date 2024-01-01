@@ -231,8 +231,8 @@ M.exec = function(cmd, opts)
       pty = false,
       env = opts.env,
       stdout_buffered = true,
-      on_stdout = function(_, _lines)
-         lines = _lines
+      on_stdout = function(_, lines_)
+         lines = lines_
       end,
    })
    local res = vim.fn.jobwait({ job }, opts.timeout or 1000)

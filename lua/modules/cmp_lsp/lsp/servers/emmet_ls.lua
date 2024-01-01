@@ -1,6 +1,7 @@
 -- https://github.com/pedro757/emmet
 -- npm i -g ls_emmet
 
+-- luacheck: ignore
 local cmd = {}
 
 if HOST.is_win then

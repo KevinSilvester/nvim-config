@@ -16,7 +16,7 @@ M.capabilities =
    vim.tbl_deep_extend('force', require('cmp_nvim_lsp').default_capabilities(), capabilities_extension)
 
 -- Settings
-M.on_attach = function(client, bufnr)
+M.on_attach = function(_client, _bufnr)
    -- require('colorizer').attach_to_buffer(
    --    bufnr,
    --    { mode = 'background', css = true, names = false, tailwind = true }
