@@ -9,6 +9,15 @@ icons.diagnostics = {
 }
 
 -- stylua: ignore
+icons.notify = {
+   ERROR = "󰅚",
+   WARN  = "",
+   INFO  = "󰋽",
+   DEBUG = '',
+   TRACE = '✎',
+}
+
+-- stylua: ignore
 icons.git = {
    Add       = "",
    Mod       = "",
@@ -48,7 +57,7 @@ icons.kind = {
    Array         = "",
    Boolean       = "",
    Class         = "",
-   Color         = "",
+   Color         = "󰏘",
    Constant      = "",
    Constructor   = "",
    Enum          = "",
@@ -57,17 +66,17 @@ icons.kind = {
    Field         = "",
    File          = "",
    Folder        = "",
-   Function      = "",
+   Function      = "󰊕",
    Interface     = "",
    Key           = "",
    Keyword       = "",
    Macro         = "",
-   Method        = "",
+   Method        = "󰆧",
    Module        = "",
    Namespace     = "",
    Null          = "",
    Number        = "",
-   Object        = "",
+   Object        = "󰅩",
    Operator      = "",
    Package       = "",
    Parameter     = "",
@@ -77,7 +86,7 @@ icons.kind = {
    String        = "",
    Struct        = "",
    Variable      = "",
-   Text          = "",
+   Text          = "󰉿",
    TypeParameter = "",
    Unit          = "",
    Value         = "",
@@ -88,7 +97,7 @@ icons.kind = {
 -- stylua: ignore
 icons.custom = {
    Octoface = "",
-   Emoji    = "ﲃ",
+   Emoji    = "󰞅",
    Crates   = "",
    Tree     = "",
 }
