@@ -94,13 +94,13 @@ mod tests {
             renderer.render_queue(&queue).unwrap();
 
             for j in 0..i {
-                res.push(format!("line {}\n", j));
+                res.push(format!("line {j}\n"));
             }
 
             if i == len - 1 {
                 res.push(format!("\u{1b}[{i}F\u{1b}[J"));
                 for j in 0..len {
-                    res.push(format!("line {}\n", j));
+                    res.push(format!("line {j}\n"));
                 }
             }
 
