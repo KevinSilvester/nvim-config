@@ -14,12 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Stylua Lint
+      - name: Check formatting
         uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: 0.19.1
           args: --check .
+
+      - name: Lint
+        uses: lunarmodules/luacheck@v1
+        with:
+          args: init.lua lua/
 
   lint-rust:
     name: Lint+Test Nvim-Utils Scripts
@@ -67,7 +72,7 @@ jobs:
           New-Item -ItemType Directory "$env:LOCALAPPDATA\\nvim-data"
           Copy-Item -Force -Recurse ".\*" -Destination "$env:LOCALAPPDATA\\nvim"
 
-      - name: Check formating
+      - name: Check formattting
         run: |
           cd scripts/nvim-utils
           cargo fmt --all -- --check
