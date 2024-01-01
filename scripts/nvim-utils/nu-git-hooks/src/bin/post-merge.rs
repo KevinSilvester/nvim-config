@@ -1,12 +1,14 @@
+use std::path::Path;
+
 use nu_git_hooks::hash::{Hash, NvimUtils};
 use nu_lib::{c_println, command::run_command, paths::Paths};
 use tokio::{fs, runtime};
 
 #[cfg(windows)]
-const BIN_NAME: &str = "post-merge.exe";
+const BINARY_SUFFIX: &str = ".exe";
 
 #[cfg(unix)]
-const BIN_NAME: &str = "post-merge";
+const BINARY_SUFFIX: &str = "";
 
 fn main() {
     let paths = Paths::new();
@@ -64,14 +66,50 @@ fn main() {
             .unwrap();
         c_println!(green, "nvim-utils: New hash created successfully!");
 
-        c_println!(blue, "\nnvim-utils: Updating git hooks...");
+        c_println!(blue, "\nnvim-utils: Updating all binaries...");
         let new_bin = paths
             .nvim_utils
             .join("target")
             .join("release")
-            .join(BIN_NAME);
+            .join(format!("post-merge{}", BINARY_SUFFIX));
         self_replace::self_replace(new_bin).unwrap();
+
+        delete_and_copy(
+            "pre-push",
+            &paths,
+            &paths.nvim_config.join(".git").join("hooks"),
+        )
+        .await;
+        delete_and_copy(
+            "bootstrap",
+            &paths,
+            &paths.nvim_config.join("scripts").join("bin"),
+        )
+        .await;
+        delete_and_copy(
+            "ts-parsers",
+            &paths,
+            &paths.nvim_config.join("scripts").join("bin"),
+        )
+        .await;
         c_println!(green, "nvim-utils: Git hooks updated successfully!");
         c_println!(green, "nvim-utils: Done! (●'◡'●)");
     });
+}
+
+async fn delete_and_copy(name: &str, paths: &Paths, dest: &Path) {
+    fs::remove_file(dest.join(format!("{name}{BINARY_SUFFIX}")))
+        .await
+        .unwrap();
+
+    fs::copy(
+        paths
+            .nvim_utils
+            .join("target")
+            .join("release")
+            .join(format!("{name}{BINARY_SUFFIX}")),
+        dest.join(format!("{name}{BINARY_SUFFIX}")),
+    )
+    .await
+    .unwrap();
 }
