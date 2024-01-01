@@ -124,7 +124,7 @@ return {
    --      formatter+linter       --
    ---------------------------------
    {
-      'jose-elias-alvarez/null-ls.nvim',
+      'nvimtools/none-ls.nvim',
       event = 'BufReadPost',
       config = require('modules.cmp_lsp.setup.null-ls').config,
    },
