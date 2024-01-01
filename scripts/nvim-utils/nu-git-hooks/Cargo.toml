@@ -9,7 +9,11 @@ name = "bootstrap"
 [[bin]]
 name = "post-merge"
 
+[[bin]]
+name = "pre-push"
+
 [dependencies]
+anyhow = "1.0.78"
 cfg-if = "1.0.0"
 hex = "0.4.3"
 jwalk = "0.8.1"

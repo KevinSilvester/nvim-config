@@ -49,13 +49,7 @@ fn main() {
         c_println!(green, "nvim-utils: Changes detected!");
 
         c_println!(blue, "\nnvim-utils: Rebuiling...");
-        match run_command(
-            "cargo",
-            &vec!["build", "--release"],
-            Some(&paths.nvim_utils),
-        )
-        .await
-        {
+        match run_command("cargo", &["build", "--release"], Some(&paths.nvim_utils)).await {
             Ok(_) => (),
             Err(e) => {
                 c_println!(red, "nvim-utils: Error rebuilding: {}", e);

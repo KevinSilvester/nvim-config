@@ -14,7 +14,7 @@ const PNPM: &str = "pnpm.CMD";
 pub async fn read_parsers(paths: &Paths) -> serde_json::Result<Vec<ParserInfo>> {
     run_command(
         "nvim",
-        &vec![
+        &[
             "--headless",
             "-c",
             "lua require('utils.fn').get_treesitter_parsers()",
@@ -64,8 +64,8 @@ pub async fn read_ts_lock(
 async fn build_from_grammar() -> anyhow::Result<()> {
     let mut tree_sitter_cli = true;
 
-    run_command(PNPM, &vec!["install"], None).await?;
-    if !run_command("tree-sitter", &vec!["generate"], None).await? {
+    run_command(PNPM, &["install"], None).await?;
+    if !run_command("tree-sitter", &["generate"], None).await? {
         tree_sitter_cli = false;
     }
 
@@ -102,11 +102,11 @@ pub async fn compile_parser(
 
     run_command(
         "git",
-        &vec!["clone", clone_depth, &parsers.url, cwd.to_str().unwrap()],
+        &["clone", clone_depth, &parsers.url, cwd.to_str().unwrap()],
         None,
     )
     .await?;
-    run_command("git", &vec!["checkout", revision], None).await?;
+    run_command("git", &["checkout", revision], None).await?;
 
     build_from_grammar().await?;
 

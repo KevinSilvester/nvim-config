@@ -14,14 +14,13 @@ pub fn check_command_exists(command: &str) -> anyhow::Result<()> {
         .output()
     {
         Ok(_) => Ok(()),
-        Err(e) => {
-            if let std::io::ErrorKind::NotFound = e.kind() {
+        Err(e) => match e.kind() {
+            std::io::ErrorKind::NotFound | std::io::ErrorKind::PermissionDenied => {
                 c_println!(red, "ERROR: `{}` not found", command);
                 anyhow::bail!(e)
-            } else {
-                Ok(())
             }
-        }
+            _ => Ok(()),
+        },
     }
 }
 
@@ -31,7 +30,7 @@ fn clean_string(s: &str) -> String {
     String::from_utf8(Vec::from(bytes)).unwrap()
 }
 
-pub async fn run_command(name: &str, args: &Vec<&str>, cwd: Option<&Path>) -> anyhow::Result<bool> {
+pub async fn run_command(name: &str, args: &[&str], cwd: Option<&Path>) -> anyhow::Result<bool> {
     let mut command = Command::new(name);
     command.args(args);
     if let Some(cwd) = cwd {

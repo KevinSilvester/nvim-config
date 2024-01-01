@@ -114,10 +114,10 @@ async fn extract_archive(
     }
 
     #[cfg(unix)]
-    run_command("tar", &vec!["-xzvf", archive_name], Some(nvim_data)).await?;
+    run_command("tar", &["-xzvf", archive_name], Some(nvim_data)).await?;
 
     #[cfg(windows)]
-    run_command("7z", &vec!["x", archive_name], Some(nvim_data)).await?;
+    run_command("7z", &["x", archive_name], Some(nvim_data)).await?;
 
     if !parsers_backup_home.join("backup-log").is_file() {
         fs::write(&parsers_backup_home.join("backup-log"), "").await?;

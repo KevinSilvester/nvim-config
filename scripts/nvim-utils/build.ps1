@@ -10,6 +10,7 @@ cargo build --release
 
 # copy git hooks
 Copy-Item -Path ".\target\release\post-merge.exe" -Destination "$nvim_config\.git\hooks\post-merge.exe"
+Copy-Item -Path ".\target\release\pre-push.exe" -Destination "$nvim_config\.git\hooks\pre-push.exe"
 
 # copy other binaries
 Copy-Item -Path ".\target\release\bootstrap.exe" -Destination "$nvim_config\scripts\bin\bootstrap.exe"
