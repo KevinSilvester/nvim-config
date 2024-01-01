@@ -1,7 +1,7 @@
 local M = {}
 
 M.init = function()
-   if not require('lazy.core.config').plugins['noice.nvim'] ~= nil then
+   if require('lazy.core.config').plugins['noice.nvim'] == nil then
       require('utils.fn').on_very_lazy(function()
          vim.notify = require('notify')
       end)
@@ -37,13 +37,7 @@ M.opts = {
    minimum_width = 50,
 
    ---@usage Icons for the different levels
-   icons = {
-      ERROR = '',
-      WARN = '',
-      INFO = '',
-      DEBUG = '',
-      TRACE = '✎',
-   },
+   icons = require('modules.ui.icons').notify,
 }
 
 M.config = function(_, opts)

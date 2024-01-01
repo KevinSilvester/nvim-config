@@ -231,9 +231,10 @@ M.config = function(_, opts)
       end,
       on_click = function()
          local line = vim.fn.line('.')
+         local line_total = vim.fn.line('$')
          local col = vim.fn.virtcol('.')
-         local total = vim.fn.line('$')
-         local str = string.format('line: %d\ncol: %d\ntotal: %d', line, col, total)
+         local col_total = vim.fn.virtcol('$')
+         local str = string.format('line: %d / %d\ncol: %d / %d', line, line_total, col, col_total)
          vim.notify(str, vim.log.levels.INFO, { title = 'Location', icon = icons.location })
       end,
       padding = 0,

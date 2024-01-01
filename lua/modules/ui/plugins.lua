@@ -30,22 +30,23 @@ return {
       version = 'v3.*',
       dependencies = 'nvim-tree/nvim-web-devicons',
       event = { 'BufReadPost', 'BufNewFile' },
+      -- stylua: ignore
       keys = {
-         { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
+         { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>',            desc = 'Toggle pin' },
          { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
          {
             '<leader>br',
-            buf_cache.refresh,
+            function() buf_cache:refresh() end,
             desc = 'Refresh cache block for current buffer',
          },
          {
             '<leader>bR',
-            buf_cache.refresh_all,
+            function() buf_cache:refresh_all() end,
             desc = 'Refresh cache block for all buffers',
          },
          {
             '<leader>bs',
-            buf_cache.show,
+            function() buf_cache:render() end,
             desc = 'Render cache blocks for all buffers',
          },
       },
@@ -58,7 +59,7 @@ return {
       'nvim-lualine/lualine.nvim',
       dependencies = {
          'lewis6991/gitsigns.nvim',
-         'null-ls.nvim',
+         'none-ls.nvim',
       },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.ui.setup.lualine').opts,
@@ -77,7 +78,6 @@ return {
          'catppuccin/nvim',
       },
       opts = require('modules.ui.setup.barbecue').opts,
-      config = require('modules.ui.setup.barbecue').config,
    },
 
    -- fold/statuscolumn
@@ -114,9 +114,11 @@ return {
    -- lsp progress
    {
       'j-hui/fidget.nvim',
+      tag = 'v1.1.0',
       event = 'LspAttach',
       dependencies = 'neovim/nvim-lspconfig',
       opts = require('modules.ui.setup.fidget').opts,
+      config = true,
    },
 
    -- preview color
