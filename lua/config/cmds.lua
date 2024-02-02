@@ -49,7 +49,7 @@ vim.api.nvim_create_user_command('Work', function(opts)
          end,
       })
    else
-      log.warn('config.cmds.work', 'Invalid Subcommand!')
+      log:warn('config.cmds.work', 'Invalid Subcommand!')
    end
 end, {
    nargs = 1,
@@ -71,7 +71,7 @@ vim.api.nvim_create_user_command('Tab', function(opts)
    if val:match('^%d+$') then
       ufn.tab_opts(tonumber(val))
    else
-      log.error('config.cmds.tab', 'Invalid value!')
+      log:error('config.cmds.tab', 'Invalid value!')
    end
 end, {
    nargs = 1,
@@ -84,3 +84,8 @@ end, {
       return { tostring(vim.o.tabstop) }
    end,
 })
+
+vim.api.nvim_create_user_command('Ibr', function()
+   vim.cmd('IBLDisable')
+   vim.cmd('IBLEnable')
+end, { nargs = 0 })
