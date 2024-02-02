@@ -1,5 +1,5 @@
 ---@alias MapperMode string|string[]
----@alias MapperOpts { silent?: boolean, noremap?: boolean, nowait?: boolean, expr?: boolean, desc?: string }
+---@alias MapperOpts { silent?: boolean, remap?: boolean, noremap?: boolean, nowait?: boolean, expr?: boolean, desc?: string, buffer?: number }
 ---@alias MapperOptsModifier fun(opts: MapperOpts): function
 ---@alias MapperMapping { [1]: string, [2]: string|function, [3]: MapperOpts }
 
@@ -17,8 +17,10 @@ function Opts:new()
          silent = false,
          nowait = false,
          expr = false,
+         remap = false,
          noremap = false,
          desc = nil,
+         buffer = nil,
       },
    }
    setmetatable(instance, self)
@@ -37,12 +39,13 @@ local _set_keymap = function(mode, buffer, mappings)
    if has_multiple then
       for _, mapping in ipairs(mappings) do
          if #mapping < 2 then
-            log.warn('core.mapper', 'Invalid keymap for `' .. mapping[1] .. '`')
+            log:warn('core.mapper', 'Invalid keymap for `' .. mapping[1] .. '`')
             goto continue
          end
+
          local o = mapping[3] or M.opts()
          if type(buffer) == 'number' then
-            o = vim.tbl_extend('force', o, { buffer = buffer })
+            o.buffer = buffer
          end
          vim.keymap.set(mode, mapping[1], mapping[2], o)
          ::continue::
@@ -50,12 +53,13 @@ local _set_keymap = function(mode, buffer, mappings)
    else
       ---@cast mappings MapperMapping
       if #mappings < 2 then
-         log.warn('core.mapper', 'Invalid keymap for `' .. mappings[1] .. '`')
+         log:warn('core.mapper', 'Invalid keymap for `' .. mappings[1] .. '`')
          return
       end
+
       local o = mappings[3] or M.opts()
       if type(buffer) == 'number' then
-         o = vim.tbl_extend('force', o, { buffer = buffer })
+         o.buffer = buffer
       end
       vim.keymap.set(mode, mappings[1], mappings[2], o)
    end

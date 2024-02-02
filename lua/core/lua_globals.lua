@@ -1,6 +1,4 @@
 -- stylua: ignore start
-local fn = vim.fn
-
 
 ------------------------------------------------------------------------
 --                            host OS                                 --
@@ -9,7 +7,7 @@ _G.HOST = {}
 HOST.is_win = vim.loop.os_uname().sysname == 'Windows_NT'
 HOST.is_linux = vim.loop.os_uname().sysname == 'Linux'
 HOST.is_mac = vim.loop.os_uname().sysname == 'Darwin'
-HOST.is_docker = fn.filereadable('/.dockerenv') == 1
+HOST.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 
 
 ------------------------------------------------------------------------
@@ -42,7 +40,6 @@ _G.DEFAULT_LSP_SERVERS = {
    'tailwindcss',
    'taplo',
    'tsserver',
-   'vuels',
    'yamlls',
 }
 if not HOST.is_docker then
@@ -54,38 +51,8 @@ end
 
 
 ------------------------------------------------------------------------
---                        treesitter parsers                          --
+--                           harpoon list                             --
 ------------------------------------------------------------------------
-_G.DEFAULT_TREESITTER_PARSERS = {
-   'bash',
-   'comment',
-   'css',
-   'dockerfile',
-   'fish',
-   'git_config',
-   'git_rebase',
-   'gitattributes',
-   'gitcommit',
-   'gitignore',
-   'graphql',
-   'help',
-   'html',
-   'javascript',
-   'jsdoc',
-   'json',
-   'jsonc',
-   'lua',
-   'make',
-   'markdown',
-   'markdown_inline',
-   'python',
-   'regex',
-   'rust',
-   'scss',
-   'sql',
-   'svelte',
-   'toml',
-   'vim',
-   'yaml',
-}
+---@type table<string, number>
+_G.HARPOON_LIST = {}
 -- stylua: ignore end
