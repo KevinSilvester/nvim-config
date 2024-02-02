@@ -28,11 +28,11 @@ M.inspect = function(input, yank, ft, open_split)
    local split_ok, Split = pcall(require, 'nui.split')
 
    if input == nil then
-      log.warn('utils.fn.inspect', 'No input provided')
+      log:warn('utils.fn.inspect', 'No input provided')
       return
    end
    if not popup_ok or not split_ok then
-      log.error('utils.fn.inspect', 'Failed to load plugin `nui`')
+      log:error('utils.fn.inspect', 'Failed to load plugin `nui`')
       return
    end
 
@@ -92,9 +92,10 @@ end
 M.get_root = function()
    ---@type string?
    local path = vim.api.nvim_buf_get_name(0)
-   path = path ~= '' and vim.loop.fs_realpath(path) or nil
+   path = path ~= '' and uv.fs_realpath(path) or nil
    ---@type string[]
    local roots = {}
+
    if path then
       for _, client in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
          local workspace = client.config.workspace_folders
@@ -105,7 +106,9 @@ M.get_root = function()
             or client.config.root_dir and { client.config.root_dir }
             or {}
          for _, p in ipairs(paths) do
-            local r = vim.loop.fs_realpath(p)
+            local r = uv.fs_realpath(p)
+
+            ---@cast r string
             if path:find(r, 1, true) then
                roots[#roots + 1] = r
             end
@@ -118,10 +121,10 @@ M.get_root = function()
    ---@type string?
    local root = roots[1]
    if not root then
-      path = path and vim.fs.dirname(path) or vim.loop.cwd()
+      path = path and vim.fs.dirname(path) or uv.cwd()
       ---@type string?
       root = vim.fs.find({ '.git', 'lua' }, { path = path, upward = true })[1]
-      root = root and vim.fs.dirname(root) or vim.loop.cwd()
+      root = root and vim.fs.dirname(root) or uv.cwd()
    end
    ---@cast root string
    return root
@@ -130,15 +133,19 @@ end
 -- this will return a function that calls telescope.
 -- cwd will default to util.get_root
 -- for `files`, git_files or find_files will be chosen depending on .git
--- ref: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/util/init.lua#L87
+-- ref: https://github.com/LazyVim/LazyVim/blob/879e29504d43e9f178d967ecc34d482f902e5a91/lua/lazyvim/util/telescope.lua#L20
+---@param builtin string
+---@param opts table
 M.telescope = function(builtin, opts)
    local params = { builtin = builtin, opts = opts }
+
    return function()
       builtin = params.builtin
       opts = params.opts
       opts = vim.tbl_deep_extend('force', { cwd = M.get_root() }, opts or {})
+
       if builtin == 'files' then
-         if vim.loop.fs_stat((opts.cwd or vim.loop.cwd()) .. '/.git') then
+         if uv.fs_stat((opts.cwd or uv.cwd()) .. '/.git') then
             opts.show_untracked = true
             builtin = 'git_files'
          else
@@ -169,12 +176,12 @@ M.spawn = function(command, args, on_exit, out, err)
    local stderr = uv.new_pipe(false)
 
    if not stdout or not stderr then
-      log.debug(
-         'utils.fn.spawn',
-         'Command: `' .. command .. '` | StdOut: `' .. type(stdout) .. ' | `StdErr: `' .. type(stderr) .. '`'
-      )
+      log:error('utils.fn.spawn', '[command: ' .. command .. ']: Failed to create pipes for stdout/stderr')
       return
    end
+
+   ---@cast stdout uv_pipe_t
+   ---@cast stderr uv_pipe_t
 
    local proc
    proc = uv.spawn(
@@ -185,6 +192,8 @@ M.spawn = function(command, args, on_exit, out, err)
          stderr:read_stop()
          stdout:close()
          stderr:close()
+
+         ---@cast proc uv_process_t
          proc:close()
          if type(on_exit) == 'function' then
             on_exit(code, signal)
@@ -196,7 +205,7 @@ M.spawn = function(command, args, on_exit, out, err)
       if data and type(err) ~= 'nil' then
          local str = data:sub(1, -2)
          if err.log then
-            log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`', true)
+            log:debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdErr: `' .. str .. '`', true)
          end
          if type(err.fn) == 'function' then
             err(str)
@@ -208,7 +217,7 @@ M.spawn = function(command, args, on_exit, out, err)
       if data and type(out) ~= 'nil' then
          local str = data:sub(1, -2)
          if out.log then
-            log.debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`', true)
+            log:debug('utils.fn.spawn', 'Command: `' .. command .. '` | StdOut: `' .. str .. '`', true)
          end
          if type(out.fn) == 'function' then
             out(str)
@@ -226,7 +235,7 @@ M.exec = function(cmd, opts)
    opts = opts or {}
    ---@type string[]
    local lines
-   local job = vim.fn.jobstart(cmd, {
+   local job = fn.jobstart(cmd, {
       cwd = opts.cwd,
       pty = false,
       env = opts.env,
@@ -235,7 +244,7 @@ M.exec = function(cmd, opts)
          lines = lines_
       end,
    })
-   local res = vim.fn.jobwait({ job }, opts.timeout or 1000)
+   local res = fn.jobwait({ job }, opts.timeout or 1000)
    table.remove(lines, #lines)
    return res[1] == 0, lines
 end
@@ -260,15 +269,15 @@ M.get_treesitter_parsers = function()
 
    for k, v in pairs(require('nvim-treesitter.parsers').list) do
       local value = string.format(
-         [[   {
+            [[   {
       "language": "%s",
       "url": "%s",
       "files": %s
    }]],
-         k,
-         v.install_info.url,
-         vim.json.encode(v.install_info.files)
-      )
+            k,
+            v.install_info.url,
+            vim.json.encode(v.install_info.files)
+         )
       table.insert(res, value)
    end
 

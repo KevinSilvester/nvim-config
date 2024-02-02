@@ -15,6 +15,9 @@ M.server_capabilities = function()
          return 'capabilites for: ' .. item
       end,
    }, function(choice)
+      if not choice then
+         return
+      end
       ufn.inspect(vim.lsp.get_active_clients()[active_client_map[choice]].server_capabilities)
    end)
 end
