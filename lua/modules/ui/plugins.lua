@@ -6,49 +6,52 @@ return {
       init = function()
          vim.g.catppuccin_flavour = 'mocha'
       end,
+      lazy = false,
+      priority = 1000,
    },
-   { 'glepnir/zephyr-nvim' },
-   { 'folke/tokyonight.nvim' },
-   { 'lunarvim/darkplus.nvim' },
-   { 'lunarvim/onedarker.nvim' },
-   { 'rebelot/kanagawa.nvim' },
+   { 'glepnir/zephyr-nvim',     event = 'VeryLazy' },
+   { 'folke/tokyonight.nvim',   event = 'VeryLazy' },
+   { 'lunarvim/darkplus.nvim',  event = 'VeryLazy' },
+   { 'lunarvim/onedarker.nvim', event = 'VeryLazy' },
+   { 'rebelot/kanagawa.nvim',   event = 'VeryLazy' },
    {
       'marko-cerovac/material.nvim',
       init = function()
          vim.g.material_style = 'deep ocean'
       end,
+      event = 'VeryLazy',
    },
-   { 'olimorris/onedarkpro.nvim' },
-   { 'olivercederborg/poimandres.nvim' },
+   { 'olimorris/onedarkpro.nvim',       event = 'VeryLazy' },
+   { 'olivercederborg/poimandres.nvim', event = 'VeryLazy' },
 
    -- file icons
-   { 'nvim-tree/nvim-web-devicons' },
+   { 'nvim-tree/nvim-web-devicons',     lazy = true },
+
+   -- background transparency
+   {
+      'xiyaowong/transparent.nvim',
+      lazy = false,
+      cmd = { 'TransparentEnable', 'TransparentDisable', 'TransparentToggle' },
+      enabled = function()
+         return vim.env.TERM_PROGRAM == 'WezTerm'
+      end,
+      config = function()
+         require('transparent').setup()
+         vim.cmd('TransparentEnable')
+      end,
+   },
 
    -- bufferline
    {
+      -- enabled = false,
       'akinsho/bufferline.nvim',
       version = 'v3.*',
-      dependencies = 'nvim-tree/nvim-web-devicons',
+      dependencies = { 'nvim-tree/nvim-web-devicons', 'ThePrimeagen/harpoon' },
       event = { 'BufReadPost', 'BufNewFile' },
       -- stylua: ignore
       keys = {
-         { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>',            desc = 'Toggle pin' },
-         { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
-         {
-            '<leader>br',
-            function() buf_cache:refresh() end,
-            desc = 'Refresh cache block for current buffer',
-         },
-         {
-            '<leader>bR',
-            function() buf_cache:refresh_all() end,
-            desc = 'Refresh cache block for all buffers',
-         },
-         {
-            '<leader>bs',
-            function() buf_cache:render() end,
-            desc = 'Render cache blocks for all buffers',
-         },
+         { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>',            desc = '[bufferline] Toggle pin' },
+         { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = '[bufferline] Delete non-pinned buffers' },
       },
       opts = require('modules.ui.setup.bufferline').opts,
       config = true,
@@ -59,7 +62,7 @@ return {
       'nvim-lualine/lualine.nvim',
       dependencies = {
          'lewis6991/gitsigns.nvim',
-         'none-ls.nvim',
+         'nvimtools/none-ls.nvim',
       },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.ui.setup.lualine').opts,
@@ -75,7 +78,6 @@ return {
       dependencies = {
          'SmiteshP/nvim-navic',
          'nvim-tree/nvim-web-devicons',
-         'catppuccin/nvim',
       },
       opts = require('modules.ui.setup.barbecue').opts,
    },
@@ -117,7 +119,6 @@ return {
       tag = 'v1.1.0',
       event = 'LspAttach',
       dependencies = 'neovim/nvim-lspconfig',
-      opts = require('modules.ui.setup.fidget').opts,
       config = true,
    },
 
@@ -154,22 +155,6 @@ return {
    },
 
    -- side/file explorer
-   -- {
-   --    'nvim-neo-tree/neo-tree.nvim',
-   --    branch = 'v2.x',
-   --    cmd = 'Neotree',
-   --    dependencies = {
-   --       'nvim-lua/plenary.nvim',
-   --       'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
-   --       'MunifTanjim/nui.nvim',
-   --    },
-   --    deactivate = function()
-   --       vim.cmd([[Neotree close]])
-   --    end,
-   --    opts = require('modules.ui.setup.neo-tree').opts,
-   --    init = require('modules.ui.setup.neo-tree').init,
-   --    keys = require('modules.ui.setup.neo-tree').keys,
-   -- },
    {
       'nvim-tree/nvim-tree.lua',
       version = '*',

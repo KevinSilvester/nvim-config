@@ -1,4 +1,12 @@
+local i = require('modules.ui.icons')
 local M = {}
+
+local CUSTOM_AREA_RIGHT = {
+   { text = i.misc.SemiCircleLeft, bg = '#1e1e2e', fg = '#89b4fa' },
+   { text = 'harpoon: ',           fg = '#1e1e2e', bg = '#89b4fa' },
+   nil,
+   { text = i.misc.SemiCircleRight, bg = '#1e1e2e', fg = '#89b4fa' },
+}
 
 M.opts = {
    options = {
@@ -19,6 +27,17 @@ M.opts = {
             highlight = 'Directory',
             text_align = 'left',
          },
+      },
+      custom_areas = {
+         right = function()
+            local list_len = vim.tbl_count(HARPOON_LIST)
+            if list_len == 0 then
+               return nil
+            end
+            local idx = HARPOON_LIST[buf_cache.buffers.active.file] or 0
+            CUSTOM_AREA_RIGHT[3] = { text = idx .. '/' .. list_len, fg = '#1e1e2e', bg = '#89b4fa' }
+            return CUSTOM_AREA_RIGHT
+         end,
       },
    },
    highlights = {

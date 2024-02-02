@@ -150,7 +150,7 @@ M.config = function(_, opts)
       separator = '',
       padding = { right = 1 },
       color = function()
-         return { fg = buf_cache.active.copilot and colours.turqouise or colours.red }
+         return { fg = buf_cache.buffers.active.copilot and colours.turqouise or colours.red }
       end,
    }
 
@@ -161,22 +161,22 @@ M.config = function(_, opts)
       separator = '',
       padding = 1,
       color = function()
-         return { fg = buf_cache.active.treesitter and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = buf_cache.buffers.active.treesitter and colours.turqouise or colours.red, gui = 'bold' }
       end,
    }
 
    local fmt = {
       function()
-         return icons.fmt .. ' ' .. #(buf_cache.active.fmt or {})
+         return icons.fmt .. ' ' .. #(buf_cache.buffers.active.fmt or {})
       end,
       color = function()
-         return { fg = #(buf_cache.active.fmt or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = #(buf_cache.buffers.active.fmt or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
       end,
       padding = 0,
       separator = '',
       on_click = function()
-         if #(buf_cache.active.fmt or {}) > 0 then
-            local str = table_to_string(buf_cache.active.fmt)
+         if #(buf_cache.buffers.active.fmt or {}) > 0 then
+            local str = table_to_string(buf_cache.buffers.active.fmt)
             vim.notify(str, vim.log.levels.INFO, { title = 'Active Formatter' })
          else
             vim.notify('No formatters active', vim.log.levels.ERROR, { title = 'Active Formatter' })
@@ -186,18 +186,18 @@ M.config = function(_, opts)
 
    local lsp = {
       function()
-         return icons.lsp .. ' ' .. #(buf_cache.active.lsp or {})
+         return icons.lsp .. ' ' .. #(buf_cache.buffers.active.lsp or {})
       end,
       color = function()
-         return { fg = #(buf_cache.active.lsp or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         return { fg = #(buf_cache.buffers.active.lsp or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
       end,
       separator = '',
       on_click = function()
-         if #(buf_cache.active.lsp or {}) > 0 then
-            local str = table_to_string(buf_cache.active.lsp)
-            vim.notify(str, vim.log.levels.INFO, { title = 'Active LSP' })
+         if #(buf_cache.buffers.active.lsp or {}) > 0 then
+            local str = table_to_string(buf_cache.buffers.active.lsp)
+            vim.notify(str, vim.log.levels.INFO, { title = 'Active LS' })
          else
-            vim.notify('No LSP active', vim.log.levels.ERROR, { title = 'Active LSP' })
+            vim.notify('No Language Servers active', vim.log.levels.ERROR, { title = 'Active LS' })
          end
       end,
    }
