@@ -1,3 +1,4 @@
+local ufn = require('utils.fn')
 local cmd = require('core.mapper').cmd
 local M = {}
 
@@ -98,36 +99,40 @@ end
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>ff',  cmd('Telescope find_files'),                    desc = 'Files' },
-   { '<leader>fb',  cmd('Telescope buffers'),                       desc = 'Buffers' },
-   { '<leader>fB',  cmd('Telescope buffers show_all_buffers=true'), desc = 'Switch Buffer' },
-   { '<leader>ft',  cmd('Telescope live_grep'),                     desc = 'Text' },
-   { '<leader>fw',  cmd('Telescope grep_string'),                   desc = 'Word' },
-   { '<leader>fr',  cmd('Telescope oldfiles'),                      desc = 'Recent File' },
+   {
+      '<leader>ff',
+      ufn.telescope('files', { enable_preview = true }),
+      desc = '[telescope] Files'
+   },
+   { '<leader>fb',  cmd('Telescope buffers'),                       desc = '[telescope] Buffers' },
+   { '<leader>fB',  cmd('Telescope buffers show_all_buffers=true'), desc = '[telescope] Switch Buffer' },
+   { '<leader>ft',  cmd('Telescope live_grep'),                     desc = '[telescope] Text' },
+   { '<leader>fw',  cmd('Telescope grep_string'),                   desc = '[telescope] Word' },
+   { '<leader>fr',  cmd('Telescope oldfiles'),                      desc = '[telescope] Recent File' },
 
    -- git
-   { '<leader>gcb', cmd('Telescope git_branch'),                    desc = 'Checkout Branch' },
-   { '<leader>gcc', cmd('Telescope git_commits'),                   desc = 'Checkout Commit' },
-   { '<leader>go',  cmd('Telescope git_status'),                    desc = 'Open Changed File' },
+   { '<leader>gcb', cmd('Telescope git_branch'),                    desc = '[telescope] Checkout Branch' },
+   { '<leader>gcc', cmd('Telescope git_commits'),                   desc = '[telescope] Checkout Commit' },
+   { '<leader>go',  cmd('Telescope git_status'),                    desc = '[telescope] Open Changed File' },
 
    -- search
-   { '<leader>sa',  cmd('Telescope autocommands'),                  desc = 'Auto Commands' },
-   { '<leader>sb',  cmd('Telescope current_buffer_fuzzy_find'),     desc = 'Buffer' },
-   { '<leader>sC',  cmd('Telescope command_history'),               desc = 'Command History' },
-   { '<leader>sc',  cmd('Telescope commands'),                      desc = 'Commands' },
-   { '<leader>sd',  cmd('Telescope diagnostics bufnr=0'),           desc = 'Document diagnostics', },
-   { '<leader>sD',  cmd('Telescope diagnostics'),                   desc = 'Workspace diagnostics', },
-   { '<leader>sh',  cmd('Telescope help_tags'),                     desc = 'Help Tags' },
-   { '<leader>sH',  cmd('Telescope highlights'),                    desc = 'Search Highlight Groups', },
-   { '<leader>sk',  cmd('Telescope keymaps'),                       desc = 'Key Maps' },
-   { '<leader>sM',  cmd('Telescope man_pages'),                     desc = 'Man Pages' },
-   { '<leader>sm',  cmd('Telescope marks'),                         desc = 'Jump to Mark' },
-   { '<leader>so',  cmd('Telescope vim_options'),                   desc = 'Options' },
-   { '<leader>sR',  cmd('Telescope resume'),                        desc = 'Resume' },
+   { '<leader>sa',  cmd('Telescope autocommands'),                  desc = '[telescope] Auto Commands' },
+   { '<leader>sb',  cmd('Telescope current_buffer_fuzzy_find'),     desc = '[telescope] Buffer' },
+   { '<leader>sC',  cmd('Telescope command_history'),               desc = '[telescope] Command History' },
+   { '<leader>sc',  cmd('Telescope commands'),                      desc = '[telescope] Commands' },
+   { '<leader>sd',  cmd('Telescope diagnostics bufnr=0'),           desc = '[telescope] Document diagnostics', },
+   { '<leader>sD',  cmd('Telescope diagnostics'),                   desc = '[telescope] Workspace diagnostics', },
+   { '<leader>sh',  cmd('Telescope help_tags'),                     desc = '[telescope] Help Tags' },
+   { '<leader>sH',  cmd('Telescope highlights'),                    desc = '[telescope] Search Highlight Groups', },
+   { '<leader>sk',  cmd('Telescope keymaps'),                       desc = '[telescope] Key Maps' },
+   { '<leader>sM',  cmd('Telescope man_pages'),                     desc = '[telescope] Man Pages' },
+   { '<leader>sm',  cmd('Telescope marks'),                         desc = '[telescope] Jump to Mark' },
+   { '<leader>so',  cmd('Telescope vim_options'),                   desc = '[telescope] Options' },
+   { '<leader>sR',  cmd('Telescope resume'),                        desc = '[telescope] Resume' },
    {
       '<leader>sp',
-      require('utils.fn').telescope('colorscheme', { enable_preview = true }),
-      desc = 'Colorscheme with preview',
+      ufn.telescope('colorscheme', { enable_preview = true }),
+      desc = '[telescope] Colorscheme with preview',
    },
 }
 

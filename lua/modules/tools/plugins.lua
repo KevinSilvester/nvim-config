@@ -16,14 +16,26 @@ return {
          dir = PATH.cache .. '/session/',
          options = { 'buffers', 'curdir', 'tabpages', 'winsize', 'help', 'globals' },
          pre_save = function()
-            log.info('modules.tools.persistence', 'Session saved')
+            log:info('modules.tools.persistence', 'Session saved')
          end,
       },
       -- stylua: ignore
       keys = {
-         { "<leader>qs", function() require("persistence").load() end,                desc = "Restore Session" },
-         { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-         { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
+         {
+            "<leader>qs",
+            function() require("persistence").load() end,
+            desc = "[persistence] Restore Session"
+         },
+         {
+            "<leader>ql",
+            function() require("persistence").load({ last = true }) end,
+            desc = "[persistence] Restore Last Session"
+         },
+         {
+            "<leader>qd",
+            function() require("persistence").stop() end,
+            desc = "[persistence] Don't Save Current Session"
+         },
       },
    },
    {
@@ -36,6 +48,46 @@ return {
       config = function(_, opts)
          require('project_nvim').setup(opts)
       end,
+   },
+   {
+      'ThePrimeagen/git-worktree.nvim',
+      dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+      config = function()
+         require('git-worktree').setup()
+         require('telescope').load_extension('git_worktree')
+      end,
+      keys = {
+         {
+            '<leader>gww',
+            cmd('lua require("telescope").extensions.git_worktree.git_worktrees()'),
+            desc = '[git-worktree] Git Worktrees',
+         },
+         {
+            '<leader>gwc',
+            cmd('lua require("telescope").extensions.git_worktree.create_git_worktree()'),
+            desc = '[git-worktree] Create Git Worktree',
+         },
+      },
+   },
+   {
+      'tpope/vim-fugitive',
+      lazy = true,
+      cmd = {
+         'Git',
+         'Gedit',
+         'Gsplit',
+         'Gdiffsplit',
+         'Gvdiffsplit',
+         'Gread',
+         'Gwrite',
+         'Ggrep',
+         'Glgrep',
+         'GMove',
+         'GRename',
+         'GDelete',
+         'GRemove',
+         'GBrowse',
+      },
    },
 
    -- fuzzy finder
@@ -89,6 +141,49 @@ return {
       },
    },
 
+   -- better yank
+   {
+      'gbprod/yanky.nvim',
+      dependencies = { 'nvim-telescope/telescope.nvim' },
+      config = require('modules.tools.setup.yanky').config,
+      keys = require('modules.tools.setup.yanky').keys,
+   },
+
+   -- Paste Images
+   {
+      'HakonHarnes/img-clip.nvim',
+      event = 'BufEnter',
+      keys = {
+         { '<leader>P', '<cmd>PasteImage<cr>', desc = 'Paste image' },
+      },
+      cmd = 'PasteImage',
+   },
+
+   -- useful text objects
+   {
+      'chrisgrieser/nvim-various-textobjs',
+      lazy = false,
+      opts = { useDefaultKeymaps = true },
+   },
+
+   -- snippet maker
+   {
+      'chrisgrieser/nvim-scissors',
+      dependencies = 'nvim-telescope/telescope.nvim',
+      opts = { jsonFormatter = 'jq' },
+      config = true,
+      -- stylua: ignore
+      keys = {
+         {
+            '<leader>;a',
+            function() require('scissors').addNewSnippet() end,
+            desc = 'Add Snippet',
+            mode = { 'n', 'x' }
+         },
+         { '<leader>;e', function() require('scissors').editSnippet() end, desc = 'Edit Snippet' },
+      },
+   },
+
    -- WARNNING: Cursor disappears after using plugin
    -- colour picker
    -- {
@@ -100,22 +195,30 @@ return {
    --    config = true
    -- },
 
+   -- HARPOON
+   {
+      'ThePrimeagen/harpoon',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      enabled = true,
+      branch = 'harpoon2',
+      config = require('modules.tools.setup.harpoon').config,
+      keys = require('modules.tools.setup.harpoon').keys,
+   },
+
    -- package info
    {
       'vuki656/package-info.nvim',
-      event = { 'BufReadPre package.json' },
-      dependencies = 'nui.nvim',
+      event = { 'BufReadPre package.json', 'BufNewFile package.json' },
+      dependencies = 'MunifTanjim/nui.nvim',
       opts = require('modules.tools.setup.package-info').opts,
-      keys = require('modules.tools.setup.package-info').keys,
       config = require('modules.tools.setup.package-info').config,
    },
    {
       'saecki/crates.nvim',
       tag = 'v0.3.0',
-      event = { 'BufReadPre Cargo.toml' },
-      dependencies = 'plenary.nvim',
+      event = { 'BufReadPre Cargo.toml', 'BufNewFile Cargo.toml' },
+      dependencies = 'nvim-lua/plenary.nvim',
       opts = require('modules.tools.setup.crates').opts,
-      config = require('modules.tools.setup.crates').config,
    },
 
    -- terminal in neovim
@@ -134,6 +237,7 @@ return {
    },
 
    -- debugger
+   -- TODO: Setup Dap
    {
       'mfussenegger/nvim-dap',
       cmd = {
@@ -149,10 +253,21 @@ return {
       },
    },
 
+   -- hide .env file variables
+   {
+      'laytan/cloak.nvim',
+      event = { 'BufReadPre .env*', 'BufNewFile .env*' },
+      cmd = { 'CloakEnable', 'CloakDisable', 'CloakToggle' },
+      config = true,
+   },
+
    -- misc
    {
       'iamcco/markdown-preview.nvim',
-      build = 'cd app && npm i',
+      build = function()
+         vim.fn['mkdp#util#install']()
+      end,
+      commit = 'a923f5fc5ba36a3b17e289dc35dc17f66d0548ee',
       cmd = {
          'MarkdownPreview',
          'MarkdownPreviewStop',
@@ -164,5 +279,15 @@ return {
          vim.g.mkdp_filetypes = { 'markdown' }
          vim.g.mkdp_echo_preview_url = 1
       end,
+   },
+   {
+      'monaqa/dial.nvim',
+      keys = { '<C-a>', '<C-x>' },
+   },
+   {
+      'folke/zen-mode.nvim',
+      config = true,
+      cmd = 'ZenMode',
+      keys = { { '<leader>z', cmd('ZenMode'), desc = 'Zen Mode' }, },
    },
 }

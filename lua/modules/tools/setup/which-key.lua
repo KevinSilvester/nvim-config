@@ -30,8 +30,11 @@ M.opts = {
       ['<leader>gc'] = { name = '+checkout' },
       ['<leader>gd'] = { name = '+diff' },
       ['<leader>gh'] = { name = '+hunks' },
-      ['<leader>gt'] = { name = '+toggle' },
       ['<leader>gr'] = { name = '+reset' },
+      ['<leader>gs'] = { name = '+stage' },
+      ['<leader>gt'] = { name = '+toggle' },
+      ['<leader>gw'] = { name = '+worktrees' },
+      ['<leader>h'] = { name = '+harpoon' },
       ['<leader>i'] = { name = '+icons' },
       ['<leader>q'] = { name = '+quit/session' },
       ['<leader>j'] = { name = '+split/join' },
@@ -41,20 +44,12 @@ M.opts = {
       ['<leader>m'] = { name = '+mini-map' },
       ['<leader>n'] = { name = '+nvim-tree' },
       ['<leader>s'] = { name = '+search' },
+      ['<leader>sn'] = { name = '+noice' },
       ['<leader>S'] = { name = '+search/replace' },
       ['<leader>t'] = { name = '+terminal' },
       ['<leader>w'] = { name = '+windows' },
       ['<leader>x'] = { name = '+diagnostics/quickfix' },
-   },
-   crates = {
-      mode = { 'n', 'v' },
-      ['<leader>p'] = '+crates',
-      ['<leader>po'] = '+open',
-      ['<leader>ps'] = '+show',
-   },
-   ['package-info'] = {
-      mode = { 'n', 'v' },
-      ['<leader>p'] = '+package-info',
+      ['<leader>;'] = { name = '+snippets' },
    },
 }
 
@@ -62,13 +57,6 @@ M.config = function(_, opts)
    local wk = require('which-key')
    wk.setup(opts)
    wk.register(opts.defaults)
-
-   if package.loaded['crates'] then
-      wk.register(opts.crates)
-   end
-   if package.loaded['package-info'] then
-      wk.register(opts['package-info'])
-   end
 end
 
 return M

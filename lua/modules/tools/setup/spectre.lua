@@ -19,21 +19,21 @@ M.keys = {
       function()
          require('spectre').open_visual()
       end,
-      desc = 'Search and Replace (Current Directory)',
+      desc = '[spectre] Search+Replace (Current Directory)',
    },
    {
       '<leader>Sw',
       function()
          require('spectre').open_visual({ select_word = true })
       end,
-      desc = 'Search and Replace Current Word (Current Directory)',
+      desc = '[spectre] Search+Replace Word (Current Directory)',
    },
    {
       '<leader>Sf',
       function()
          require('spectre').open_file_search()
       end,
-      desc = 'Search and Replace (Current File)',
+      desc = '[spectre] Search+Replace (Current File)',
    },
 }
 
