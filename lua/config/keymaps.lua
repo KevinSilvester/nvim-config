@@ -16,6 +16,28 @@ vim.g.mapleader = ' '
 -- NORMAL MODE --
 nmap({
    { '<leader>L', cmd('Lazy'), opts(noremap, silent, 'Lazy') },
+   { '<leader>D', function() log:dump() end, opts(noremap, silent, 'Log Dump') },
+   {
+      '<leader>br',
+      function()
+         buf_cache:refresh()
+      end,
+      opts(noremap, silent, '[bufcache] Refresh current buffer cache'),
+   },
+   {
+      '<leader>bR',
+      function()
+         buf_cache:refresh_all()
+      end,
+      opts(noremap, silent, '[bufcache] Refresh all buffer cache'),
+   },
+   {
+      '<leader>bs',
+      function()
+         buf_cache:render()
+      end,
+      opts(noremap, silent, '[bufcache] Render cache blocks'),
+   },
 
    -- Better window navigation
    { '<C-h>', '<C-w>h', opts(noremap, silent, 'Focus window (left)') },
@@ -41,7 +63,7 @@ nmap({
    { '<C-BS>', '<C-W>', opts(noremap, silent) },
 
    -- Delete Word
-   { '<leader>h', cmd('nohlsearch'), opts(noremap, silent) },
+   { '<leader>H', cmd('nohlsearch'), opts(noremap, silent) },
 })
 
 if HOST.is_mac then
@@ -66,9 +88,6 @@ imap({
    -- Move text up and down
    { '<A-j>', '<Esc>:m .+1<CR>==gi', opts(noremap, silent) },
    { '<A-k>', '<Esc>:m .-2<CR>==gi', opts(noremap, silent) },
-
-   -- Delete Word
-   { '<S-BS>', '<C-W>', opts(noremap, silent) },
 
    -- Icon Picker
    -- { '<C-I>', cmd('IconPickerInsert'), opts(noremap, silent) },
