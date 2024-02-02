@@ -118,7 +118,7 @@ vim.opt.foldenable = true
 -- Appearance --
 ----------------
 if HOST.is_win then
-   vim.opt.guifont = { 'JetBrainsMono NF', ':h9' }
+   vim.opt.guifont = { 'JetBrainsMono Nerd Font', ':h9' }
 elseif HOST.is_mac then
    vim.opt.guifont = { 'JetBrainsMono Nerd Font', ':h12' }
 end
@@ -161,9 +161,9 @@ else
 end
 
 
-------------------------
--- For Neovim Nightly --
-------------------------
+--------------------
+-- For Neovim v7+ --
+--------------------
 vim.opt.cmdwinheight = 5
 vim.opt.equalalways = false
 vim.opt.display = 'lastline'
