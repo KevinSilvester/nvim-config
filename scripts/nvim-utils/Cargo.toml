@@ -2,5 +2,14 @@
 members = ["nu-lib", "nu-git-hooks", "nu-ts-parsers"]
 resolver = "2"
 
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+ansi_term = "0.12.1"
+anyhow = "1.0.75"
+cfg-if = "1.0.0"
+
 [profile.release]
 opt-level = 3
+lto = "thin"

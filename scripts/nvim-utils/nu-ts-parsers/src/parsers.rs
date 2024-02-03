@@ -5,7 +5,7 @@ pub const WANTED_PARSERS: &[&str] = &[
     "bash",
     "c",
     "cmake",
-    "comment",
+    // "comment", Causing severe lag. See https://github.com/nvim-treesitter/nvim-treesitter/issues/5057
     "cpp",
     "css",
     "diff",

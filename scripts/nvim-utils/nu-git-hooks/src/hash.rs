@@ -26,7 +26,7 @@ fn walk_dir_stream(
     root: PathBuf,
     queue_len: usize,
     parelellism: Parallelism,
-) -> Result<mpsc::Receiver<PathBuf>, Box<dyn std::error::Error>> {
+) -> anyhow::Result<mpsc::Receiver<PathBuf>> {
     let (tx, rx) = mpsc::channel(queue_len);
 
     tokio::spawn(async move {
@@ -81,7 +81,7 @@ impl<'b> Hash<'b> {
         }
     }
 
-    pub async fn create_hash_data_dir(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn create_hash_data_dir(&self) -> anyhow::Result<()> {
         if self.hash_data_dir.exists() {
             fs::remove_dir_all(&self.hash_data_dir).await?;
         }
@@ -102,7 +102,7 @@ impl<'b> Hash<'b> {
         _: &SD,
         file_path: &Path,
         write: bool,
-    ) -> Result<(PathBuf, String), Box<dyn std::error::Error>> {
+    ) -> anyhow::Result<(PathBuf, String)> {
         let file = File::open(file_path).await?;
         let mut buf_reader = BufReader::with_capacity(READ_BUFFER_SIZE, file);
         let mut hasher = Context::new(&SHA256);
@@ -132,7 +132,7 @@ impl<'b> Hash<'b> {
     pub async fn clear_data_subdir<'a, SD: Subdir<'a>>(
         &self,
         _: &SD,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> anyhow::Result<()> {
         let path = self.hash_data_dir.join(SD::NAME);
         if path.exists() {
             fs::remove_dir_all(&path).await?;
@@ -150,7 +150,7 @@ impl<'b> Hash<'b> {
         subdir: &SD,
         dir_path: &Path,
         write: bool,
-    ) -> Result<Vec<(PathBuf, String)>, Box<dyn std::error::Error>> {
+    ) -> anyhow::Result<Vec<(PathBuf, String)>> {
         let workers = num_cpus::get();
         let mut hashes: Vec<(PathBuf, String)> = Vec::new();
         let mut stream = walk_dir_stream(
@@ -179,7 +179,7 @@ impl<'b> Hash<'b> {
         &self,
         subdir: &SD,
         file_path: &Path,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> anyhow::Result<bool> {
         let (digest_path, digest) = self.hash_file(subdir, file_path, false).await?;
         if !digest_path.is_file() {
             return Ok(false);
@@ -192,7 +192,7 @@ impl<'b> Hash<'b> {
         &self,
         subdir: &SD,
         dir_path: &Path,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> anyhow::Result<bool> {
         let mut result = true;
         let workers = num_cpus::get();
 

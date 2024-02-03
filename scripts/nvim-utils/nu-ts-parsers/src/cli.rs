@@ -13,7 +13,7 @@ pub enum SubCommands {
     #[clap(name = "compile", bin_name = "compile")]
     Compile(Compile),
 
-    // Compile tree sitter parsers for current machine target with clang
+    /// Compile tree sitter parsers for current machine target with clang
     #[clap(name = "compile-local", bin_name = "compile-local")]
     CompileLocal(CompileLocal),
 }

@@ -1,7 +1,7 @@
 [package]
 name = "nu-git-hooks"
 version = "0.1.0"
-edition = "2021"
+edition = { workspace = true }
 
 [[bin]]
 name = "bootstrap"
@@ -13,8 +13,8 @@ name = "post-merge"
 name = "pre-push"
 
 [dependencies]
-anyhow = "1.0.78"
-cfg-if = "1.0.0"
+anyhow = { workspace = true }
+cfg-if = { workspace = true }
 hex = "0.4.3"
 jwalk = "0.8.1"
 nu-lib = { path = "../nu-lib" }

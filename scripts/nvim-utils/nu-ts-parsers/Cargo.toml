@@ -1,15 +1,15 @@
 [package]
 name = "nu-ts-parsers"
 version = "0.1.0"
-edition = "2021"
+edition = { workspace = true }
 
 [[bin]]
 name = "ts-parsers"
 path = "src/main.rs"
 
 [dependencies]
-ansi_term = "0.12.1"
-anyhow = "1.0.75"
+ansi_term = { workspace = true }
+anyhow = { workspace = true }
 async-trait = "0.1.73"
 chrono = { version = "0.4.31", features = ["clock"] }
 clap = { version = "4.4.4", features = ["derive"] }

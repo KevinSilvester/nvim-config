@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 rm ~/.config/nvim/.git/hooks/*
 rm ~/.config/nvim/scripts/bin/*
