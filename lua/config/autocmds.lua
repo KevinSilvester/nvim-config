@@ -130,7 +130,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
       end
       vim.cmd.cd(data.file)
       xpcall(require('nvim-tree.api').tree.open, function()
-         log.error('config.autocmd', 'Plugin `nvim-tree` not found')
+         log:error('config.autocmd', 'Plugin `nvim-tree` not found')
       end)
    end,
 })

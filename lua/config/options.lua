@@ -35,6 +35,7 @@ vim.opt.ruler = true
 -----------------
 -- Indentation --
 -----------------
+vim.opt.autoindent = true
 vim.opt.expandtab = true   -- convert tabs to spaces
 vim.opt.shiftwidth = 3     -- number of spaces inserted for indentation
 vim.opt.tabstop = 3        -- number of spaces '\t' is worth
@@ -154,9 +155,7 @@ if HOST.is_win then
    for option, value in pairs(powershell_options) do
       vim.opt[option] = value
    end
-elseif HOST.is_mac then
-   vim.opt.shell = 'fish'
-else
+elseif HOST.is_mac or HOST.is_linux then
    vim.opt.shell = 'fish'
 end
 

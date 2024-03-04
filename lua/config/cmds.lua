@@ -69,6 +69,7 @@ end, {
 vim.api.nvim_create_user_command('Tab', function(opts)
    local val = string.gsub(opts.args, ' ', '')
    if val:match('^%d+$') then
+      ---@diagnostic disable-next-line: param-type-mismatch
       ufn.tab_opts(tonumber(val))
    else
       log:error('config.cmds.tab', 'Invalid value!')
