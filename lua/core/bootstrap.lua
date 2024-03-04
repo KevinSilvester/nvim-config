@@ -1,5 +1,6 @@
 local ufs = require('utils.fs')
 local ufn = require('utils.fn')
+local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 
 local augroup = vim.api.nvim_create_augroup('core.bootstrap', { clear = true })
 
@@ -125,9 +126,9 @@ function Bootstrap:__delete_bundled_parsers()
       end
 
       for _, file in ipairs(files) do
-         vim.loop.fs_unlink(file)
+         uv.fs_unlink(file)
       end
-      vim.loop.fs_rmdir(path)
+      uv.fs_rmdir(path)
 
       log:info('core.bootstrap', 'Bundled parsers deleted')
    end, function()

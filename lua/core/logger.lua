@@ -152,7 +152,7 @@ function Logger:dump()
          false,
          vim.split(ufs.read_file(self._logfile) or '', '\n', {})
       )
-      vim.api.nvim_buf_set_option(component.bufnr, 'modifiable', false)
+      vim.api.nvim_set_option_value('modifiable', false, { buf = component.bufnr })
       vim.cmd('set number')
       vim.cmd(component.bufnr .. 'b +$')
    end)

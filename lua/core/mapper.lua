@@ -31,7 +31,7 @@ end
 ---@param mode MapperMode vim mode
 ---@param buffer? number buffer number
 ---@param mappings MapperMapping|MapperMapping[]
-local _set_keymap = function(mode, buffer, mappings)
+local function _set_keymap(mode, buffer, mappings)
    -- check if multiple mappings need to be set
    local has_multiple = type(mappings[1]) == 'table' and type(mappings[2]) == 'table'
 
@@ -68,7 +68,7 @@ end
 ---@private
 ---@param mode MapperMode vim mode
 ---@param map_to_buffer? boolean map key bindings to specific buffer
-local _map = function(mode, map_to_buffer)
+local function _map(mode, map_to_buffer)
    if map_to_buffer then
       ---@param buffer number
       ---@param mappings MapperMapping|MapperMapping[]

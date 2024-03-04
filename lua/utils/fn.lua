@@ -1,6 +1,6 @@
 local ufs = require('utils.fs')
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 
 local M = {}
 
@@ -97,7 +97,7 @@ M.get_root = function()
    local roots = {}
 
    if path then
-      for _, client in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
+      for _, client in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
          local workspace = client.config.workspace_folders
          local paths = workspace
                and vim.tbl_map(function(ws)
@@ -123,7 +123,13 @@ M.get_root = function()
    if not root then
       path = path and vim.fs.dirname(path) or uv.cwd()
       ---@type string?
-      root = vim.fs.find({ '.git', 'lua' }, { path = path, upward = true })[1]
+      root = vim.fs.find({ '.git', 'lua' }, {
+         path = path,
+         upward = true,
+         type = 'directory',
+         limit = 10,
+         stop = ''
+      })[1]
       root = root and vim.fs.dirname(root) or uv.cwd()
    end
    ---@cast root string
@@ -269,15 +275,15 @@ M.get_treesitter_parsers = function()
 
    for k, v in pairs(require('nvim-treesitter.parsers').list) do
       local value = string.format(
-            [[   {
+         [[   {
       "language": "%s",
       "url": "%s",
       "files": %s
    }]],
-            k,
-            v.install_info.url,
-            vim.json.encode(v.install_info.files)
-         )
+         k,
+         v.install_info.url,
+         vim.json.encode(v.install_info.files)
+      )
       table.insert(res, value)
    end
 

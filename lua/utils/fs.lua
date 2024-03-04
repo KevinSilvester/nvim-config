@@ -1,5 +1,5 @@
 local M = {}
-local fn, uv = vim.fn, vim.loop
+local fn, uv = vim.fn, (vim.version().minor >= 10 and vim.uv or vim.loop)
 
 ---The file system path separator for the current platform.
 M.path_separator = '/'

@@ -50,7 +50,13 @@ end
 function Lazy:__load_spec()
    local modules_dir = ufs.path_join(PATH.config, 'lua', 'modules')
    local match_pattern = 'lua/(.+).lua$'
-   local imports = vim.fs.find('plugins.lua', { path = modules_dir, type = 'file', limit = 10 })
+   local imports = vim.fs.find('plugins.lua', {
+      upward = false,
+      stop = '',
+      path = modules_dir,
+      type = 'file',
+      limit = 10,
+   })
 
    if #imports == 0 then
       log:warn('core.lazy', 'No import modules were found')
@@ -58,7 +64,6 @@ function Lazy:__load_spec()
    end
 
    for idx, path in ipairs(imports) do
-      local module_name = string.match(path, match_pattern):gsub('/', '.')
       self.spec[idx] = { import = string.match(path, match_pattern):gsub('/', '.') }
    end
 end

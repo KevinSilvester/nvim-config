@@ -1,12 +1,13 @@
+local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 -- stylua: ignore start
 
 ------------------------------------------------------------------------
 --                            host OS                                 --
 ------------------------------------------------------------------------
 _G.HOST = {}
-HOST.is_win = vim.loop.os_uname().sysname == 'Windows_NT'
-HOST.is_linux = vim.loop.os_uname().sysname == 'Linux'
-HOST.is_mac = vim.loop.os_uname().sysname == 'Darwin'
+HOST.is_win = uv.os_uname().sysname == 'Windows_NT'
+HOST.is_linux = uv.os_uname().sysname == 'Linux'
+HOST.is_mac = uv.os_uname().sysname == 'Darwin'
 HOST.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 
 
@@ -14,8 +15,16 @@ HOST.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 --                         standard paths                             --
 ------------------------------------------------------------------------
 _G.PATH = {}
+---@type string
+---@diagnostic disable-next-line: assign-type-mismatch
 PATH.config = vim.fn.stdpath('config')
+
+---@type string
+---@diagnostic disable-next-line: assign-type-mismatch
 PATH.data = vim.fn.stdpath('data')
+
+---@type string
+---@diagnostic disable-next-line: assign-type-mismatch
 PATH.cache = vim.fn.stdpath('cache')
 
 

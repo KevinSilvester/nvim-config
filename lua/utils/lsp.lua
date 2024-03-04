@@ -2,7 +2,7 @@ local ufn = require('utils.fn')
 local M = {}
 
 M.server_capabilities = function()
-   local active_clients = vim.lsp.get_active_clients()
+   local active_clients = vim.lsp.get_clients()
    local active_client_map = {}
 
    for index, value in ipairs(active_clients) do
@@ -18,7 +18,7 @@ M.server_capabilities = function()
       if not choice then
          return
       end
-      ufn.inspect(vim.lsp.get_active_clients()[active_client_map[choice]].server_capabilities)
+      ufn.inspect(active_clients[active_client_map[choice]].server_capabilities)
    end)
 end
 
