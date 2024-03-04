@@ -7,13 +7,14 @@ local info_status = {
 }
 
 ---@alias InfoBlock { value: boolean | string[], status: InfoStatus }
----@alias BufferInfo { file: string, bufnr: number, lsp: {}, fmt: {}, treesitter: boolean, copilot: boolean }
+---@alias BufferInfo { file: string, bufnr: number, lsp: {}, formatters: {}, linters: {}, treesitter: boolean, copilot: boolean }
 
 ---@class Core.BufCache.Buffer
 ---@field file string
 ---@field bufnr number
 ---@field lsp InfoBlock
----@field fmt InfoBlock
+---@field formatters InfoBlock
+---@field linters InfoBlock
 ---@field treesitter InfoBlock
 ---@field copilot InfoBlock
 ---@operator call:BufferInfo
@@ -23,8 +24,11 @@ Buffer.__call = function(self)
    return {
       file = self.file,
       bufnr = self.bufnr,
-      lsp = self.lsp.value,
-      fmt = self.fmt.value,
+      lsp = vim.tbl_filter(function(v)
+         return v ~= 'null-ls' and v ~= 'copilot'
+      end, vim.tbl_values(self.lsp.value)),
+      formatters = self.formatters.value,
+      linters = self.linters.value,
       treesitter = self.treesitter.value,
       copilot = self.copilot.value,
    }
@@ -37,7 +41,8 @@ function Buffer:new(bufnr, file)
       file = file,
       bufnr = bufnr,
       lsp = { value = {}, status = info_status.UNCHECKED },
-      fmt = { value = {}, status = info_status.UNCHECKED },
+      formatters = { value = {}, status = info_status.UNCHECKED },
+      linters = { value = {}, status = info_status.UNCHECKED },
       copilot = { value = false, status = info_status.UNCHECKED },
       treesitter = { value = false, status = info_status.UNCHECKED },
    }, self)
@@ -54,9 +59,49 @@ function Buffer:check_treesitter(force)
    self.treesitter.status = info_status.CHECKED
 end
 
+---Check if a LSP or null-ls is attached to buffer
+---@param client_id number
+function Buffer:add_lsp(client_id)
+   local client = vim.lsp.get_client_by_id(client_id)
+   if not client then
+      self.copilot.status = info_status.CHECKED
+      self.lsp.status = info_status.CHCEKED
+      return
+   end
+
+   if client.name == 'copilot' then
+      self.copilot.status = info_status.CHECKED
+      self.copilot.value = true
+   end
+   if client.name == 'null-ls' then
+      self:check_linters_formatters()
+   end
+   if not vim.tbl_contains(vim.tbl_values(self.lsp.value), client.name) then
+      self.lsp.value[client_id] = client.name
+   end
+
+   self.lsp.status = info_status.CHECKED
+end
+
+---Remove LSP from buffer
+---@param client_id number
+function Buffer:remove_lsp(client_id)
+   local client = self.lsp.value[client_id]
+
+   if client == 'copilot' then
+      self.copilot.value = false
+   end
+
+   if client == 'null-ls' then
+      self.formatters.value = {}
+   end
+
+   self.lsp.value[client_id] = nil
+end
+
 ---Check if a LSP is attached to buffer
 ---@param force? boolean
-function Buffer:check_lsp_and_copilot(force)
+function Buffer:refresh_lsp(force)
    if self.lsp.status == info_status.CHECKED and self.copilot.status == info_status.CHECKED and not force then
       return
    end
@@ -66,18 +111,19 @@ function Buffer:check_lsp_and_copilot(force)
    self.copilot.value = false
 
    vim.schedule(function()
-      for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = self.bufnr })) do
-         if
-            client.name ~= 'copilot'
-            and client.name ~= 'null-ls'
-            and not vim.tbl_contains(self.lsp.value, client.name)
-         then
-            table.insert(self.lsp.value, client.name)
-         elseif client.name == 'copilot' then
+      for _, client in ipairs(vim.lsp.get_clients({ bufnr = self.bufnr })) do
+         if client.name == 'copilot' then
             self.copilot.value = true
          end
-      end
 
+         if client.name == 'null-ls' then
+            self:check_linters_formatters()
+         end
+
+         if not vim.tbl_contains(vim.tbl_values(self.lsp.value), client.name) then
+            self.lsp.value[client.id] = client.name
+         end
+      end
       self.lsp.status = info_status.CHECKED
       self.copilot.status = info_status.CHECKED
    end)
@@ -85,12 +131,14 @@ end
 
 ---Check if a formatter is available to the buffer
 ---@param force? boolean
-function Buffer:check_fmt(force)
-   if self.fmt.status == info_status.CHECKED and not force then
+function Buffer:check_linters_formatters(force)
+   if self.formatters.status == info_status.CHECKED and not force then
       return
    end
-   self.fmt.status = info_status.CHECKING
-   self.fmt.value = {}
+   self.formatters.status = info_status.CHECKING
+   self.formatters.value = {}
+   self.linters.status = info_status.CHECKING
+   self.linters.value = {}
 
    vim.schedule(function()
       local buf_ft = vim.bo[self.bufnr].filetype
@@ -100,24 +148,26 @@ function Buffer:check_fmt(force)
          return
       end
       for _, source in ipairs(nl_sources.get_available(buf_ft)) do
-         if source.methods.NULL_LS_FORMATTING and not vim.tbl_contains(self.fmt.value, source.name) then
-            table.insert(self.fmt.value, source.name)
+         if source.methods.NULL_LS_FORMATTING and not vim.tbl_contains(self.formatters.value, source.name) then
+            table.insert(self.formatters.value, source.name)
+         end
+         if source.methods.NULL_LS_DIAGNOSTICS and not vim.tbl_contains(self.linters.value, source.name) then
+            table.insert(self.linters.value, source.name)
          end
       end
 
-      self.fmt.status = info_status.CHECKED
+      self.formatters.status = info_status.CHECKED
    end)
 end
 
 ---Refresh cache block info
 function Buffer:refresh()
    self.lsp = { value = {}, status = info_status.UNCHECKED }
-   self.fmt = { value = {}, status = info_status.UNCHECKED }
+   self.formatters = { value = {}, status = info_status.UNCHECKED }
    self.copilot = { value = false, status = info_status.UNCHECKED }
    self.treesitter = { value = false, status = info_status.UNCHECKED }
    self:check_treesitter(true)
-   self:check_lsp_and_copilot(true)
-   self:check_fmt(true)
+   self:refresh_lsp(true)
 end
 
 return Buffer

@@ -62,14 +62,11 @@ M.config = function(_, opts)
       location = i.misc.Location,
    }
 
+   ---@param tbl_name string
    ---@param tbl table
    ---@return string
-   local function table_to_string(tbl)
-      local str_tokens = {}
-      for idx, val in ipairs(tbl) do
-         table.insert(str_tokens, idx .. '. ' .. val)
-      end
-      return table.concat(str_tokens, '\n')
+   local function table_to_string(tbl_name, tbl)
+      return tbl_name .. ': ' .. '[' .. table.concat(tbl, ', ') .. ']'
    end
 
    local mode = {
@@ -167,19 +164,26 @@ M.config = function(_, opts)
 
    local fmt = {
       function()
-         return icons.fmt .. ' ' .. #(buf_cache.buffers.active.fmt or {})
+         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         return icons.fmt .. ' ' .. total
       end,
       color = function()
-         return { fg = #(buf_cache.buffers.active.fmt or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         return {
+            fg = total > 0 and colours.turqouise or colours.red,
+            gui = 'bold',
+         }
       end,
       padding = 0,
       separator = '',
       on_click = function()
-         if #(buf_cache.buffers.active.fmt or {}) > 0 then
-            local str = table_to_string(buf_cache.buffers.active.fmt)
-            vim.notify(str, vim.log.levels.INFO, { title = 'Active Formatter' })
+         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         if total > 0 then
+            local str1 = table_to_string('formatters', buf_cache.buffers.active.formatters)
+            local str2 = table_to_string('linters', buf_cache.buffers.active.linters)
+            vim.notify(str1 .. '\n' .. str2, vim.log.levels.INFO, { title = 'Active Formatter + Linters' })
          else
-            vim.notify('No formatters active', vim.log.levels.ERROR, { title = 'Active Formatter' })
+            vim.notify('No formatters active or linters', vim.log.levels.ERROR, { title = 'Active Formatter + Linters' })
          end
       end,
    }
@@ -189,7 +193,10 @@ M.config = function(_, opts)
          return icons.lsp .. ' ' .. #(buf_cache.buffers.active.lsp or {})
       end,
       color = function()
-         return { fg = #(buf_cache.buffers.active.lsp or {}) > 0 and colours.turqouise or colours.red, gui = 'bold' }
+         return {
+            fg = #(buf_cache.buffers.active.lsp or {}) > 0 and colours.turqouise or colours.red,
+            gui = 'bold',
+         }
       end,
       separator = '',
       on_click = function()
@@ -233,7 +240,7 @@ M.config = function(_, opts)
          local line = vim.fn.line('.')
          local line_total = vim.fn.line('$')
          local col = vim.fn.virtcol('.')
-         local col_total = vim.fn.virtcol('$')
+         local col_total = vim.fn.virtcol('$') - 1
          local str = string.format('line: %d / %d\ncol: %d / %d', line, line_total, col, col_total)
          vim.notify(str, vim.log.levels.INFO, { title = 'Location', icon = icons.location })
       end,

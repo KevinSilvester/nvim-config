@@ -1,4 +1,5 @@
 local ufs = require('utils.fs')
+local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 
 ---@class CustomNuiTreeNode: NuiTree.Node
 ---@field _bufnr number
@@ -33,7 +34,8 @@ local function gen_node_table(buffer, active)
       { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-copilot',    key = 'copilot',    value = buffer.copilot },
       { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-treesitter', key = 'treesitter', value = buffer.treesitter },
       { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-lsp',        key = 'lsp',        value = buffer.lsp },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-fmt',        key = 'fmt',        value = buffer.fmt },
+      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-fmt',        key = 'formatters', value = buffer.formatters },
+      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-lint',       key = 'linters',    value = buffer.linters },
    }
 
    local blank = { _bufnr = buffer.bufnr, _type = 'blank', id = buffer.bufnr .. '-blank' }
@@ -78,12 +80,11 @@ end
 
 ---@param file_path string
 local function file(file_path)
-   ---@diagnostic disable-next-line: redefined-local
-   local file = file_path:gsub(vim.loop.cwd() .. ufs.path_separator, '')
-   if #file > 33 then
-      file = '...' .. file:sub(-30)
+   local fp = file_path:gsub(uv.cwd() .. ufs.path_separator, '')
+   if #fp > 33 then
+      fp = '...' .. fp:sub(-30)
    end
-   return file
+   return fp
 end
 
 ---@param node CustomNuiTreeNode
@@ -135,10 +136,10 @@ local function prepare_node(node)
       line_texts[5] = Text(string.format('%-10s\t', node.key), 'core.cache.brackets')
 
       if value_is_table then
-         line_texts[6] = Text('[ ', 'core.cache.brackets_value')
+         line_texts[6] = Text('[', 'core.cache.brackets_value')
          ---@diagnostic disable-next-line: param-type-mismatch
          line_texts[7] = Text(table.concat(node.value, ', '))
-         line_texts[8] = Text(' ]', 'core.cache.brackets_value')
+         line_texts[8] = Text(']', 'core.cache.brackets_value')
       end
 
       if value_is_boolean then
@@ -310,6 +311,7 @@ function Ui:__set_keymaps()
             return
          end
 
+         -- luacheck: ignore 311
          local updated = false
          if expand then
             updated = node:expand()
@@ -449,28 +451,30 @@ function Ui:__set_keymaps()
    -- Refresh
    self.popup:map('n', 'r', function()
       buf_cache:refresh_all()
-      ---@type NodeTable[]
-      local nodes_table = {}
-      local nodes = self.tree:get_nodes()
+      vim.defer_fn(function()
+         ---@type NodeTable[]
+         local nodes_table = {}
+         local nodes = self.tree:get_nodes()
 
-      for _, bufnr in ipairs(self.bufnr_list) do
-         local active = self.buffers.active.bufnr == bufnr
-         nodes_table[bufnr] = gen_node_table(self.buffers.list[bufnr](), active)
-      end
+         for _, bufnr in ipairs(self.bufnr_list) do
+            local active = self.buffers.active.bufnr == bufnr
+            nodes_table[bufnr] = gen_node_table(self.buffers.list[bufnr](), active)
+         end
 
-      for _, node in ipairs(nodes) do
-         if node._type == 'parent' then
-            local children = self.tree:get_nodes(node._id)
-            for i, child in ipairs(children) do
-               ---@cast child CustomNuiTreeNode
-               child.value = nodes_table[node._bufnr].children[i].value
+         for _, node in ipairs(nodes) do
+            if node._type == 'parent' then
+               local children = self.tree:get_nodes(node._id)
+               for i, child in ipairs(children) do
+                  ---@cast child CustomNuiTreeNode
+                  child.value = nodes_table[node._bufnr].children[i].value
+               end
             end
          end
-      end
 
-      vim.schedule(function()
-         self.tree:render()
-      end)
+         vim.schedule(function()
+            self.tree:render()
+         end)
+      end, 5)
    end, { noremap = true, silent = true })
 
    -- Go to bottom
@@ -526,7 +530,7 @@ function Ui:__set_keymaps()
       })
 
       vim.api.nvim_buf_set_lines(help_popup.bufnr, 0, -1, false, help_text)
-      vim.api.nvim_buf_set_option(help_popup.bufnr, 'modifiable', false)
+      vim.api.nvim_set_option_value('modifiable', false, { buf = help_popup.bufnr })
 
       help_popup:on({ 'BufLeave', 'BufDelete', 'BufWinLeave' }, function()
          vim.schedule(function()

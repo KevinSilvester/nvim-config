@@ -1,6 +1,6 @@
 local Buffer = require('core.cache.buffer')
 
----@alias ActiveBuffer { bufnr: number, file: string, lsp: string[], fmt: string[], treesitter: boolean, copilot: boolean }
+---@alias ActiveBuffer BufferInfo
 
 ---@class Core.BufCache.Buffers
 ---@field active ActiveBuffer

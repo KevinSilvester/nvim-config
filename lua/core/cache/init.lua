@@ -76,14 +76,32 @@ function BufCache:__create_autocmds()
       end),
    })
 
-   vim.api.nvim_create_autocmd({ 'LspAttach', 'LspDetach' }, {
-      group = augroup('lsp+fmt+copilot'),
-      desc = 'Check if ls, formatter/linter, and copilot have attached to buffer',
+   vim.api.nvim_create_autocmd({ 'LspAttach' }, {
+      group = augroup('add-lsp'),
+      desc = 'Add LSP/formatter attached to buffer',
       callback = vim.schedule_wrap(function(event)
-         self.buffers.list[event.buf]:check_lsp_and_copilot()
-         self.buffers.list[event.buf]:check_fmt()
+         if event.file ~= '' then
+            self.buffers.list[event.buf]:add_lsp(event.data.client_id)
+
+            if event.buf == self.buffers.active.bufnr then
+               vim.defer_fn(function()
+                  self.buffers:update_active(event.buf)
+               end, 5)
+            end
+         end
+      end),
+   })
+
+   vim.api.nvim_create_autocmd({ 'LspDetach' }, {
+      group = augroup('remove-lsp'),
+      desc = 'Remove LSP/formatter detached from buffer',
+      callback = vim.schedule_wrap(function(event)
+         self.buffers.list[event.buf]:remove_lsp(event.data.client_id)
+
          if event.buf == self.buffers.active.bufnr then
-            self.buffers:update_active(event.buf)
+            vim.defer_fn(function()
+               self.buffers:update_active(event.buf)
+            end, 5)
          end
       end),
    })
@@ -94,7 +112,9 @@ function BufCache:refresh()
    ---@type number
    local bufnr = vim.api.nvim_get_current_buf()
    self.buffers:refresh(bufnr)
-   self.buffers:update_active(bufnr)
+   vim.defer_fn(function()
+      self.buffers:update_active(bufnr)
+   end, 5)
 end
 
 ---Refresh buf cache for all buffers
@@ -106,7 +126,9 @@ function BufCache:refresh_all()
       self.buffers:refresh(bufnr)
    end
    if self.buffers.active.bufnr == vim.api.nvim_get_current_buf() then
-      self.buffers:update_active(self.buffers.active.bufnr)
+      vim.defer_fn(function()
+         self.buffers:update_active(self.buffers.active.bufnr)
+      end, 5)
    end
 end
 
