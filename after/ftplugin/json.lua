@@ -1,6 +1,14 @@
+vim.opt_local.shiftwidth = 2
+vim.opt_local.softtabstop = 2
+vim.opt_local.tabstop = 2
+
 if vim.fn.expand('%:t') ~= 'package.json' then
    return
 end
+
+vim.opt_local.shiftwidth = 3
+vim.opt_local.softtabstop = 3
+vim.opt_local.tabstop = 3
 
 local wk = require('which-key')
 local m = require('core.mapper')
