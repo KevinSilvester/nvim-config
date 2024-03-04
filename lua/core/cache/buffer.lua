@@ -148,7 +148,9 @@ function Buffer:check_linters_formatters(force)
          return
       end
       for _, source in ipairs(nl_sources.get_available(buf_ft)) do
-         if source.methods.NULL_LS_FORMATTING and not vim.tbl_contains(self.formatters.value, source.name) then
+         if
+            source.methods.NULL_LS_FORMATTING and not vim.tbl_contains(self.formatters.value, source.name)
+         then
             table.insert(self.formatters.value, source.name)
          end
          if source.methods.NULL_LS_DIAGNOSTICS and not vim.tbl_contains(self.linters.value, source.name) then

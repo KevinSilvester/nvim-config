@@ -128,7 +128,7 @@ M.get_root = function()
          upward = true,
          type = 'directory',
          limit = 10,
-         stop = ''
+         stop = '',
       })[1]
       root = root and vim.fs.dirname(root) or uv.cwd()
    end

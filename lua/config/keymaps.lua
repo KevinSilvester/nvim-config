@@ -16,7 +16,13 @@ vim.g.mapleader = ' '
 -- NORMAL MODE --
 nmap({
    { '<leader>L', cmd('Lazy'), opts(noremap, silent, 'Lazy') },
-   { '<leader>D', function() log:dump() end, opts(noremap, silent, 'Log Dump') },
+   {
+      '<leader>D',
+      function()
+         log:dump()
+      end,
+      opts(noremap, silent, 'Log Dump'),
+   },
    {
       '<leader>br',
       function()

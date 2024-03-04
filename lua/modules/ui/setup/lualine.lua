@@ -164,11 +164,13 @@ M.config = function(_, opts)
 
    local fmt = {
       function()
-         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         local total = #(buf_cache.buffers.active.formatters or {})
+            + #(buf_cache.buffers.active.linters or {})
          return icons.fmt .. ' ' .. total
       end,
       color = function()
-         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         local total = #(buf_cache.buffers.active.formatters or {})
+            + #(buf_cache.buffers.active.linters or {})
          return {
             fg = total > 0 and colours.turqouise or colours.red,
             gui = 'bold',
@@ -177,13 +179,18 @@ M.config = function(_, opts)
       padding = 0,
       separator = '',
       on_click = function()
-         local total = #(buf_cache.buffers.active.formatters or {}) + #(buf_cache.buffers.active.linters or {})
+         local total = #(buf_cache.buffers.active.formatters or {})
+            + #(buf_cache.buffers.active.linters or {})
          if total > 0 then
             local str1 = table_to_string('formatters', buf_cache.buffers.active.formatters)
             local str2 = table_to_string('linters', buf_cache.buffers.active.linters)
             vim.notify(str1 .. '\n' .. str2, vim.log.levels.INFO, { title = 'Active Formatter + Linters' })
          else
-            vim.notify('No formatters active or linters', vim.log.levels.ERROR, { title = 'Active Formatter + Linters' })
+            vim.notify(
+               'No formatters active or linters',
+               vim.log.levels.ERROR,
+               { title = 'Active Formatter + Linters' }
+            )
          end
       end,
    }
@@ -201,7 +208,7 @@ M.config = function(_, opts)
       separator = '',
       on_click = function()
          if #(buf_cache.buffers.active.lsp or {}) > 0 then
-            local str = table_to_string(buf_cache.buffers.active.lsp)
+            local str = table_to_string('Language Servers', buf_cache.buffers.active.lsp)
             vim.notify(str, vim.log.levels.INFO, { title = 'Active LS' })
          else
             vim.notify('No Language Servers active', vim.log.levels.ERROR, { title = 'Active LS' })
