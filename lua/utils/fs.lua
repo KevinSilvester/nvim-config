@@ -1,6 +1,26 @@
 local M = {}
 local fn, uv = vim.fn, (vim.version().minor >= 10 and vim.uv or vim.loop)
 
+--- File mode constants for `libuv`'s unix fs operations
+M.FILE_MODES = {
+   o777 = tonumber('100777', 8), -- -rwxrwxrwx
+   o755 = tonumber('100755', 8), -- -rwxr-xr-x
+   o700 = tonumber('100700', 8), -- -rwx------
+   o644 = tonumber('100644', 8), -- -rw-r--r--
+   o600 = tonumber('100600', 8), -- -rw-------
+}
+M.FILE_MODES.default = M.FILE_MODES.o644 -- -rw-r--r--
+
+--- Directory mode constants for `libuv`'s unix fs operations
+M.DIR_MODES = {
+   o777 = tonumber('40777', 8), -- drwxrwxrwx
+   o755 = tonumber('40755', 8), -- drwxr-xr-x
+   o700 = tonumber('40700', 8), -- drwx------
+   o644 = tonumber('40644', 8), -- drw-r--r--
+   o600 = tonumber('40600', 8), -- drw-------
+}
+M.DIR_MODES.default = M.DIR_MODES.o755 -- drwxr-xr-x
+
 ---The file system path separator for the current platform.
 M.path_separator = '/'
 if HOST.is_win then
@@ -34,16 +54,39 @@ end
 
 ---make a new directory
 ---@param path string new directory path
----@param mode number|nil directory permission (default 16895, equivalent of 777)
+---@param mode number|nil directory permission (default 16877, equivalent of 755)
 M.mkdir = function(path, mode)
-   mode = mode or 16895
+   mode = mode or M.DIR_MODES.default
    uv.fs_mkdir(path, mode)
+end
+
+---make a new directory and all its parents
+---@param path string new directory path
+---@param mode number|nil directory permission (default 16877, equivalent of 755)
+M.mkdirp = function(path, mode)
+   mode = mode or M.DIR_MODES.default
+
+   local parts = M.split(path, M.path_separator)
+   local paths = {}
+
+   for i, part in ipairs(parts) do
+      paths[i] = M.path_join((paths[i - 1] or ''), part)
+   end
+
+   for _, p in ipairs(paths) do
+      if M.is_dir(p) then
+         goto continue
+      end
+      assert(not M.is_file(p), 'Cannot create directory: ' .. p .. ' is a file')
+      M.mkdir(p, mode)
+      ::continue::
+   end
 end
 
 ---list all files in a directory recursively
 ---@param path string source path
----@param paths table|nil list of paths
----@return table|nil list of paths
+---@param paths string[]|nil list of paths
+---@return string[]|nil list of paths
 M.scandir = function(path, paths)
    local stat = uv.fs_stat(path)
    paths = paths or {}
@@ -55,11 +98,7 @@ M.scandir = function(path, paths)
    if stat.type == 'file' then
       paths[#paths + 1] = path
    elseif stat.type == 'directory' then
-      local handle = uv.fs_scandir(path)
-
-      if not handle then
-         return nil
-      end
+      local handle = assert(uv.fs_scandir(path))
 
       while true do
          local name = uv.fs_scandir_next(handle)
@@ -77,10 +116,15 @@ end
 ---@param path string can be full or relative to `cwd`
 ---@param txt string|table text to be written, uses `vim.inspect` internally for tables
 ---@param flag string used to determine access mode, common flags: "w" for `overwrite` or "a" for `append`
----@param offset number|nil specific number of bytes from the beginning of the file where the data should be written, defaults is `-1` which appends to current file offset
-function M.write_file(path, txt, flag, offset)
+---@param mode? number directory permission (default 33188, equivalent of 644)
+---@param offset? number specific number of bytes from the beginning of the file where the data should be written, defaults is `-1` which appends to current file offset
+function M.write_file(path, txt, flag, mode, offset)
+   mode = mode or M.FILE_MODES.default
+   offset = offset == nil and -1 or offset
+
    local data = type(txt) == 'string' and txt or vim.inspect(txt)
-   uv.fs_open(path, flag, 438, function(open_err, fd)
+
+   uv.fs_open(path, flag, mode, function(open_err, fd)
       assert(not open_err, open_err)
       uv.fs_write(fd, data, offset, function(write_err)
          assert(not write_err, write_err)
@@ -93,12 +137,14 @@ end
 
 ---Write data to a file
 ---@param path string can be full or relative to `cwd`
+---@param mode number|nil directory permission (default 33188, equivalent of 644)
 ---@param offset number|nil specific number of bytes from the beginning of the file where the data should be read, default is `0` which will not change current file offset
 ---@return string|nil
-M.read_file = function(path, offset)
+M.read_file = function(path, mode, offset)
+   mode = mode or M.FILE_MODES.default
    offset = offset == nil and 0 or offset
 
-   local fd = assert(uv.fs_open(path, 'r', 438))
+   local fd = assert(uv.fs_open(path, 'r', mode))
    local stat = assert(uv.fs_fstat(fd))
    local data = assert(uv.fs_read(fd, stat.size, offset))
    assert(uv.fs_close(fd))
@@ -107,6 +153,44 @@ M.read_file = function(path, offset)
       return data
    else
       return nil
+   end
+end
+
+---Copy a file or directory
+---@param src string source path
+---@param dest string destination path
+M.copy = function(src, dest)
+   local src_stat = assert(uv.fs_stat(src))
+   local src_parts = M.split(src, M.path_separator)
+
+   local dest_stat = uv.fs_stat(dest)
+
+   if src_stat.type == 'file' then
+      if dest_stat and dest_stat.type == 'directory' then
+         dest = M.path_join(dest, src_parts[#src_parts])
+      end
+      uv.fs_copyfile(src, dest, function(err)
+         assert(not err, err)
+      end)
+      return
+   elseif src_stat.type == 'directory' then
+      if dest_stat then
+         assert(dest_stat.type ~= 'file', 'Destination is a file')
+      else
+         M.mkdir(dest, src_stat.mode)
+      end
+
+      local handle = assert(uv.fs_scandir(src))
+
+      while true do
+         local name = uv.fs_scandir_next(handle)
+         if not name then
+            break
+         end
+         local new_src = M.path_join(src, name)
+         local new_dest = M.path_join(dest, name)
+         M.copy(new_src, new_dest)
+      end
    end
 end
 

@@ -186,12 +186,13 @@ M.spawn = function(command, args, on_exit, out, err)
       return
    end
 
-   ---@cast stdout uv_pipe_t
-   ---@cast stderr uv_pipe_t
+   assert(stdout)
+   assert(stderr)
 
    local proc
    proc = uv.spawn(
       command,
+      ---@diagnostic disable-next-line: missing-fields
       { args = args, stdio = { nil, stdout, stderr } },
       vim.schedule_wrap(function(code, signal)
          stdout:read_stop()
@@ -199,7 +200,7 @@ M.spawn = function(command, args, on_exit, out, err)
          stdout:close()
          stderr:close()
 
-         ---@cast proc uv_process_t
+         ---@cast proc uv.uv_process_t
          proc:close()
          if type(on_exit) == 'function' then
             on_exit(code, signal)
