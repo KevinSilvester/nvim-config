@@ -1,5 +1,4 @@
-local ufs = require('utils.fs')
-local uv = vim.version().minor >= 10 and vim.uv or vim.loop
+local helpers = require('core.cache.ui-helpers')
 
 ---@class CustomNuiTreeNode: NuiTree.Node
 ---@field _bufnr number
@@ -15,146 +14,6 @@ local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 ---@alias ParentData { _bufnr: number, text: string, file: string, active: boolean }
 ---@alias BlankData { _bufnr: number, id: string, blank: boolean }
 ---@alias NodeTable  { parent: ParentData, children: ChildData[], blank: BlankData }
-
----@param buffer BufferInfo Buffer to generate node table for
----@param active boolean Is Buffer active
----@return NodeTable
-local function gen_node_table(buffer, active)
-   local parent = {
-      _bufnr = buffer.bufnr,
-      _type = 'parent',
-      text = tostring(buffer.bufnr),
-      file = buffer.file,
-      active = active,
-   }
-
-   -- stylua: ignore
-   local children = {
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-file',       key = 'file',       value = buffer.file },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-copilot',    key = 'copilot',    value = buffer.copilot },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-treesitter', key = 'treesitter', value = buffer.treesitter },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-lsp',        key = 'lsp',        value = buffer.lsp },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-fmt',        key = 'formatters', value = buffer.formatters },
-      { _bufnr = buffer.bufnr, _type = 'child', id = buffer.bufnr .. '-lint',       key = 'linters',    value = buffer.linters },
-   }
-
-   local blank = { _bufnr = buffer.bufnr, _type = 'blank', id = buffer.bufnr .. '-blank' }
-
-   return { parent = parent, children = children, blank = blank }
-end
-
----@param nodes_table NodeTable[]
----@param bufnr_list number[]
----@return CustomNuiTreeNode[]
-local function gen_tree_nodes(nodes_table, bufnr_list)
-   local Node = require('nui.tree').Node
-
-   local tree_nodes = {}
-
-   for _, bufnr in ipairs(bufnr_list) do
-      local node = nodes_table[bufnr]
-
-      local child_nodes = {}
-      for _, child in ipairs(node.children) do
-         table.insert(child_nodes, Node(child))
-      end
-
-      local parent_node = Node(node.parent, child_nodes)
-      local blank_node = Node(node.blank)
-
-      if node.parent.active then
-         table.insert(tree_nodes, 1, parent_node)
-         if #bufnr_list > 0 then
-            table.insert(tree_nodes, 2, blank_node)
-         end
-      else
-         table.insert(tree_nodes, parent_node)
-         table.insert(tree_nodes, blank_node)
-      end
-   end
-
-   tree_nodes[#tree_nodes] = nil
-
-   return tree_nodes
-end
-
----@param file_path string
-local function file(file_path)
-   local fp = file_path:gsub(uv.cwd() .. ufs.path_separator, '')
-   if #fp > 33 then
-      fp = '...' .. fp:sub(-30)
-   end
-   return fp
-end
-
----@param node CustomNuiTreeNode
----@return NuiLine|nil
-local function prepare_node(node)
-   local Line = require('nui.line')
-   local Text = require('nui.text')
-
-   ---@type NuiText[]
-   local line_texts = {}
-
-   if node._type == 'blank' then
-      return Line()
-      -- return
-   end
-
-   if node._type == 'parent' then
-      -- stylua: ignore
-      line_texts = {
-         Text(node:is_expanded() and '' or '', 'core.cache.arrows'),
-         Text(' [ ', 'core.cache.brackets'),
-         Text('󰈸', node.active and 'core.cache.active' or 'core.cache.brackets'),
-         Text(' ] ', 'core.cache.brackets'),
-         Text('Buffer ' .. string.format('%-3s', node.text)),
-      }
-
-      if not node:is_expanded() then
-         line_texts[6] = Text('', {
-            virt_text = { { file(node.file), 'core.cache.virt_text' } },
-            virt_text_pos = 'eol',
-         })
-      end
-   end
-
-   if node._type == 'child' then
-      local value_is_table = type(node.value) == 'table'
-      local value_is_boolean = type(node.value) == 'boolean'
-
-      line_texts[1] = Text('    ', 'core.cache.arrows')
-      line_texts[2] = Text(' [ ', 'core.cache.brackets')
-
-      if (value_is_table and #node.value == 0) or node.value == false then
-         line_texts[3] = Text('', 'core.cache.inactive')
-      else
-         line_texts[3] = Text('', 'core.cache.active')
-      end
-
-      line_texts[4] = Text(' ] ', 'core.cache.brackets')
-      line_texts[5] = Text(string.format('%-10s\t', node.key), 'core.cache.brackets')
-
-      if value_is_table then
-         line_texts[6] = Text('[', 'core.cache.brackets_value')
-         ---@diagnostic disable-next-line: param-type-mismatch
-         line_texts[7] = Text(table.concat(node.value, ', '))
-         line_texts[8] = Text(']', 'core.cache.brackets_value')
-      end
-
-      if value_is_boolean then
-         line_texts[6] = Text(tostring(node.value), 'core.cache.boolean')
-      end
-
-      if not value_is_table and not value_is_boolean then
-         ---@diagnostic disable-next-line: param-type-mismatch
-         local val = file(node.value)
-         line_texts[6] = Text(val)
-      end
-   end
-
-   return Line(line_texts)
-end
 
 ---@class Core.BufCache.Ui
 ---@field _hl_created boolean
@@ -178,7 +37,13 @@ Ui.__POPUP_OPTIONS = function()
       relative = 'editor',
       position = '50%',
       size = { height = '50%', width = 60 },
-      buf_options = { modifiable = false, readonly = false },
+      buf_options = {
+         modifiable = false,
+         readonly = false,
+         filetype = 'bufcache',
+         buftype = 'nofile',
+         bufhidden = 'wipe',
+      },
    }
 end
 
@@ -194,16 +59,16 @@ Ui.__TREE_OPTIONS = function(popup_bufnr, bufnr_list, buffers)
 
    for _, bufnr in ipairs(bufnr_list) do
       local active = buffers.active.bufnr == bufnr
-      nodes_table[bufnr] = gen_node_table(buffers.list[bufnr](), active)
+      nodes_table[bufnr] = helpers.gen_node_table(buffers.list[bufnr](), active)
    end
 
-   local tree_nodes = gen_tree_nodes(nodes_table, bufnr_list)
+   local tree_nodes = helpers.gen_tree_nodes(nodes_table, bufnr_list)
 
    ---@type nui_tree_options
    return {
       bufnr = popup_bufnr,
       nodes = tree_nodes,
-      prepare_node = prepare_node,
+      prepare_node = helpers.prepare_node,
    }
 end
 
@@ -392,7 +257,19 @@ function Ui:__set_keymaps()
 
          if node.file then
             vim.schedule(function()
-               vim.api.nvim_buf_delete(node._bufnr, { force = force })
+               xpcall(function()
+                  vim.api.nvim_buf_delete(node._bufnr, { force = force })
+               end, function()
+                  log:error(
+                     'core.cache.ui',
+                     'failed to delete buffer ' .. node._bufnr .. '(' .. self.buffers.list[node._bufnr].file
+                  )
+               end)
+
+               if self.buffers:exists(node._bufnr) then
+                  self.buffers:delete(node._bufnr)
+               end
+
                for _, id in ipairs(delete_list) do
                   self.tree:remove_node(id)
                end
@@ -450,6 +327,7 @@ function Ui:__set_keymaps()
 
    -- Refresh
    self.popup:map('n', 'r', function()
+      vim.notify('Refreshing buffer info...', 'info', { title = 'core.cache' })
       buf_cache:refresh_all()
       vim.defer_fn(function()
          ---@type NodeTable[]
@@ -458,7 +336,7 @@ function Ui:__set_keymaps()
 
          for _, bufnr in ipairs(self.bufnr_list) do
             local active = self.buffers.active.bufnr == bufnr
-            nodes_table[bufnr] = gen_node_table(self.buffers.list[bufnr](), active)
+            nodes_table[bufnr] = helpers.gen_node_table(self.buffers.list[bufnr](), active)
          end
 
          for _, node in ipairs(nodes) do

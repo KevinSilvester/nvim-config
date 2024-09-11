@@ -159,6 +159,7 @@ function Buffer:check_linters_formatters(force)
       end
 
       self.formatters.status = info_status.CHECKED
+      self.linters.status = info_status.CHECKED
    end)
 end
 

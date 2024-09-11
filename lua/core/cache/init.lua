@@ -19,7 +19,7 @@ function BufCache:init()
       buffers = Buffers:new(),
       _hl_created = false,
       _excluded_ft = {
-         'help',
+         -- 'help',
          'netrw',
          'NvimTree',
          'mason',
@@ -28,6 +28,12 @@ function BufCache:init()
          'alpha',
          'TelescopePropmt',
          'sagaoutline',
+         'sagaoufinder',
+         'undotree',
+         'diff',
+         'DiffviewFile',
+         'DiffviewFileHistory',
+         'fugitiveblame',
       },
    }, self)
 
@@ -47,6 +53,9 @@ function BufCache:__create_autocmds()
       group = augroup('active-buffer'),
       desc = 'Update/Insert active buffer + check treesitter',
       callback = function(event)
+         if self:__is_excluded(vim.bo[event.buf].filetype) then
+            return
+         end
          if event.file ~= '' then
             self.buffers:insert(event.buf)
             self.buffers.list[event.buf]:check_treesitter()
@@ -59,10 +68,7 @@ function BufCache:__create_autocmds()
       group = augroup('delete-excluded'),
       desc = 'Delete buffer if excluded filetype',
       callback = function(event)
-         if
-            self.buffers:exists(event.buf)
-            and vim.tbl_contains(self._excluded_ft, vim.bo[event.buf].filetype)
-         then
+         if self.buffers:exists(event.buf) and self:__is_excluded(vim.bo[event.buf].filetype) then
             self.buffers:delete(event.buf)
          end
       end,
@@ -81,6 +87,11 @@ function BufCache:__create_autocmds()
       desc = 'Add LSP/formatter attached to buffer',
       callback = vim.schedule_wrap(function(event)
          if event.file ~= '' then
+            -- for edge cases caused by opening lsp references windows with lspsaga
+            if not self.buffers:exists(event.buf) then
+               return
+            end
+
             self.buffers.list[event.buf]:add_lsp(event.data.client_id)
 
             if event.buf == self.buffers.active.bufnr then
@@ -96,6 +107,11 @@ function BufCache:__create_autocmds()
       group = augroup('remove-lsp'),
       desc = 'Remove LSP/formatter detached from buffer',
       callback = vim.schedule_wrap(function(event)
+         -- for when buffer is deleted
+         if not self.buffers:exists(event.buf) then
+            return
+         end
+
          self.buffers.list[event.buf]:remove_lsp(event.data.client_id)
 
          if event.buf == self.buffers.active.bufnr then
@@ -105,6 +121,14 @@ function BufCache:__create_autocmds()
          end
       end),
    })
+end
+
+---Check if filetype is excluded
+---@private
+---@param ft string
+---@return boolean
+function BufCache:__is_excluded(ft)
+   return vim.tbl_contains(self._excluded_ft, ft)
 end
 
 ---Refresh buf cache for active buffer
