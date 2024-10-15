@@ -11,6 +11,7 @@
 -  ls_emmet
 -  go
 -  tree-sitter-cli (preferably not as npm package)
+-  jq
 
 **Unix**
 
@@ -27,40 +28,47 @@
 
 ### FIX:
 
--  [ ] Tab key not working as intended
--  [ ] `tabstop`, `softtabstop`, `shiftwidth` not being set properly
+-  [x] Tab key not working as intended
+-  [x] `tabstop`, `softtabstop`, `shiftwidth` not being set properly
 -  [x] MardownPreview not working in MacOS
 
 ### TODO:
 
 -  [x] Implement global `buf_cache`
--  [ ] Create wrapper for `nvim-treesitter` commands
--  [ ] Create wrapper for `lazy.nvim` commands
+-  [ ] Create wrapper for `nvim-treesitter` commands to interop with `ts-parsers`
+-  [ ] ~~Create wrapper for `lazy.nvim` commands~~
 -  [x] Bootstrap
    -  [x] Add function to create git-hooks
    -  [x] Add function to download pre-compiled treesitter parsers
 -  [ ] LSP
    -  [x] Show line diagnostics key-mapping
    -  [ ] Group line diagnostics virtual text
+   -  [ ] Migrate from `typescript.nvim` and `tsserver` to `ts_ls` 
+   -  [ ] Fix navic not attaching with `cssls`
 -  [ ] Configure
    -  [ ] nvim-dap
 -  [ ] Add
    -  [ ] nvim-dap-ui
+   -  [ ] nvim-dap-virtual-text
    -  [ ] neotest
-   -  [ ] yanky.nvim
-   -  [ ] git-worktree.nvim
+   -  [x] yanky.nvim
+   -  [x] git-worktree.nvim
    -  [ ] nvim-regexplainer
-   -  [ ] dial.nvim
-   -  [ ] gitlinker.nvim
+   -  [x] dial.nvim
+   -  [ ] ~~gitlinker.nvim~~
    -  [ ] overseer.nvim
    -  [ ] neogen
    -  [ ] ssr.nvim
    -  [ ] trailblazer.nvim?
-   -  [ ] harpoon
+   -  [x] harpoon
    -  [ ] vim-be-good
+   -  [ ] surround.vim
    -  [ ] refactoring.nvim
-   -  [x] nvim-ufo (config error)
-   -  [ ] zen-mode.nvim
+   -  [x] nvim-ufo
+   -  [x] zen-mode.nvim
+   -  [x] codesnap.nvim
+   -  [ ] nvim-html-css
+   -  [ ] johmsalas/text-case.nvim
 
 ### Preview Config
 

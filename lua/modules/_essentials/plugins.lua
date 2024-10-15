@@ -17,4 +17,9 @@ return {
 
    -- makes some plugins dot-repeatable like leap
    { 'tpope/vim-repeat', event = 'VeryLazy' },
+   {
+      'tpope/vim-eunuch',
+      cmd = { 'Chmod', 'SudoEdit', 'SudoWrite' },
+      enabled = not HOST.is_win,
+   },
 }
