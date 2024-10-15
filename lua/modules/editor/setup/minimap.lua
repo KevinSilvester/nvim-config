@@ -4,7 +4,7 @@ local M = {}
 
 M.init = function()
    if not fn.executable('code-minimap') then
-      log.error(
+      log:error(
          'modules.editor.mimimap',
          [[`code-mimimap` not found
 Install on macOS/linux: `brew install code-minimap`,

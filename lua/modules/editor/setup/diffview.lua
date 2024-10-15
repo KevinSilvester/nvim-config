@@ -129,9 +129,9 @@ end
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>gdh', cmd('DiffviewFileHistory %'), desc = 'Current File History' },
-   { '<leader>gdo', cmd('DiffviewOpen'),          desc = 'Open DiffView' },
-   { '<leader>gdr', cmd('DiffviewRefresh'),       desc = 'Refresh DiffView' },
+   { '<leader>gdh', cmd('DiffviewFileHistory %'), desc = '[diffview] Current File History' },
+   { '<leader>gdo', cmd('DiffviewOpen'),          desc = '[diffview] Open DiffView' },
+   { '<leader>gdr', cmd('DiffviewRefresh'),       desc = '[diffview] Refresh DiffView' },
 }
 
 return M

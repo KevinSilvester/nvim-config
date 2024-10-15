@@ -47,10 +47,10 @@ M.opts = {
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>xx', cmd('TroubleToggle document_diagnostics'),  desc = 'Document Diagnostics (Trouble)' },
-   { '<leader>xX', cmd('TroubleToggle workspace_diagnostics'), desc = 'Workspace Diagnostics (Trouble)' },
-   { '<leader>xL', cmd('TroubleToggle loclist'),               desc = 'Location List (Trouble)' },
-   { '<leader>xQ', cmd('TroubleToggle quickfix'),              desc = 'Quickfix List (Trouble)' },
+   { '<leader>xx', cmd('TroubleToggle document_diagnostics'),  desc = '[trouble] Document Diagnostics (Trouble)' },
+   { '<leader>xX', cmd('TroubleToggle workspace_diagnostics'), desc = '[trouble] Workspace Diagnostics (Trouble)' },
+   { '<leader>xL', cmd('TroubleToggle loclist'),               desc = '[trouble] Location List (Trouble)' },
+   { '<leader>xQ', cmd('TroubleToggle quickfix'),              desc = '[trouble] Quickfix List (Trouble)' },
    {
       '[q',
       function()
@@ -60,7 +60,7 @@ M.keys = {
             vim.cmd.cprev()
          end
       end,
-      desc = 'Previous trouble/quickfix item',
+      desc = '[trouble] Previous trouble/quickfix item',
    },
    {
       ']q',
@@ -71,7 +71,7 @@ M.keys = {
             vim.cmd.cnext()
          end
       end,
-      desc = 'Next trouble/quickfix item',
+      desc = '[trouble] Next trouble/quickfix item',
    },
 }
 

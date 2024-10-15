@@ -13,8 +13,8 @@ return {
       'echasnovski/mini.bufremove',
       -- stylua: ignore
       keys = {
-         { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = 'Delete Buffer', },
-         { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = 'Delete Buffer (Force)', },
+         { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = '[mini] Delete Buffer ', },
+         { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = '[mini] Delete Buffer (Force) ', },
       },
    },
 
@@ -60,10 +60,24 @@ return {
       keys = require('modules.editor.setup.diffview').keys,
    },
 
+   -- undo/redo
+   {
+      'tzachar/highlight-undo.nvim',
+      config = true,
+      event = 'VeryLazy',
+   },
+
    -- multiple cursors
    {
       'mg979/vim-visual-multi',
       event = 'VeryLazy',
+   },
+
+   -- hover
+   {
+      'lewis6991/hover.nvim',
+      config = require('modules.editor.setup.hover').config,
+      keys = require('modules.editor.setup.hover').keys,
    },
 
    -- navigation
@@ -71,6 +85,7 @@ return {
       'karb94/neoscroll.nvim',
       event = 'VeryLazy',
       opts = require('modules.editor.setup.neoscroll').opts,
+      config = require('modules.editor.setup.neoscroll').config,
    },
    {
       'max397574/better-escape.nvim',
@@ -88,6 +103,7 @@ return {
    },
    {
       'ggandor/flit.nvim',
+      dependencies = { 'ggandor/leap.nvim', 'tpope/vim-repeat' },
       keys = function()
          ---@type LazyKeys[]
          local ret = {}
@@ -100,6 +116,7 @@ return {
    },
    {
       'ggandor/leap.nvim',
+      dependencies = { 'tpope/vim-repeat' },
       keys = {
          { 's', mode = { 'n', 'x', 'o' }, desc = 'Leap forward to' },
          { 'S', mode = { 'n', 'x', 'o' }, desc = 'Leap backward to' },
@@ -116,7 +133,7 @@ return {
       end,
    },
    {
-      'edluffy/specs.nvim',
+      'KevinSilvester/specs.nvim',
       event = 'CursorMoved',
       config = require('modules.editor.setup.specs').config,
    },
@@ -134,16 +151,17 @@ return {
    -- syntax hightlighting
    {
       'nvim-treesitter/nvim-treesitter',
-      version = false,
+      -- version = false,
+      -- commit = 'e49f1e8ef3e8450a8446cb1f2bbb53c919f60b6d',
       opts = require('modules.editor.setup.nvim-treesitter').opts,
       init = require('modules.editor.setup.nvim-treesitter').init,
       config = require('modules.editor.setup.nvim-treesitter').config,
-      build = ':TSUpdate',
       event = { 'BufReadPost', 'BufNewFile' },
       dependencies = {
          'nvim-treesitter/nvim-treesitter-textobjects',
          'nvim-treesitter/nvim-treesitter-refactor',
          'nvim-treesitter/nvim-treesitter-context',
+         'nvim-treesitter/playground',
          'windwp/nvim-ts-autotag',
          'JoosepAlviste/nvim-ts-context-commentstring',
          'andymass/vim-matchup',
@@ -167,6 +185,14 @@ return {
             require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-textobjects')
          end
       end,
+   },
+
+   -- markdown
+   {
+      'OXY2DEV/markview.nvim',
+      config = true,
+      event = { 'BufReadPost *.md', 'BufNewFile *.md' },
+      cmd = 'Markview',
    },
 
    {
@@ -231,18 +257,26 @@ return {
    },
 
    -- block folding
-   -- {
-   --    'kevinhwang91/nvim-ufo',
-   --    enable = false,
-   --    event = 'BufReadPre',
-   --    dependencies = {
-   --       'kevinhwang91/promise-async',
-   --       'luukvbaal/statuscol.nvim',
-   --       'nvim-treesitter/nvim-treesitter',
-   --    },
-   --    opts = require('modules.editor.setup.ufo').opts,
-   --    keys = require('modules.editor.setup.ufo').keys,
-   -- },
+   {
+      'kevinhwang91/nvim-ufo',
+      event = 'VeryLazy',
+      dependencies = {
+         'kevinhwang91/promise-async',
+         'luukvbaal/statuscol.nvim',
+      },
+      opts = require('modules.editor.setup.ufo').opts,
+      keys = require('modules.editor.setup.ufo').keys,
+   },
+
+   -- marks
+   {
+      'chentoast/marks.nvim',
+      config = true,
+      keys = require('modules.editor.setup.marks').keys,
+   },
+
+   -- undo
+   { 'mbbill/undotree', cmd = 'UndotreeToggle' },
 
    -- misc
    {

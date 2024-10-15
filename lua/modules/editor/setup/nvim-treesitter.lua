@@ -72,6 +72,24 @@ M.opts = {
          node_decremental = '<bs>',
       },
    },
+   playground = {
+      enable = true,
+      disable = {},
+      updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+      persist_queries = false, -- Whether the query persists across vim sessions
+      keybindings = {
+         toggle_query_editor = 'o',
+         toggle_hl_groups = 'i',
+         toggle_injected_languages = 't',
+         toggle_anonymous_nodes = 'a',
+         toggle_language_display = 'I',
+         focus_language = 'f',
+         unfocus_language = 'F',
+         update = 'R',
+         goto_node = '<cr>',
+         show_help = '?',
+      },
+   },
 }
 
 M.config = function(_, opts)
@@ -80,10 +98,10 @@ M.config = function(_, opts)
       return
    end
 
-   local manual_install_file = ufs.path_join(PATH.data, 'treesitter-manual-installs')
+   -- local manual_install_file = ufs.path_join(PATH.data, 'treesitter-manual-installs')
 
-   require('nvim-treesitter.install').prefer_git = true
-   require('nvim-treesitter.install').compilers = HOST.is_win and { 'clang' } or { 'clang', 'gcc', 'zig' }
+   -- require('nvim-treesitter.install').prefer_git = true
+   require('nvim-treesitter.install').compilers = { 'clang' }
    require('nvim-treesitter.configs').setup(opts)
 
    -- handle deprecated API, https://github.com/windwp/nvim-autopairs/pull/324
@@ -91,60 +109,60 @@ M.config = function(_, opts)
    require('nvim-treesitter.ts_utils').get_node_range = vim.treesitter.get_node_range
 
    ---A function convert an ipair to string
-   local arr_to_str = function(arr, sep)
-      sep = sep or ' '
+   -- local arr_to_str = function(arr, sep)
+   --    sep = sep or ' '
 
-      local str = ''
-      for idx, v in ipairs(arr) do
-         str = str .. v
-         if idx ~= #arr then
-            str = str .. sep
-         end
-      end
-      return str
-   end
+   --    local str = ''
+   --    for idx, v in ipairs(arr) do
+   --       str = str .. v
+   --       if idx ~= #arr then
+   --          str = str .. sep
+   --       end
+   --    end
+   --    return str
+   -- end
 
-   ---A function to convert string to an ipair
-   local str_to_arr = function(str)
-      local arr = vim.split(str, ' ', { plain = true })
-      for idx, v in ipairs(arr) do
-         arr[idx] = v:gsub('[\n\r]', '')
-      end
-      return arr
-   end
+   -- ---A function to convert string to an ipair
+   -- local str_to_arr = function(str)
+   --    local arr = vim.split(str, ' ', { plain = true })
+   --    for idx, v in ipairs(arr) do
+   --       arr[idx] = v:gsub('[\n\r]', '')
+   --    end
+   --    return arr
+   -- end
 
-   vim.api.nvim_create_user_command('TSInstall', function(o)
-      -- local bang = o.bang and '!' or ''
-      local bang = '!'
+   -- vim.api.nvim_create_user_command('TSInstall', function(o)
+   --    -- local bang = o.bang and '!' or ''
+   --    local bang = '!'
 
-      local manual_installs = ufs.is_file(manual_install_file)
-            and str_to_arr(ufs.read_file(manual_install_file))
-         or {}
+   --    local manual_installs = ufs.is_file(manual_install_file)
+   --          and str_to_arr(ufs.read_file(manual_install_file))
+   --       or {}
 
-      local parsers_to_install = str_to_arr(o.args)
-      local available_parsers = vim.tbl_keys(require('nvim-treesitter.parsers').get_parser_configs())
+   --    local parsers_to_install = str_to_arr(o.args)
+   --    local available_parsers = vim.tbl_keys(require('nvim-treesitter.parsers').get_parser_configs())
 
-      local valid = {}
-      local invald = {}
-      for _, parser in ipairs(parsers_to_install) do
-         if vim.tbl_contains(available_parsers, parser) then
-            table.insert(valid, parser)
-         else
-            table.insert(invald, parser)
-         end
-      end
+   --    local valid = {}
+   --    local invald = {}
+   --    for _, parser in ipairs(parsers_to_install) do
+   --       if vim.tbl_contains(available_parsers, parser) then
+   --          table.insert(valid, parser)
+   --       else
+   --          table.insert(invald, parser)
+   --       end
+   --    end
 
-      if #invald > 0 then
-         log.warn('modules.editor.nvim-treesitter', 'Invalid parsers: ' .. arr_to_str(invald, ', '))
-         vim.api.nvim_err_writeln('Invalid parsers: ' .. arr_to_str(invald))
-         return
-      end
+   --    if #invald > 0 then
+   --       log:warn('modules.editor.nvim-treesitter', 'Invalid parsers: ' .. arr_to_str(invald, ', '))
+   --       vim.api.nvim_err_writeln('Invalid parsers: ' .. arr_to_str(invald))
+   --       return
+   --    end
 
-      manual_installs = vim.tbl_extend('force', manual_installs, valid)
+   --    manual_installs = vim.tbl_extend('force', manual_installs, valid)
 
-      require('nvim-treesitter.install').commands.TSInstall['run' .. bang](o.args)
-      ufs.write_file(manual_install_file, arr_to_str(manual_installs), 'w')
-   end, { nargs = '+', bang = true, complete = 'custom,nvim_treesitter#installable_parsers' })
+   --    require('nvim-treesitter.install').commands.TSInstall['run' .. bang](o.args)
+   --    ufs.write_file(manual_install_file, arr_to_str(manual_installs), 'w')
+   -- end, { nargs = '+', bang = true, complete = 'custom,nvim_treesitter#installable_parsers' })
 
    vim.api.nvim_command('set foldmethod=expr')
    vim.api.nvim_command('set foldexpr=nvim_treesitter#foldexpr()')
