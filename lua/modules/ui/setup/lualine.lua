@@ -22,7 +22,8 @@ M.config = function(_, opts)
       grey_bg   = '#212430',
       grey_fg   = '#b4befe',
       black     = '#121319',
-      navy      = '#0f111a'
+      navy      = '#0f111a',
+      blue      = '#89b4fa',
    }
 
    --stylua: ignore
@@ -138,6 +139,29 @@ M.config = function(_, opts)
       always_visible = true,
       symbols = icons.diagnostic,
       separator = separators.both,
+   }
+
+   local harpoon = {
+      function()
+         local list_len = vim.tbl_count(HARPOON_LIST)
+         if list_len == 0 then
+            return ''
+         end
+
+         local tbl = {}
+
+         for path, idx in pairs(HARPOON_LIST) do
+            if path == buf_cache.buffers.active.file then
+               tbl[idx] = '[' .. idx .. ']'
+            else
+               tbl[idx] = idx
+            end
+         end
+
+         return ' : ' .. table.concat(tbl, ' ')
+      end,
+      separator = separators.none,
+      color = { bg = colours.blue, fg = colours.black },
    }
 
    local copilot = {
@@ -259,7 +283,7 @@ M.config = function(_, opts)
    opts.sections = {
       lualine_a = { mode },
       lualine_b = { filename, branch, diff },
-      lualine_c = { info, diagnostics },
+      lualine_c = { info, diagnostics, '%=', harpoon },
       lualine_x = { copilot, treesitter, fmt, lsp, fileformat },
       lualine_y = { filesize, filetype },
       lualine_z = { location },

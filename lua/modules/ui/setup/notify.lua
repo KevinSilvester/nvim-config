@@ -31,7 +31,7 @@ M.opts = {
    end,
 
    ---@usage highlight behind the window for stages that change opacity
-   background_colour = 'Normal',
+   -- background_colour = 'Normal',
 
    ---@usage minimum width for notification windows
    minimum_width = 50,

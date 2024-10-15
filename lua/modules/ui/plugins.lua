@@ -9,11 +9,11 @@ return {
       lazy = false,
       priority = 1000,
    },
-   { 'glepnir/zephyr-nvim',     event = 'VeryLazy' },
-   { 'folke/tokyonight.nvim',   event = 'VeryLazy' },
-   { 'lunarvim/darkplus.nvim',  event = 'VeryLazy' },
+   { 'glepnir/zephyr-nvim', event = 'VeryLazy' },
+   { 'folke/tokyonight.nvim', event = 'VeryLazy' },
+   { 'lunarvim/darkplus.nvim', event = 'VeryLazy' },
    { 'lunarvim/onedarker.nvim', event = 'VeryLazy' },
-   { 'rebelot/kanagawa.nvim',   event = 'VeryLazy' },
+   { 'rebelot/kanagawa.nvim', event = 'VeryLazy' },
    {
       'marko-cerovac/material.nvim',
       init = function()
@@ -21,11 +21,26 @@ return {
       end,
       event = 'VeryLazy',
    },
-   { 'olimorris/onedarkpro.nvim',       event = 'VeryLazy' },
+   { 'olimorris/onedarkpro.nvim', event = 'VeryLazy' },
    { 'olivercederborg/poimandres.nvim', event = 'VeryLazy' },
+   { 'comfysage/evergarden', event = 'VeryLazy' },
+   { 'ellisonleao/gruvbox.nvim', event = 'VeryLazy' },
 
    -- file icons
-   { 'nvim-tree/nvim-web-devicons',     lazy = true },
+   {
+      'nvim-tree/nvim-web-devicons',
+      lazy = true,
+      opts = {
+         override_by_filename = {
+            ['Cargo.toml'] = {
+               icon = '',
+               color = '#9c4221',
+               cterm_color = '124',
+               name = 'Toml',
+            },
+         },
+      },
+   },
 
    -- background transparency
    {
@@ -33,10 +48,10 @@ return {
       lazy = false,
       cmd = { 'TransparentEnable', 'TransparentDisable', 'TransparentToggle' },
       enabled = function()
-         return vim.env.TERM_PROGRAM == 'WezTerm'
+         return vim.env.TERM_PROGRAM == 'WezTerm' or not vim.g.neovide
       end,
       config = function()
-         require('transparent').setup()
+         require('transparent').setup({})
          vim.cmd('TransparentEnable')
       end,
    },
@@ -45,8 +60,8 @@ return {
    {
       -- enabled = false,
       'akinsho/bufferline.nvim',
-      version = 'v3.*',
-      dependencies = { 'nvim-tree/nvim-web-devicons', 'ThePrimeagen/harpoon' },
+      version = 'v4.*',
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
       event = { 'BufReadPost', 'BufNewFile' },
       -- stylua: ignore
       keys = {
@@ -63,6 +78,7 @@ return {
       dependencies = {
          'lewis6991/gitsigns.nvim',
          'nvimtools/none-ls.nvim',
+         'ThePrimeagen/harpoon',
       },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.ui.setup.lualine').opts,
@@ -108,6 +124,7 @@ return {
    -- noicer ui
    {
       'folke/noice.nvim',
+      enabled = true,
       event = 'VeryLazy',
       opts = require('modules.ui.setup.noice').opts,
       keys = require('modules.ui.setup.noice').keys,
@@ -116,7 +133,7 @@ return {
    -- lsp progress
    {
       'j-hui/fidget.nvim',
-      tag = 'v1.1.0',
+      tag = 'v1.4.1',
       event = 'LspAttach',
       dependencies = 'neovim/nvim-lspconfig',
       config = true,
@@ -181,6 +198,9 @@ return {
    -- cure-border
    {
       'eandrju/cellular-automaton.nvim',
-      cmd = 'CellularAutomaton',
+      event = 'VeryLazy',
+      -- cmd = 'CellularAutomation',
    },
+
+   { 'NStefan002/speedtyper.nvim', config = true, cmd = 'Speedtyper' },
 }

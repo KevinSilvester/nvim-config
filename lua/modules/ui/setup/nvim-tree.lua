@@ -107,13 +107,11 @@ M.opts = {
       cmd = HOST.is_win and 'pwsh -c Remove-ItemSafely' or 'trash-put',
       require_confirm = true, -- missing
    },
-   experimental = {
-      git = { async = true },
-   },
 }
 
 M.config = function(_, opts)
    local api = require('nvim-tree.api')
+   require('nvim-web-devicons').refresh()
 
    opts.on_attach = function(bufnr)
       api.config.mappings.default_on_attach(bufnr)
@@ -158,6 +156,7 @@ M.config = function(_, opts)
    end
 
    require('nvim-tree').setup(opts)
+   vim.api.nvim_set_hl(0, 'NvimTreeGitDirtyIcon', { link = 'NvimTreeGitDirty' })
 end
 
 -- stylua: ignore

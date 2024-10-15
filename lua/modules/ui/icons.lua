@@ -121,7 +121,13 @@ icons.misc = {
    Formatter       = "󰉢",
    LSP             = "",
    FileSize        = "",
-   Location        = ""
+   Location        = "",
+   Fire            = "󰈸",
+   ArrowRight      = "",
+   CaretRight      = "",
+   CaretDown       = "",
+   ThumbUp         = "",
+   ThumbDown       = ""
 }
 
 -- stylua: ignore
@@ -139,6 +145,17 @@ icons.dap = {
    StepOver            = '󰆷',
    Stopped             = '',
    Terminate           = '󰝤',
+}
+
+-- stylua: ignore
+icons.todo = {
+   Fix  = "",
+   Todo = "",
+   Hack = "",
+   Warn = "",
+   Perf = "󰅒",
+   Note = "󰍨",
+   Test = "󰙨",
 }
 
 return icons
