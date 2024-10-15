@@ -36,9 +36,14 @@ M.inspect = function(input, yank, ft, open_split)
       return
    end
 
-   ft = ft or 'lua'
-
    local output = vim.inspect(input)
+   local buf_options = {
+      modifiable = true,
+      readonly = false,
+      filetype = ft or 'lua',
+      buftype = 'nofile',
+      bufhidden = 'wipe',
+   }
    local component
 
    if open_split then
@@ -47,7 +52,7 @@ M.inspect = function(input, yank, ft, open_split)
          relative = 'win',
          position = 'bottom',
          size = '20%',
-         buf_options = { modifiable = true, readonly = false, filetype = ft },
+         buf_options = buf_options,
       })
    else
       component = Popup({
@@ -57,7 +62,7 @@ M.inspect = function(input, yank, ft, open_split)
          relative = 'editor',
          position = '50%',
          size = { width = '80%', height = '60%' },
-         buf_options = { modifiable = true, readonly = false, filetype = ft },
+         buf_options = buf_options,
       })
    end
 

@@ -1,0 +1,60 @@
+{
+  "autocmd (Neovim)": {
+    "body": [
+      "vim.api.nvim_create_autocmd({ '${1:Event}' }, {",
+      "   group = vim.api.nvim_create_augroup('${2:Group}', { clear = true }),",
+      "   desc = '${3:Description}',",
+      "   pattern = {},",
+      "   callback = function(args)",
+      "   end,",
+      "})"
+    ],
+    "prefix": "autocmd (Neovim)"
+  },
+  "ld (Neovim)": {
+    "body": "log:debug('${1:origin}', ${2:})",
+    "prefix": "ld (Neovim)"
+  },
+  "le (Neovim)": {
+    "body": "log:error('${1:origin}', ${2:})",
+    "prefix": "le (Neovim)"
+  },
+  "li (Neovim)": {
+    "body": "log:info('${1:origin}', ${2:})",
+    "prefix": "li (Neovim)"
+  },
+  "lt (Neovim)": {
+    "body": "log:trace('${1:origin}', ${2:})",
+    "prefix": "lt (Neovim)"
+  },
+  "lw (Neovim)": {
+    "body": "log:warn('${1:origin}', ${2:})",
+    "prefix": "lw (Neovim)"
+  },
+  "newplugin (Neovim)": {
+    "body": [
+      "{",
+      "   '${1:}',",
+      "   dependencies = {${2:}},",
+      "   event = '${3:VeryLazy}',",
+      "   opts = {${4:}},",
+      "   config = true,",
+      "   keys = {${5:}},",
+      "   lazy = true,",
+      "},"
+    ],
+    "prefix": "newplugin (Neovim)"
+  },
+  "usercmd (Neovim)": {
+    "body": [
+      "vim.api.nvim_create_user_command('${1:Command}', function(opt)",
+      "end, {",
+      "   nargs = 0,",
+      "   complete = function(_, line)",
+      "      return { 'completion'}",
+      "   end",
+      "})"
+    ],
+    "prefix": "usercmd (Neovim)"
+  }
+}

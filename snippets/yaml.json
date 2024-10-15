@@ -1,0 +1,43 @@
+{
+  "g-checkout (Github Actions)": {
+    "body": [
+      "- name: Checkout",
+      "  uses: actions/checkout@v4"
+    ],
+    "prefix": "g-checkout (Github Actions)"
+  },
+  "g-cron (GitHub Actions)": {
+    "body": [
+      "on:",
+      "  push:",
+      "    branches: [\"lazy\"]",
+      "  pull_request:",
+      "    branches: [\"lazy\"]",
+      "  schedule: # execute every 24 hours",
+      "    - cron: '* */24 * * *'"
+    ],
+    "prefix": "g-cron (GitHub Actions)"
+  },
+  "g-job (GitHub Actions)": {
+    "body": [
+      "${0:job}:",
+      "  runs-on: ubuntu-latest",
+      "  name: ${1:job name}",
+      "  permissions:",
+      "    content: write"
+    ],
+    "prefix": "g-job (GitHub Actions)"
+  },
+  "g-shell (GitHub Actions)": {
+    "body": [
+      "- name: ${0:Step Name}",
+      "  id: ${1:Step ID}",
+      "  env:",
+      "    ENV: true",
+      "  shell: bash",
+      "  run: |",
+      "    echo 'Hello World'"
+    ],
+    "prefix": "g-shell (GitHub Actions)"
+  }
+}

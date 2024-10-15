@@ -54,7 +54,7 @@ end
 
 ---make a new directory
 ---@param path string new directory path
----@param mode number|nil directory permission (default 16877, equivalent of 755)
+---@param mode number|nil directory permission (default 16877, equivalent of 755/drwxr-xr-x)
 M.mkdir = function(path, mode)
    mode = mode or M.DIR_MODES.default
    uv.fs_mkdir(path, mode)
@@ -62,7 +62,7 @@ end
 
 ---make a new directory and all its parents
 ---@param path string new directory path
----@param mode number|nil directory permission (default 16877, equivalent of 755)
+---@param mode number|nil directory permission (default 16877, equivalent of 755/drwxr-xr-x)
 M.mkdirp = function(path, mode)
    mode = mode or M.DIR_MODES.default
 
@@ -116,7 +116,7 @@ end
 ---@param path string can be full or relative to `cwd`
 ---@param txt string|table text to be written, uses `vim.inspect` internally for tables
 ---@param flag string used to determine access mode, common flags: "w" for `overwrite` or "a" for `append`
----@param mode? number directory permission (default 33188, equivalent of 644)
+---@param mode? number directory permission (default 33188, equivalent of 644/-rw-r--r--)
 ---@param offset? number specific number of bytes from the beginning of the file where the data should be written, defaults is `-1` which appends to current file offset
 function M.write_file(path, txt, flag, mode, offset)
    mode = mode or M.FILE_MODES.default
@@ -137,8 +137,8 @@ end
 
 ---Write data to a file
 ---@param path string can be full or relative to `cwd`
----@param mode number|nil directory permission (default 33188, equivalent of 644)
----@param offset number|nil specific number of bytes from the beginning of the file where the data should be read, default is `0` which will not change current file offset
+---@param mode? number directory permission (default 33188, equivalent of 644/-rw-r--r--)
+---@param offset number? specific number of bytes from the beginning of the file where the data should be read, default is `0` which will not change current file offset
 ---@return string|nil
 M.read_file = function(path, mode, offset)
    mode = mode or M.FILE_MODES.default
