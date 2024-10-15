@@ -1,15 +1,23 @@
 local m = require('core.mapper')
+local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 local M = {}
-
 
 M.config = function()
    local harpoon = require('harpoon')
 
-   local harpoon_events = {
-      SETUP_CALLED = function(_)
+   ---@param delay number
+   local function refresh_harpoon(delay)
+      vim.defer_fn(function()
+         HARPOON_LIST = {}
          for idx, item in ipairs(harpoon:list().items) do
             HARPOON_LIST[item.value] = idx
          end
+      end, delay)
+   end
+
+   local harpoon_events = {
+      SETUP_CALLED = function(_)
+         refresh_harpoon(10)
       end,
       ADD = function(cx)
          HARPOON_LIST[cx.item.value] = cx.idx
@@ -17,12 +25,8 @@ M.config = function()
       REMOVE = function(cx)
          HARPOON_LIST[cx.item.value] = nil
       end,
-      REORDER = function(_)
-         vim.defer_fn(function()
-            for idx, item in ipairs(harpoon:list().items) do
-               HARPOON_LIST[item.value] = idx
-            end
-         end, 100)
+      LIST_CHANGE = function(_)
+         refresh_harpoon(50)
       end,
    }
 
@@ -30,14 +34,14 @@ M.config = function()
       SETUP_CALLED = harpoon_events.SETUP_CALLED,
       ADD = harpoon_events.ADD,
       REMOVE = harpoon_events.REMOVE,
-      REORDER = harpoon_events.REORDER,
+      LIST_CHANGE = harpoon_events.LIST_CHANGE,
    })
 
    harpoon:setup({
       default = {
          ---@param list_item HarpoonListItem
          display = function(list_item)
-            local cwd = vim.loop.cwd()
+            local cwd = uv.cwd()
             if not cwd then
                return list_item.value
             end
@@ -46,7 +50,7 @@ M.config = function()
             return value
          end,
 
-         create_list_item = function(_, _)
+         create_list_item = function(_, _name)
             local name = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
             ---@diagnostic disable-next-line: param-type-mismatch
             local bufnr = vim.fn.bufnr(name, false)
@@ -75,29 +79,38 @@ M.config = function()
       end
 
       require('telescope.pickers')
-          .new({}, {
-             prompt_title = 'Harpoon',
-             finder = require('telescope.finders').new_table({
-                results = file_paths,
-             }),
-             previewer = conf.file_previewer({}),
-             sorter = conf.generic_sorter({}),
-          })
-          :find()
+         .new({}, {
+            prompt_title = 'Harpoon',
+            finder = require('telescope.finders').new_table({
+               results = file_paths,
+            }),
+            previewer = conf.file_previewer({}),
+            sorter = conf.generic_sorter({}),
+         })
+         :find()
    end
 
    m.nmap({
-      '<leader>fh',
-      function()
-         toggle_telescope(require('harpoon'):list())
-      end,
-      m.opts(m.noremap, m.silent, '[harpoon] Find'),
+      {
+         '<leader>fh',
+         function()
+            toggle_telescope(require('harpoon'):list())
+         end,
+         m.opts(m.noremap, m.silent, '[harpoon] Find'),
+      },
+      {
+         '<leader>hr',
+         function()
+            refresh_harpoon(50)
+         end,
+         m.opts(m.noremap, m.silent, '[harpoon] Find'),
+      },
    })
 end
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>a',  function() require('harpoon'):list():append() end,  desc = 'Harpoon Append', },
+   { '<leader>a',  function() require('harpoon'):list():add() end,     desc = 'Harpoon Append', },
    { '<C-[>',      function() require('harpoon'):list():prev() end,    desc = 'Harpoon Previous', },
    { '<C-]>',      function() require('harpoon'):list():next() end,    desc = 'Harpoon Next', },
    { '<leader>h1', function() require('harpoon'):list():select(1) end, desc = 'Harpoon Select 1', },
@@ -110,6 +123,8 @@ M.keys = {
       function() require('harpoon').ui:toggle_quick_menu(require('harpoon'):list()) end,
       desc = 'Harpoon Quick Menu',
    },
+   { '<leader>hd', function() log:dump(require('harpoon').logger.lines) end, desc = 'Harpoon Dump Logs' },
+   { '<leader>hr', desc = 'Harpoon Dump Logs' },
    { '<leader>fh', desc = '[harpoon] Find' },
 }
 

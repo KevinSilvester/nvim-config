@@ -198,6 +198,7 @@ return {
    -- HARPOON
    {
       'ThePrimeagen/harpoon',
+      -- dir = '/home/kevin/projects/harpoon',
       dependencies = { 'nvim-lua/plenary.nvim' },
       enabled = true,
       branch = 'harpoon2',
@@ -261,6 +262,14 @@ return {
       config = true,
    },
 
+   -- colour picker
+   { 'nvchad/volt', lazy = true },
+   {
+      'nvchad/minty',
+      -- dir = '/home/kevin/projects/minty',
+      lazy = true,
+   },
+
    -- misc
    {
       'iamcco/markdown-preview.nvim',
@@ -288,6 +297,14 @@ return {
       'folke/zen-mode.nvim',
       config = true,
       cmd = 'ZenMode',
-      keys = { { '<leader>z', cmd('ZenMode'), desc = 'Zen Mode' }, },
+      keys = {
+         {
+            '<leader>z',
+            function()
+               require('zen-mode').toggle({ window = { width = 0.55 } })
+            end,
+            desc = 'Zen Mode',
+         },
+      },
    },
 }
