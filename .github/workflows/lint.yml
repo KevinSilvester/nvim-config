@@ -12,72 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check formatting
         uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: 0.19.1
+          version: 0.20.0
           args: --check .
 
       - name: Lint
         uses: lunarmodules/luacheck@v1
         with:
           args: init.lua lua/
-
-  lint-rust:
-    name: Lint+Test Nvim-Utils Scripts
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["windows-latest", "macos-latest", "ubuntu-latest"]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Set git to use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Rust Toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt
-
-      - name: Configure Rust Cache
-        run: |
-          echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
-          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
-
-      - name: Setup Rust Cache
-        uses: mozilla-actions/sccache-action@v0.0.3
-
-      - name: Test Setup (Linux + Mac)
-        if: ${{ matrix.os != 'windows-latest' }}
-        shell: bash
-        run: |
-          mkdir -p ~/.config/nvim && cp -r ./* ~/.config/nvim
-          mkdir -p ~/.local/share/nvim
-
-      - name: Test Setup (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory "$env:LOCALAPPDATA\\nvim"
-          New-Item -ItemType Directory "$env:LOCALAPPDATA\\nvim-data"
-          Copy-Item -Force -Recurse ".\*" -Destination "$env:LOCALAPPDATA\\nvim"
-
-      - name: Check formattting
-        run: |
-          cd scripts/nvim-utils
-          cargo fmt --all -- --check
-
-      - name: Run Tests
-        run: |
-          cd scripts/nvim-utils
-          cargo test
