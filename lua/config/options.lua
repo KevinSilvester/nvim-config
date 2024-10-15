@@ -8,7 +8,7 @@ vim.opt.laststatus = 3               -- always show status line and only on the 
 vim.opt.fileformats = 'unix,mac,dos' -- use unix EOL format
 vim.opt.title = true
 vim.opt.showmode = false             -- don't show the current mode
-vim.opt.clipboard = 'unnamedplus'    -- allow neovim to access system clipboard
+vim.opt.clipboard = 'unnamed'    -- allow neovim to access system clipboard
 vim.opt.cursorline = true            -- highlight the current line
 vim.opt.mouse = 'a'
 vim.opt.termguicolors = true
@@ -17,8 +17,7 @@ vim.opt.encoding = 'utf-8'
 vim.opt.viewoptions = 'folds,cursor,curdir,slash,unix'
 vim.opt.wildignore =
 '.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**,**/bower_modules/**'
-vim.opt.runtimepath:append(PATH.data .. '/treesitter')
-vim.opt.runtimepath:append(PATH.config .. '/scripts/bin')
+vim.opt.runtimepath:append(PATH.data .. '/ts-parsers')
 vim.opt.spell = true
 vim.opt.spelllang = { 'en_gb' }
 
@@ -95,6 +94,7 @@ end
 ---------------
 vim.opt.breakat = [[\ \	;:,!?/.+-]]       -- characters that might cause a linebreak if linebreak is on
 vim.opt.whichwrap:append('h,l,<,>,[,],~') -- allow keys to move cursor left/right to move to previous line
+vim.opt.scroll = 19                       -- number lines scrolled when using <C-u> or <C-d>
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.switchbuf = 'useopen'
@@ -113,6 +113,8 @@ vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 -- vim.opt.foldmethod = "expr"
 -- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = true
+vim.opt.equalalways = false
+vim.opt.display = 'lastline'
 
 
 ----------------
@@ -122,6 +124,8 @@ if HOST.is_win then
    vim.opt.guifont = { 'JetBrainsMono Nerd Font', ':h9' }
 elseif HOST.is_mac then
    vim.opt.guifont = { 'JetBrainsMono Nerd Font', ':h12' }
+else
+   vim.opt.guifont = { 'JetBrainsMono Nerd Font', ':h9' }
 end
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
@@ -135,6 +139,11 @@ vim.opt.signcolumn = 'yes'              -- always show the sign column, otherwis
 vim.opt.conceallevel = 0                -- so that `` is visible in mardkown files
 vim.opt.fillchars:append({ eob = ' ' }) -- hide '~' at the end of the buffer
 vim.opt.guicursor = 'n-v-c:block-Cursor,i-ci-ve:ver25-Cursor,r-cr-o:hor20-Cursor'
+vim.opt.cmdwinheight = 5
+vim.opt.showbreak = '↳  '
+vim.opt.listchars = 'tab:»·,nbsp:+,trail:·,extends:→,precedes:←'
+vim.opt.pumblend = 10
+vim.opt.winblend = 10
 
 
 -----------
@@ -160,13 +169,7 @@ elseif HOST.is_mac or HOST.is_linux then
 end
 
 
---------------------
--- For Neovim v7+ --
---------------------
-vim.opt.cmdwinheight = 5
-vim.opt.equalalways = false
-vim.opt.display = 'lastline'
-vim.opt.showbreak = '↳  '
-vim.opt.listchars = 'tab:»·,nbsp:+,trail:·,extends:→,precedes:←'
-vim.opt.pumblend = 10
-vim.opt.winblend = 10
+----------------
+-- File Types --
+----------------
+vim.filetype.add({ filename = { ['.swcrc'] = 'json' } })

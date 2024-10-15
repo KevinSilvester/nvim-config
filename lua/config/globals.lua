@@ -2,6 +2,7 @@ local ufn = require('utils.fn')
 local fn = vim.fn
 
 vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 
 ------------------------------------------------------------------------
