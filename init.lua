@@ -1,9 +1,9 @@
 -- load core
 require('core.lua_globals')
-require('core.logger'):init()
-require('core.bootstrap'):init()
-require('core.cache'):init()
-require('core.lazy'):init()
+require('core.logger'):start()
+require('core.bootstrap'):start()
+require('core.cache'):start()
+require('core.lazy'):start()
 
 -- load config
 require('config.globals')

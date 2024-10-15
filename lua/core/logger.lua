@@ -87,13 +87,12 @@ function Logger:__log(level, origin, message, silent)
 
    vim.schedule(function()
       xpcall(function()
-         ufs.write_file(
-            self._logfile,
-            '[' .. os.date('%X-%a-%x') .. '] - [' .. level .. '] - - [' .. origin .. '] - ' .. message .. '\n',
-            'a'
+         -- stylua: ignore
+         ufs.write_file(self._logfile,
+            '[' .. os.date('%X %a %d/%m/%Y') .. '] - [' .. level .. '] - - [' .. origin .. '] - ' .. message .. '\n', 'a'
          )
       end, function()
-         vim.notify('Failed writing to logfile', vim.log.levels.ERROR, { title = '[ERROR] core.config' })
+         vim.notify('Failed writing to logfile', vim.log.levels.ERROR, { title = '[ERROR] core.logger' })
       end)
    end)
 
@@ -112,7 +111,8 @@ function Logger:__log(level, origin, message, silent)
 end
 
 ---Dump logfile to floating window
-function Logger:dump()
+---@param lines string[]|nil possible lines to print
+function Logger:dump(lines)
    local popup_ok, Popup = pcall(require, 'nui.popup')
 
    if not popup_ok then
@@ -121,6 +121,7 @@ function Logger:dump()
    end
 
    local component
+   lines = lines or vim.split(ufs.read_file(self._logfile) or '', '\n', {})
 
    component = Popup({
       enter = true,
@@ -129,7 +130,13 @@ function Logger:dump()
       relative = 'editor',
       position = '50%',
       size = { width = '60%', height = '60%' },
-      buf_options = { modifiable = true, readonly = false },
+      modifiable = true,
+      buf_options = {
+         readonly = false,
+         filetype = 'log',
+         buftype = 'nofile',
+         bufhidden = 'wipe',
+      },
    })
 
    vim.schedule(function()
@@ -145,13 +152,7 @@ function Logger:dump()
          end)
       end, { once = true })
 
-      vim.api.nvim_buf_set_lines(
-         component.bufnr,
-         0,
-         1,
-         false,
-         vim.split(ufs.read_file(self._logfile) or '', '\n', {})
-      )
+      vim.api.nvim_buf_set_lines(component.bufnr, 0, 1, false, lines)
       vim.api.nvim_set_option_value('modifiable', false, { buf = component.bufnr })
       vim.cmd('set number')
       vim.cmd(component.bufnr .. 'b +$')

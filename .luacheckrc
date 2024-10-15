@@ -8,6 +8,7 @@ globals = {
    'HOST',
    'PATH',
    'DEFAULT_LSP_SERVERS',
+   'HARPOON_LIST',
    'buf_cache',
    'log',
    'vim'

@@ -48,7 +48,7 @@ _G.DEFAULT_LSP_SERVERS = {
    'svelte',
    'tailwindcss',
    'taplo',
-   'tsserver',
+   'ts_ls',
    'yamlls',
 }
 if not HOST.is_docker then

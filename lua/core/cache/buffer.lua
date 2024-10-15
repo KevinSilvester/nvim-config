@@ -17,7 +17,7 @@ local info_status = {
 ---@field linters InfoBlock
 ---@field treesitter InfoBlock
 ---@field copilot InfoBlock
----@operator call:BufferInfo
+---@overload fun(self: Core.BufCache.Buffer): BufferInfo
 local Buffer = {}
 Buffer.__index = Buffer
 Buffer.__call = function(self)
@@ -65,7 +65,7 @@ function Buffer:add_lsp(client_id)
    local client = vim.lsp.get_client_by_id(client_id)
    if not client then
       self.copilot.status = info_status.CHECKED
-      self.lsp.status = info_status.CHCEKED
+      self.lsp.status = info_status.CHECKED
       return
    end
 

@@ -50,9 +50,9 @@ end
 function Lazy:__load_spec()
    local modules_dir = ufs.path_join(PATH.config, 'lua', 'modules')
    local match_pattern = 'lua/(.+).lua$'
+   ---@diagnostic disable-next-line: missing-fields
    local imports = vim.fs.find('plugins.lua', {
       upward = false,
-      stop = '',
       path = modules_dir,
       type = 'file',
       limit = 10,
@@ -82,6 +82,7 @@ function Lazy:__bootstrap()
    end
    vim.opt.runtimepath:prepend(self.lazypath)
    vim.g.mapleader = ' '
+   vim.g.maplocalleader = ' '
 end
 
 ---Setup lazy.nvim
