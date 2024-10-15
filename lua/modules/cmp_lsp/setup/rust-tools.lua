@@ -48,18 +48,23 @@ M.config = function(_, opts)
       })
    end
    opts.server = {
-      cmd = { 'rust-analyzer' },
+      cmd = { '/home/kevin/.cargo/bin/rust-analyzer' },
       on_attach = require('modules.cmp_lsp.lsp.setup').on_attach,
       capabilities = require('modules.cmp_lsp.lsp.setup').capabilities,
+      standalone = false,
       settings = {
          ['rust-analyzer'] = {
             lens = { enable = true },
-            checkOnSave = { command = 'clippy' },
             procMacro = { enable = true },
             diagnostics = { disabled = { 'unresolved-proc-macro' } },
+            checkOnSave = { command = 'clippy' },
+            -- diagnostics = { enable = false },
+            -- checkOnSave = { enable = false },
          },
       },
    }
+
+   -- log:debug('rust-tools config: ', opts)
    require('rust-tools').setup(opts)
 end
 

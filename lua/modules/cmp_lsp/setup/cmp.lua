@@ -33,13 +33,17 @@ M.opts = {
       },
       duplicates_default = 0,
    },
+   view = {
+      entries = {
+         follow_cursor = true,
+      },
+   },
 }
 
 M.config = function(_, opts)
    local cmp = require('cmp')
    local cmp_types = require('cmp.types.cmp')
    local cmp_window = require('cmp.config.window')
-   local cmp_mapping = require('cmp.config.mapping')
    local luasnip = require('luasnip')
    local ap_cmp = require('nvim-autopairs.completion.cmp')
    local ap_handlers = require('nvim-autopairs.completion.handlers')
@@ -81,6 +85,8 @@ M.config = function(_, opts)
    -- cmp snippets
    opts.snippet = {
       expand = function(args)
+         log:debug('cmp', args)
+         -- vim.snippet.expand(args.body)
          luasnip.lsp_expand(args.body)
       end,
    }
@@ -98,7 +104,8 @@ M.config = function(_, opts)
          max_item_count = 3,
          -- stylua: ignore
          trigger_characters = {
-            { '.', ':', '(', "'", '"', '[', ',', '#', '*', '@', '|', '=', '-', '{', '/', '\\', '+', '?', ' ', }, },
+            { '.', ':', '(', "'", '"', '[', ',', '#', '*', '@', '|', '=', '-', '{', '/', '\\', '+', '?', ' ', },
+         },
       },
       {
          name = 'nvim_lsp',
@@ -129,21 +136,21 @@ M.config = function(_, opts)
    }
 
    -- cmp mapping
-   opts.mapping = cmp_mapping.preset.insert({
-      ['<C-k>'] = cmp_mapping(cmp_mapping.select_prev_item(), { 'i', 'c' }),
-      ['<C-j>'] = cmp_mapping(cmp_mapping.select_next_item(), { 'i', 'c' }),
-      ['<Down>'] = cmp_mapping(
-         cmp_mapping.select_next_item({ behavior = cmp_types.SelectBehavior.Select }),
+   opts.mapping = cmp.mapping.preset.insert({
+      ['<C-k>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 'c' }),
+      ['<C-j>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 'c' }),
+      ['<Down>'] = cmp.mapping(
+         cmp.mapping.select_next_item({ behavior = cmp_types.SelectBehavior.Select }),
          { 'i' }
       ),
-      ['<Up>'] = cmp_mapping(
-         cmp_mapping.select_prev_item({ behavior = cmp_types.SelectBehavior.Select }),
+      ['<Up>'] = cmp.mapping(
+         cmp.mapping.select_prev_item({ behavior = cmp_types.SelectBehavior.Select }),
          { 'i' }
       ),
-      ['<C-d>'] = cmp_mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp_mapping.scroll_docs(4),
-      ['<C-y>'] = cmp_mapping({
-         i = cmp_mapping.confirm({ behavior = cmp_types.ConfirmBehavior.Replace, select = false }),
+      ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-y>'] = cmp.mapping({
+         i = cmp.mapping.confirm({ behavior = cmp_types.ConfirmBehavior.Replace, select = false }),
          c = function(fallback)
             if cmp.visible() then
                cmp.confirm({ behavior = cmp_types.ConfirmBehavior.Replace, select = false })
@@ -152,7 +159,7 @@ M.config = function(_, opts)
             end
          end,
       }),
-      ['<Tab>'] = cmp_mapping(function(fallback)
+      ['<Tab>'] = cmp.mapping(function(fallback)
          if cmp.visible() then
             cmp.select_next_item()
          elseif luasnip.expand_or_locally_jumpable() then
@@ -160,13 +167,13 @@ M.config = function(_, opts)
          elseif ucmp.jumpable(1) then
             luasnip.jump(1)
          elseif ucmp.has_words_before() then
-            -- cmp.complete()
-            fallback()
+            cmp.complete()
+            -- fallback()
          else
             fallback()
          end
       end, { 'i', 's' }),
-      ['<S-Tab>'] = cmp_mapping(function(fallback)
+      ['<S-Tab>'] = cmp.mapping(function(fallback)
          if cmp.visible() then
             cmp.select_prev_item()
          elseif luasnip.jumpable(-1) then
@@ -175,9 +182,9 @@ M.config = function(_, opts)
             fallback()
          end
       end, { 'i', 's' }),
-      ['<C-Space>'] = cmp_mapping.complete(),
-      ['<C-e>'] = cmp_mapping.abort(),
-      ['<CR>'] = cmp_mapping(function(fallback)
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping(function(fallback)
          if cmp.visible() then
             local confirm_opts = vim.deepcopy(opts.confirm_opts)
             if ucmp.is_insert_mode() then -- prevent overwriting brackets

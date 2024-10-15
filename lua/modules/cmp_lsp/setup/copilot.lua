@@ -4,7 +4,7 @@ M.opts = {
    panel = { enabled = false },
    suggestion = { enabled = false },
    filetypes = {
-      yaml = false,
+      yaml = true,
       markdown = false,
       help = false,
       gitcommit = false,

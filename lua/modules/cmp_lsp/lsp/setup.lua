@@ -8,31 +8,31 @@ local M = {}
 M.set_lsp_keymaps = function(bufnr)
    -- stylua: ignore
    m.buf_nmap(bufnr, {
-      {
-         "K",
-         function()
-            -- local winid = require('ufo').peekFoldedLinesUnderCursor()
-            -- if not winid then
-            vim.lsp.buf.hover()
-            -- end
-         end,
-         m.opts(m.noremap, m.silent, 'Hover doc')
-      },
-      { "D",  function() vim.lsp.buf.type_definition() end, m.opts(m.noremap, m.silent, 'Type Definition') },
-      { "gD", function() vim.lsp.buf.declaration() end,     m.opts(m.noremap, m.silent, 'Goto Declarations') },
-      { "gd", function() vim.lsp.buf.definition() end,      m.opts(m.noremap, m.silent, 'Goto Definitions') },
-      { "gq", function() vim.diagnostic.setqflist() end,    m.opts(m.noremap, m.silent, 'Show QuickFix') },
-      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),        m.opts(m.noremap, m.silent, 'Goto Prev Diagnostics') },
-      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),        m.opts(m.noremap, m.silent, 'Goto Next Diagnostics') },
+      -- {
+      --    "K",
+      --    function()
+      --       local winid = require('ufo').peekFoldedLinesUnderCursor()
+      --       if not winid then
+      --          vim.lsp.buf.hover()
+      --       end
+      --    end,
+      --    m.opts(m.noremap, m.silent, '[ufo/builtin] Hover doc')
+      -- },
+      -- { "D",  function() vim.lsp.buf.type_definition() end, m.opts(m.noremap, m.silent, '[builtin] Type Definition') },
+      { "gD", function() vim.lsp.buf.declaration() end,  m.opts(m.noremap, m.silent, '[builtin] Goto Declarations') },
+      { "gd", function() vim.lsp.buf.definition() end,   m.opts(m.noremap, m.silent, '[builtin] Goto Definitions') },
+      { "gq", function() vim.diagnostic.setqflist() end, m.opts(m.noremap, m.silent, '[builtin] Show QuickFix') },
+      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),     m.opts(m.noremap, m.silent, '[lspsaga] Goto Prev Diagnostics') },
+      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),     m.opts(m.noremap, m.silent, '[lspsaga] Goto Next Diagnostics') },
       {
          "[e",
          function() require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR }) end,
-         m.opts(m.noremap, m.silent, 'Goto Prev Error')
+         m.opts(m.noremap, m.silent, '[lspsaga] Goto Prev Error')
       },
       {
          "]e",
          function() require("lspsaga.diagnostic").goto_next({ severity = vim.diagnostic.severity.ERROR }) end,
-         m.opts(m.noremap, m.silent, 'Goto Next Error')
+         m.opts(m.noremap, m.silent, '[lspsaga] Goto Next Error')
       }
    })
 end
@@ -63,13 +63,13 @@ M.on_attach = function(client, bufnr)
    if client.server_capabilities['documentSymbolProvider'] then
       require('nvim-navic').attach(client, bufnr)
    end
-   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+   vim.api.nvim_set_option_value('omnifunc', 'v:lua.vim.lsp.omnifunc', { buf = bufnr })
 
    local format_disable = {
       'lua_ls',
       'rust_analyzer',
       'marksman',
-      'tsserver',
+      'ts_ls',
       'jsonls',
       'cssls',
       'html',

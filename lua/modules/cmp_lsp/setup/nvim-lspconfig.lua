@@ -3,19 +3,20 @@ local icons = require('modules.ui.icons').diagnostics
 local M = {}
 
 M.init = function()
-   vim.lsp.handlers['textDocument/hover'] = function(_, result, ctx, config)
-      config = config or {}
-      config.focus_id = ctx.method
-      config.border = 'rounded'
-      if not (result and result.contents) then
-         return
-      end
-      local markdown_lines = function(contents)
-         local s = vim.lsp.util.convert_input_to_markdown_lines(contents, {})
-         return vim.lsp.util.trim_empty_lines(s)
-      end
-      return vim.lsp.util.open_floating_preview(markdown_lines(result.contents), 'markdown', config)
-   end
+   -- vim.lsp.handlers['textDocument/hover'] = function(_, result, ctx, config)
+   --    config = config or {}
+   --    config.focus_id = ctx.method
+   --    config.border = 'rounded'
+   --    if not (result and result.contents) then
+   --       return
+   --    end
+   --    log:info('lspconfig', result.content)
+   --    local markdown_lines = function(contents)
+   --       local s = vim.lsp.util.convert_input_to_markdown_lines(contents, {})
+   --       return vim.lsp.util.trim_empty_lines(s)
+   --    end
+   --    return vim.lsp.util.open_floating_preview(markdown_lines(result.contents), 'markdown', config)
+   -- end
 
    vim.lsp.handlers['textDocument/signatureHelp'] =
       vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
@@ -41,9 +42,15 @@ M.init = function()
          focusable = true,
          style = 'minimal',
          border = 'rounded',
-         source = 'always',
-         header = '',
-         prefix = '',
+         source = true,
+         header = ' ' .. vim.fn.expand('%:t'),
+         prefix = function(_diagnostic, idx, total)
+            -- log:debug('diagnostics', _diagnostic)
+            if idx < total then
+               return '┣━━', 'Comment'
+            end
+            return '┗━━', 'Comment'
+         end,
       },
    })
 end
@@ -55,7 +62,7 @@ M.config = function()
 
    for _, server in ipairs(mason_lsp.get_installed_servers()) do
       -- using rust-tools.nvim and typescrip.nvim for better lsp config
-      if server == 'rust_analyzer' or server == 'tsserver' then
+      if server == 'rust_analyzer' or server == 'ts_ls' then
          goto continue
       end
 
@@ -71,11 +78,12 @@ end
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>lc',  require('utils.lsp').server_capabilities,                 desc = 'Get Capabilities' },
-   { '<leader>lf',  function() vim.lsp.buf.format({ timeout_ms = 1000 }) end, desc = 'Format File', },
-   { '<leader>li',  cmd('LspInfo'),                                           desc = 'LSP Info' },
-   { '<leader>lr',  vim.lsp.buf.rename,                                       desc = 'Rename' },
-   { '<leader>lar', vim.lsp.codelens.run,                                     desc = 'Run CodeLens Action' },
+   { '<leader>lc',  require('utils.lsp').server_capabilities,                 desc = '[utils] Get Capabilities' },
+   { '<leader>ld',  vim.diagnostic.open_float,                                desc = '[builtin] Line Diagnostics' },
+   { '<leader>lf',  function() vim.lsp.buf.format({ timeout_ms = 1000 }) end, desc = '[builtin] Format File', },
+   { '<leader>li',  cmd('LspInfo'),                                           desc = '[lspconfig] LSP Info' },
+   { '<leader>lr',  vim.lsp.buf.rename,                                       desc = '[builtin] Rename' },
+   { '<leader>lar', vim.lsp.codelens.run,                                     desc = '[builtin] Run CodeLens Action' },
 }
 
 return M

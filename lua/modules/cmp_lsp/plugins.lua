@@ -1,3 +1,5 @@
+-- local m = require('core.mapper')
+
 return {
    ---------------------------------
    --         lsp plugins         --
@@ -12,6 +14,7 @@ return {
          'lvimuser/lsp-inlayhints.nvim',
          { 'b0o/schemastore.nvim', version = false },
          'folke/neodev.nvim',
+         'folke/neoconf.nvim',
          'SmiteshP/nvim-navic',
       },
       init = require('modules.cmp_lsp.setup.nvim-lspconfig').init,
@@ -22,6 +25,11 @@ return {
       'folke/neodev.nvim',
       event = { 'BufReadPre *.lua', 'BufNewFile *.lua' },
       opts = require('modules.cmp_lsp.setup.neodev').opts,
+   },
+   {
+      'folke/neoconf.nvim',
+      config = true,
+      cmd = 'Neoconf',
    },
    {
       'williamboman/mason.nvim',
@@ -36,16 +44,24 @@ return {
       },
    },
    {
-      'nvimdev/lspsaga.nvim',
+      -- 'nvimdev/lspsaga.nvim',
+      'KevinSilvester/lspsaga.nvim',
+      branch = 'code-action-server',
       dependencies = { 'nvim-tree/nvim-web-devicons', 'nvim-treesitter/nvim-treesitter' },
       event = 'LspAttach',
       opts = require('modules.cmp_lsp.setup.lspsaga').opts,
       keys = require('modules.cmp_lsp.setup.lspsaga').keys,
    },
+   -- {
+   --    'jose-elias-alvarez/typescript.nvim',
+   --    event = { 'BufReadPre *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
+   --    config = require('modules.cmp_lsp.setup.typescript').config,
+   -- },
    {
-      'jose-elias-alvarez/typescript.nvim',
+      'pmizio/typescript-tools.nvim',
       event = { 'BufReadPre *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
-      config = require('modules.cmp_lsp.setup.typescript').config,
+      dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+      config = require('modules.cmp_lsp.setup.typescript-tools').config,
    },
    {
       'simrat39/rust-tools.nvim',
@@ -127,5 +143,14 @@ return {
       'nvimtools/none-ls.nvim',
       event = 'BufReadPost',
       config = require('modules.cmp_lsp.setup.null-ls').config,
+   },
+
+   {
+      'smjonas/inc-rename.nvim',
+      -- opts = { input_buffer_type = 'dressing' },
+      enabled = false,
+      config = true,
+      event = 'VeryLazy',
+      -- keys = { { '<leader>lr', m.cmd('IncRename'), desc = '[inc-rename] Rename' } },
    },
 }

@@ -1,4 +1,3 @@
-local ufs = require('utils.fs')
 local M = {}
 
 M.settings = {
@@ -19,8 +18,6 @@ M.settings = {
       workspace = {
          library = {
             'lua',
-            [ufs.path_join(vim.fn.expand('$VIMRUNTIME'), 'lua')] = true,
-            [ufs.path_join(PATH.config, 'lua')] = true,
             '${3rd}/luv/library',
          },
       },

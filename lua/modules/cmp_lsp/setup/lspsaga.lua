@@ -11,10 +11,10 @@ M.opts = {
       expand = '',
       collapse = '',
       preview = ' ',
-      code_action = 'ﯧ ',
-      diagnostic = 'ﯧ ',
-      incoming = ' ',
-      outgoing = ' ',
+      code_action = ' ',
+      diagnostic = '󰛩 ',
+      incoming = ' ',
+      outgoing = ' ',
       colors = {
          --float window normal bakcground color
          normal_bg = '#1d1536',
@@ -72,6 +72,7 @@ M.opts = {
    },
    code_action = {
       num_shortcut = true,
+      show_server_name = true,
       keys = {
          quit = 'q',
          exec = '<CR>',
@@ -86,8 +87,8 @@ M.opts = {
       virtual_text = false,
    },
    preview = {
-      lines_above = 0,
-      lines_below = 20,
+      -- lines_above = 0,
+      -- lines_below = 20,
    },
    scroll_preview = {
       scroll_down = '<C-p>',
@@ -157,11 +158,11 @@ M.opts = {
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>lac', cmd('Lspsaga code_action'),           desc = 'Code Action' },
-   { '<leader>ld',  cmd('Lspsaga show_line_diagnostics'), desc = 'Show Line Diagnostics' },
-   { '<leader>lsd', cmd('Lspsaga peek_definition'),       desc = 'Show Definitions' },
-   { '<leader>lso', cmd('Lspsaga outline'),               desc = 'Show Document Symbols' },
-   { '<leader>lsr', cmd('Lspsaga finder'),                desc = 'Show References' },
+   { '<leader>lac', cmd('Lspsaga code_action'),           desc = '[lspsaga] Code Action' },
+   -- { '<leader>ld',  cmd('Lspsaga show_line_diagnostics'), desc = '[lspsaga] Show Line Diagnostics' },
+   { '<leader>lsd', cmd('Lspsaga peek_definition'),       desc = '[lspsaga] Show Definitions' },
+   { '<leader>lso', cmd('Lspsaga outline'),               desc = '[lspsaga] Show LS Outline' },
+   { '<leader>lsr', cmd('Lspsaga finder'),                desc = '[lspsaga] Show References' },
 }
 
 return M
