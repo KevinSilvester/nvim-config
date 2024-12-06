@@ -156,7 +156,7 @@ return {
          mode = 'background',
          css = true,
          names = false,
-         tailwind = true,
+         tailwind = 'lsp',
       },
       config = function(_, opts)
          require('colorizer').setup(opts)
