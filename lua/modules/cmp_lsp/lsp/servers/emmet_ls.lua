@@ -28,12 +28,12 @@ M.filetypes = {
    'slim',
    'sass',
    'stylus',
+   'svelte',
    'less',
    'sss',
    'hbs',
    'handlebars',
    'eruby',
-   'svelte',
    'vue',
 }
 --[[
@@ -211,13 +211,17 @@ M.filetypes = {
 'stylesheet.intUnit': string;
 --]]
 
-M.init_options = {
-   html = {
-      options = {
-         -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
-         ['bem.enabled'] = true,
-      },
-   },
-}
+-- M.init_options = {
+--    includedLanguages = {
+--       svelte = 'html',
+--       rust = 'html',
+--    },
+--    html = {
+--       options = {
+--          -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+--          ['bem.enabled'] = true,
+--       },
+--    },
+-- }
 
 return M

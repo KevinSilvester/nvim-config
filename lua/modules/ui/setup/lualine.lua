@@ -160,7 +160,7 @@ M.config = function(_, opts)
 
          return ' : ' .. table.concat(tbl, ' ')
       end,
-      separator = separators.none,
+      separator = separators.both,
       color = { bg = colours.blue, fg = colours.black },
    }
 

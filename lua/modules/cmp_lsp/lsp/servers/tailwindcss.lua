@@ -1,8 +1,9 @@
 -- ref: https://github.com/ecosse3/nvim/blob/master/lua/lsp/servers/tailwindcss.lua
 
+local filetypes = require('tailwind-tools.filetypes')
 local M = {}
 
-local capabilities_extension = {
+M.capabilities = vim.tbl_deep_extend('force', vim.lsp.protocol.make_client_capabilities(), {
    textDocument = {
       colorProvider = { dynamicRegistration = false },
       foldingRange = {
@@ -10,27 +11,14 @@ local capabilities_extension = {
          lineFoldingOnly = true,
       },
    },
-}
+})
 
-M.capabilities =
-   vim.tbl_deep_extend('force', require('cmp_nvim_lsp').default_capabilities(), capabilities_extension)
+M.filetypes = filetypes.get_all()
 
--- Settings
-M.on_attach = function(_client, _bufnr)
-   -- require('colorizer').attach_to_buffer(
-   --    bufnr,
-   --    { mode = 'background', css = true, names = false, tailwind = true }
-   -- )
-end
-
-M.init_options = {
-   userLanguages = {
-      eelixir = 'html-eex',
-      eruby = 'erb',
-   },
-}
+M.init_options = { userLanguages = filetypes.get_server_map() }
 
 M.settings = {
+   includeLanguages = filetypes.get_server_map(),
    tailwindCSS = {
       classAttributes = { 'class', 'className', 'classList', 'ngClass' },
       lint = {
@@ -56,5 +44,7 @@ M.settings = {
       validate = true,
    },
 }
+
+M.root_dir = require('lspconfig.configs.tailwindcss').default_config.root_dir
 
 return M

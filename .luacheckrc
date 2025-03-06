@@ -12,6 +12,7 @@ globals = {
    'buf_cache',
    'log',
    'vim'
+   'Snacks'
 }
 
 files['lua/core/**'] = { ignore = {'212'} }

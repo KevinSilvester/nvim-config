@@ -148,12 +148,12 @@ function Ui:__set_keymaps()
          end
 
          if current_node_index == 1 and not next then
-            log:debug('core.cache.ui', 'current node is first node')
+            log:debug('core.cache.ui', 'current node is first node', true)
             return
          end
 
          if current_node_index == #nodes then
-            log:debug('core.cache.ui', 'current node is last node')
+            log:debug('core.cache.ui', 'current node is last node', true)
             return
          end
 

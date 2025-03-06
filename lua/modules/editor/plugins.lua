@@ -1,22 +1,22 @@
 return {
    -- hightlight selection
-   {
-      'RRethy/vim-illuminate',
-      event = { 'BufReadPost', 'BufNewFile' },
-      opts = require('modules.editor.setup.illuminate').opts,
-      config = require('modules.editor.setup.illuminate').config,
-      keys = require('modules.editor.setup.illuminate').keys,
-   },
+   -- {
+   --    'RRethy/vim-illuminate',
+   --    event = { 'BufReadPost', 'BufNewFile' },
+   --    opts = require('modules.editor.setup.illuminate').opts,
+   --    config = require('modules.editor.setup.illuminate').config,
+   --    keys = require('modules.editor.setup.illuminate').keys,
+   -- },
 
    -- buffer remove
-   {
-      'echasnovski/mini.bufremove',
-      -- stylua: ignore
-      keys = {
-         { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = '[mini] Delete Buffer ', },
-         { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = '[mini] Delete Buffer (Force) ', },
-      },
-   },
+   -- {
+   --    'echasnovski/mini.bufremove',
+   --    -- stylua: ignore
+   --    keys = {
+   --       { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = '[mini] Delete Buffer ', },
+   --       { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = '[mini] Delete Buffer (Force) ', },
+   --    },
+   -- },
 
    -- minimap
    {
@@ -24,18 +24,6 @@ return {
       config = require('modules.editor.setup.mini-map').config,
       keys = require('modules.editor.setup.mini-map').keys,
    },
-   -- {
-   --    'wfxr/minimap.vim',
-   --    init = require('modules.editor.setup.minimap').init,
-   --    cmd = {
-   --       'Minimap',
-   --       'MinimapClose',
-   --       'MinimapToggle',
-   --       'MinimapRescan',
-   --       'MinimapRefresh',
-   --       'MinimapUpdateHighlight',
-   --    },
-   -- },
 
    -- git
    {
@@ -162,7 +150,6 @@ return {
          'nvim-treesitter/nvim-treesitter-refactor',
          'nvim-treesitter/nvim-treesitter-context',
          'nvim-treesitter/playground',
-         'windwp/nvim-ts-autotag',
          'JoosepAlviste/nvim-ts-context-commentstring',
          'andymass/vim-matchup',
       },
@@ -187,12 +174,28 @@ return {
       end,
    },
 
+   {
+      'windwp/nvim-ts-autotag',
+      dependencies = 'nvim-treesitter/nvim-treesitter',
+      event = {
+         'BufReadPost *.{html,vue,svelte,tsx,jsx,astro}',
+         'BufNewFile *.{html,vue,svelte,tsx,jsx,astro}',
+      },
+      config = true,
+   },
+
    -- markdown
    {
       'OXY2DEV/markview.nvim',
       config = true,
       event = { 'BufReadPost *.md', 'BufNewFile *.md' },
       cmd = 'Markview',
+   },
+   {
+      'OXY2DEV/helpview.nvim',
+      opts = { preview = { icon_provider = 'devicons' }, },
+      cmd = 'Helpview',
+      lazy = false
    },
 
    {
@@ -241,19 +244,32 @@ return {
    },
    {
       'folke/todo-comments.nvim',
-      cmd = { 'TodoTrouble', 'TodoTelescope' },
+      cmd = { 'TodoTrouble', },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.editor.setup.todo-comments').opts,
       keys = require('modules.editor.setup.todo-comments').keys,
-      config = true,
    },
 
    -- diagnostics/quickfix
    {
       'folke/trouble.nvim',
-      cmd = { 'TroubleToggle', 'Trouble' },
+      cmd = { 'Trouble' },
       opts = require('modules.editor.setup.trouble').opts,
       keys = require('modules.editor.setup.trouble').keys,
+   },
+   {
+      'rachartier/tiny-inline-diagnostic.nvim',
+      event = 'LspAttach',
+      priority = 1000,
+      opts = {
+         signs = { vertical_end = ' ╰' },
+         options = {
+            show_all_diags_on_cursorline = true,
+            enable_on_insert = true,
+            multilines = true,
+            show_source = true,
+         },
+      },
    },
 
    -- block folding
@@ -297,5 +313,19 @@ return {
    {
       'gbprod/stay-in-place.nvim',
       config = true,
+   },
+   {
+      'GitMarkedDan/you-are-an-idiot.nvim',
+      cmd = 'ToggleIdiot',
+      config = function()
+         local idiot = require('you-are-an-idiot')
+         vim.api.nvim_create_user_command('ToggleIdiot', function(_opt)
+            if idiot.is_running() then
+               idiot.abort()
+            else
+               idiot.run({ flashing = true, reproduce_count = 10 })
+            end
+         end, { nargs = 0 })
+      end,
    },
 }

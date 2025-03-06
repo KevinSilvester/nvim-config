@@ -15,8 +15,14 @@ M.custom = {
       capabilities = M.default.capabilities,
       on_attach = M.default.on_attach,
       -- cmd = require('modules.cmp_lsp.lsp.servers.emmet_ls').cmd,
-      init_options = require('modules.cmp_lsp.lsp.servers.emmet_ls').init_options,
+      -- init_options = require('modules.cmp_lsp.lsp.servers.emmet_ls').init_options,
       filetypes = require('modules.cmp_lsp.lsp.servers.emmet_ls').filetypes,
+   },
+   emmet_language_server = {
+      capabilities = M.default.capabilities,
+      on_attach = M.default.on_attach,
+      init_options = require('modules.cmp_lsp.lsp.servers.emmet_language_server').init_options,
+      filetypes = require('modules.cmp_lsp.lsp.servers.emmet_language_server').filetypes,
    },
    eslint = {
       capabilities = M.default.capabilities,
@@ -46,16 +52,18 @@ M.custom = {
       settings = require('modules.cmp_lsp.lsp.servers.lua_ls').settings,
    },
    omnisharp = {
+      cmd = { 'omnisharp.cmd' },
       capabilities = M.default.capabilities,
       on_attach = M.default.on_attach,
       handlers = require('modules.cmp_lsp.lsp.servers.omnisharp').handlers,
    },
-   tailwindcss = {
-      capabilities = require('modules.cmp_lsp.lsp.servers.tailwindcss').capabilities,
-      init_options = require('modules.cmp_lsp.lsp.servers.tailwindcss').init_options,
-      on_attach = require('modules.cmp_lsp.lsp.servers.tailwindcss').on_attach,
-      settings = require('modules.cmp_lsp.lsp.servers.tailwindcss').settings,
-   },
+   -- tailwindcss = {
+   --    filetypes = require('modules.cmp_lsp.lsp.servers.tailwindcss').filetypes,
+   --    capabilities = require('modules.cmp_lsp.lsp.servers.tailwindcss').capabilities,
+   --    init_options = require('modules.cmp_lsp.lsp.servers.tailwindcss').init_options,
+   --    settings = require('modules.cmp_lsp.lsp.servers.tailwindcss').settings,
+   --    root_dir = require('modules.cmp_lsp.lsp.servers.tailwindcss').root_dir,
+   -- },
    vuels = {
       filetypes = require('modules.cmp_lsp.lsp.servers.vuels').filetypes,
       on_attach = M.default.on_attach,

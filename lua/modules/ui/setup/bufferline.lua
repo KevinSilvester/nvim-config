@@ -6,11 +6,9 @@ M.opts = {
       mode = 'buffers',
       numbers = 'none',
       close_command = function(n)
-         require('mini.bufremove').delete(n, false)
+         Snacks.bufdelete.delete({ buf = n, force = false })
       end,
-      right_mouse_command = function(n)
-         require('mini.bufremove').delete(n, false)
-      end,
+      right_mouse_command = function(_n) end,
       separator_style = 'thin', -- | "thick" | "thin" | { 'any', 'any' },
       show_tab_indicators = true,
       offsets = {

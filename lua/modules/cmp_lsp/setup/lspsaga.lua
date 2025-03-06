@@ -10,6 +10,9 @@ M.opts = {
       winblend = 0,
       expand = '',
       collapse = '',
+      lines = {
+          '╰', '├', '│', '─', '╭'
+      },
       preview = ' ',
       code_action = ' ',
       diagnostic = '󰛩 ',

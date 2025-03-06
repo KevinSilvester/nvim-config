@@ -11,6 +11,7 @@ vim.opt.showmode = false             -- don't show the current mode
 vim.opt.clipboard = 'unnamed'        -- allow neovim to access system clipboard
 vim.opt.cursorline = true            -- highlight the current line
 vim.opt.mouse = 'a'
+vim.opt.mousemoveevent = true        -- for hover.nvim
 vim.opt.termguicolors = true
 vim.opt.virtualedit = 'block'
 vim.opt.encoding = 'utf-8'
@@ -95,7 +96,7 @@ end
 ---------------
 vim.opt.breakat = [[\ \	;:,!?/.+-]]       -- characters that might cause a linebreak if linebreak is on
 vim.opt.whichwrap:append('h,l,<,>,[,],~') -- allow keys to move cursor left/right to move to previous line
-vim.opt.scroll = 19                       -- number lines scrolled when using <C-u> or <C-d>
+vim.opt.scroll = 1                        -- number lines scrolled when using <C-u> or <C-d> (overrided by neoscroll)
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.switchbuf = 'useopen'

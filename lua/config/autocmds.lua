@@ -46,7 +46,7 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'Filetype' }, {
-   group = vim.api.nvim_create_augroup('CustomShebangDetection', {}),
+   group = augroup('shebang-detection'),
    desc = 'Set the filetype based on the shebang header',
    callback = function()
       local line = vim.fn.getline(1)
@@ -71,18 +71,6 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
    end,
 })
 
--- Remove statusline and tabline when in Alpha
-vim.api.nvim_create_autocmd({ 'User' }, {
-   group = augroup('options-bars'),
-   pattern = { 'AlphaReady' },
-   callback = function()
-      vim.cmd([[
-      set showtabline=0 | autocmd BufUnload <buffer> set showtabline=2
-      set laststatus=0 | autocmd BufUnload <buffer> set laststatus=3
-    ]])
-   end,
-})
-
 -- Highlight Yanked Text
 vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
    group = augroup('hightlight-yank'),
@@ -91,15 +79,6 @@ vim.api.nvim_create_autocmd({ 'TextYankPost' }, {
       vim.highlight.on_yank({ higroup = 'Visual', timeout = 200 })
    end,
 })
-
--- vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
---    callback = function()
---       if not vim.g.neovide then
---          vim.cmd('hi Normal guibg=NONE')
---          vim.cmd('hi NormalNC guibg=NONE')
---       end
---    end,
--- })
 
 -- Autocmd to close nvim if nvim-tree is the last buffer
 -- ref: https://github.com/nvim-tree/nvim-tree.lua/wiki/Auto-Close#ppwwyyxx
@@ -123,6 +102,17 @@ vim.api.nvim_create_autocmd('QuitPre', {
          for _, w in ipairs(invalid_win) do
             vim.api.nvim_win_close(w, true)
          end
+      end
+   end,
+})
+
+-- Restore cursor to file position in previous editing session
+vim.api.nvim_create_autocmd('BufReadPost', {
+   callback = function(args)
+      local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+      local line_count = vim.api.nvim_buf_line_count(args.buf)
+      if mark[1] > 0 and mark[1] <= line_count then
+         vim.cmd('normal! g`"zz')
       end
    end,
 })

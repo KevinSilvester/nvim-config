@@ -72,7 +72,7 @@ M.config = function()
       debug = false,
       sources = {
          -- null_ls.builtins.formatting.prettier,
-         null_ls.builtins.formatting.biome,
+         -- null_ls.builtins.formatting.biome,
          null_ls.builtins.formatting.shfmt,
          -- null_ls.builtins.formatting.black.with({ extra_args = { '--fast' } }),
          -- null_ls.builtins.formatting.autopep8,
