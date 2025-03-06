@@ -16,3 +16,4 @@ globals = {
 }
 
 files['lua/core/**'] = { ignore = {'212'} }
+files['lua/modules/snacks/plugins.lua'] = { ignore = {'631'} }

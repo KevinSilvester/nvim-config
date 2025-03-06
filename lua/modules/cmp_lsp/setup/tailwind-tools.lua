@@ -1,6 +1,6 @@
 local M = {}
 
----@type TailwindTools.Option
+---@type TailwindTools.Option|{}
 M.opts = {
    server = {
       override = false, -- setup the server from the plugin if true
@@ -21,11 +21,6 @@ M.opts = {
    },
    cmp = {
       highlight = 'foreground', -- color preview style, "foreground" | "background"
-   },
-   telescope = {
-      utilities = {
-         callback = function(name, class) end, -- callback used when selecting an utility class in telescope
-      },
    },
    -- see the extension section to learn more
    extension = {

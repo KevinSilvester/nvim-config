@@ -1,5 +1,5 @@
-local ufn = require('utils.fn')
-local cmd = require('core.mapper').cmd
+-- local ufn = require('utils.fn')
+-- local cmd = require('core.mapper').cmd
 local M = {}
 
 M.config = function()

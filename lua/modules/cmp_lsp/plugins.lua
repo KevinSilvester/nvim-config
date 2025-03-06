@@ -1,5 +1,3 @@
-local m = require('core.mapper')
-
 return {
    ---------------------------------
    --         lsp plugins         --
