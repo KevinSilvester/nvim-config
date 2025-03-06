@@ -69,6 +69,21 @@
    -  [x] codesnap.nvim
    -  [ ] nvim-html-css
    -  [ ] johmsalas/text-case.nvim
+   -  [ ] jake-stewart/multicursor.nvim or smoka7/multicursors.nvim
+   -  [ ] shortcuts/no-neck-pain.nvim
+   -  [ ] rafcamlet/nvim-luapad
+   -  [x] MagicDuck/grug-far.nvim (replace nvim-spectre)
+- [ ] Snacks
+   -  [x] Deprecate dressing.nvim
+   -  [x] Deprecate alpha-nvim
+   -  [x] Deprecate indent-blankline.nvim
+   -  [x] Deprecate neodev.nvim
+   -  [x] Deprecate mini.bufremove
+   -  [x] Deprecate vim-illuminate
+   -  [x] Deprecate telescope-file-browser.nvim
+   -  [x] Deprecate nvim-notify
+   -  [ ] Deprecate toggleterm.nvim
+   -  [ ] Deprecate zen-mode.nvim
 
 ### Preview Config
 

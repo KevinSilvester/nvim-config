@@ -106,4 +106,54 @@ M.jumpable = function(dir)
    end
 end
 
+--{{ Take from tailwind-tools
+---@param red number
+---@param green number
+---@param blue number
+local set_hl_from = function(red, green, blue)
+   local color = string.format('%02x%02x%02x', red, green, blue)
+   local hl_name = 'TailwindColorFg' .. color
+   local opts
+
+   opts = { fg = '#' .. color }
+
+   if not vim.api.nvim_get_hl(0, { name = hl_name })[1] then
+      vim.api.nvim_set_hl(0, hl_name, opts)
+   end
+
+   return hl_name
+end
+
+---@param s string
+local extract_color = function(s)
+   local base, _, _, r, g, b = 10, s:find('rgba?%((%d+).%s*(%d+).%s*(%d+)')
+
+   if not r then
+      base, _, _, r, g, b = 16, s:find('#(%x%x)(%x%x)(%x%x)')
+   end
+
+   if r then
+      return tonumber(r, base), tonumber(g, base), tonumber(b, base)
+   end
+end
+
+---@param entry cmp.Entry
+---@param vim_item any
+---@return any
+M.lspkind_format = function(entry, vim_item)
+   local doc = entry.completion_item.documentation
+
+   if vim_item.kind == 'Color' and doc then
+      local content = type(doc) == 'string' and doc or doc.value
+      local r, g, b = extract_color(content)
+
+      if r then
+         vim_item.kind_hl_group = set_hl_from(r, g, b)
+      end
+   end
+
+   return vim_item
+end
+--}}
+
 return M

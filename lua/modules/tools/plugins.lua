@@ -50,7 +50,7 @@ return {
       end,
    },
    {
-      'ThePrimeagen/git-worktree.nvim',
+      'polarmutex/git-worktree.nvim',
       dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
       config = function()
          require('git-worktree').setup()
@@ -100,19 +100,9 @@ return {
       cmd = 'Telescope',
    },
    {
-      'nvim-telescope/telescope-file-browser.nvim',
-      dependencies = { 'nvim-telescope/telescope.nvim' },
-      config = function()
-         require('telescope').load_extension('file_browser')
-      end,
-   },
-   {
       'nvim-telescope/telescope-fzf-native.nvim',
       dependencies = { 'nvim-telescope/telescope.nvim' },
       build = 'make',
-      config = function()
-         require('telescope').load_extension('file_browser')
-      end,
    },
 
    -- keymap helper
@@ -124,11 +114,17 @@ return {
    },
 
    -- search and replace
+   -- {
+   --    'nvim-pack/nvim-spectre',
+   --    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' },
+   --    opts = require('modules.tools.setup.spectre').opts,
+   --    keys = require('modules.tools.setup.spectre').keys,
+   -- },
    {
-      'nvim-pack/nvim-spectre',
-      dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons' },
+      'MagicDuck/grug-far.nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
       opts = require('modules.tools.setup.spectre').opts,
-      keys = require('modules.tools.setup.spectre').keys,
+      keys = require('modules.tools.setup.grug-far').keys,
    },
 
    -- nerd font icons + emoji picker
@@ -136,8 +132,8 @@ return {
       'ziontee113/icon-picker.nvim',
       opts = { disable_legacy_commands = true },
       keys = {
-         { '<leader>ii', cmd('IconPickerNormal'), desc = 'Pick Icons' },
-         { '<leader>iy', cmd('IconPickerYank'), desc = 'Yank Icons' },
+         { '<leader>ii', cmd('IconPickerNormal'), desc = '[icon-picker] Pick Icons' },
+         { '<leader>iy', cmd('IconPickerYank'), desc = '[icon-picker] Yank Icons' },
       },
    },
 
@@ -154,7 +150,7 @@ return {
       'HakonHarnes/img-clip.nvim',
       event = 'BufEnter',
       keys = {
-         { '<leader>P', '<cmd>PasteImage<cr>', desc = 'Paste image' },
+         { '<leader>ip', cmd('PasteImage'), desc = '[img-clip] Paste image' },
       },
       cmd = 'PasteImage',
    },
@@ -163,7 +159,7 @@ return {
    {
       'chrisgrieser/nvim-various-textobjs',
       lazy = false,
-      opts = { useDefaultKeymaps = true },
+      opts = { keymaps = { useDefaults = true } },
    },
 
    -- snippet maker
@@ -177,10 +173,10 @@ return {
          {
             '<leader>;a',
             function() require('scissors').addNewSnippet() end,
-            desc = 'Add Snippet',
+            desc = '[nvim-scissors] Add Snippet',
             mode = { 'n', 'x' }
          },
-         { '<leader>;e', function() require('scissors').editSnippet() end, desc = 'Edit Snippet' },
+         { '<leader>;e', function() require('scissors').editSnippet() end, desc = '[nvim-scissors] Edit Snippet' },
       },
    },
 
@@ -278,6 +274,9 @@ return {
 
    -- fancy menu
    { 'nvzone/menu', lazy = true },
+
+   -- type stats
+   { 'nvzone/typr', cmd = { 'Typr', 'TyprStats' }, dependencies = { 'nvzone/volt' } },
 
    -- misc
    {

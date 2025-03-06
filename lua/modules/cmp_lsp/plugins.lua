@@ -1,4 +1,4 @@
--- local m = require('core.mapper')
+local m = require('core.mapper')
 
 return {
    ---------------------------------
@@ -13,20 +13,25 @@ return {
          'hrsh7th/cmp-nvim-lsp',
          'lvimuser/lsp-inlayhints.nvim',
          { 'b0o/schemastore.nvim', version = false },
-         'folke/neodev.nvim',
+         -- 'folke/neodev.nvim',
          'folke/neoconf.nvim',
          'SmiteshP/nvim-navic',
          'Hoffs/omnisharp-extended-lsp.nvim',
-         'antosha417/nvim-lsp-file-operations',
+         -- 'antosha417/nvim-lsp-file-operations',
       },
-      init = require('modules.cmp_lsp.setup.nvim-lspconfig').init,
       config = require('modules.cmp_lsp.setup.nvim-lspconfig').config,
       keys = require('modules.cmp_lsp.setup.nvim-lspconfig').keys,
    },
+   -- {
+   --    'folke/neodev.nvim',
+   --    event = { 'BufReadPre *.lua', 'BufNewFile *.lua' },
+   --    opts = require('modules.cmp_lsp.setup.neodev').opts,
+   -- },
    {
-      'folke/neodev.nvim',
-      event = { 'BufReadPre *.lua', 'BufNewFile *.lua' },
-      opts = require('modules.cmp_lsp.setup.neodev').opts,
+      'folke/lazydev.nvim',
+      ft = 'lua',
+      opts = require('modules.cmp_lsp.setup.lazydev').opts,
+      dependencies = 'justinsgithub/wezterm-types',
    },
    {
       'folke/neoconf.nvim',
@@ -45,10 +50,10 @@ return {
          automatic_installation = true,
       },
    },
-   {
-      'antosha417/nvim-lsp-file-operations',
-      config = true,
-   },
+   -- {
+   --    'antosha417/nvim-lsp-file-operations',
+   --    config = true,
+   -- },
    {
       -- 'nvimdev/lspsaga.nvim',
       'KevinSilvester/lspsaga.nvim',
@@ -75,6 +80,23 @@ return {
       dependencies = { 'neovim/nvim-lspconfig' },
       opts = require('modules.cmp_lsp.setup.rust-tools').opts,
       config = require('modules.cmp_lsp.setup.rust-tools').config,
+   },
+   {
+      'cordx56/rustowl',
+      ft = 'rust',
+      dependencies = { 'neovim/nvim-lspconfig' },
+   },
+   {
+      'luckasRanarison/tailwind-tools.nvim',
+      name = 'tailwind-tools',
+      build = ':UpdateRemotePlugins',
+      dependencies = {
+         'nvim-treesitter/nvim-treesitter',
+         'folke/neoconf.nvim',
+         -- 'neovim/nvim-lspconfig',
+      },
+      opts = require('modules.cmp_lsp.setup.tailwind-tools').opts,
+      config = require('modules.cmp_lsp.setup.tailwind-tools').config,
    },
    -- {
    --    'ray-x/go.nvim',
@@ -104,6 +126,7 @@ return {
          'saadparwaiz1/cmp_luasnip',
          'f3fora/cmp-spell',
          'windwp/nvim-autopairs',
+         -- 'tailwind-tools',
       },
       opts = require('modules.cmp_lsp.setup.cmp').opts,
       config = require('modules.cmp_lsp.setup.cmp').config,
@@ -153,10 +176,20 @@ return {
 
    {
       'smjonas/inc-rename.nvim',
-      -- opts = { input_buffer_type = 'dressing' },
-      enabled = false,
-      config = true,
       event = 'VeryLazy',
-      -- keys = { { '<leader>lr', m.cmd('IncRename'), desc = '[inc-rename] Rename' } },
+      cmd = 'IncRename',
+      enabled = false,
+      -- opts = { input_buffer_type = 'dressing' },
+      keys = {
+         {
+            '<leader>lr',
+            function()
+               return ':IncRename ' .. vim.fn.expand('<cword>')
+            end,
+            noremap = true,
+            expr = true,
+            desc = '[inc-rename] Rename',
+         },
+      },
    },
 }

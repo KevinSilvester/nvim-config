@@ -1,7 +1,7 @@
 local ufn = require('utils.fn')
 
 -- command to act as alias for custom inspect function
-vim.api.nvim_create_user_command('Inspect', function(opts)
+vim.api.nvim_create_user_command('Lua', function(opts)
    local args = vim.split(opts.args, '|')
    local expr = args[1]
    local yank = args[2] == 'true' and 'true' or 'false'
@@ -17,8 +17,6 @@ vim.api.nvim_create_user_command('InspectHl', function(opts)
    local expr = args[1]
    local yank = args[2] == 'true'
    local success, hl = pcall(require('utils.colours').get_hl, expr)
-
-   log:info('InspectHl', hl)
 
    if not success then
       log:error('config.cmds.inspecthl', 'Invalid highlight group: ' .. expr)
@@ -97,9 +95,4 @@ end, { nargs = 0 })
 
 vim.api.nvim_create_user_command('StatusCol', function()
    require('modules.ui.setup.statuscol').config()
-end, { nargs = 0 })
-
-vim.api.nvim_create_user_command('Ibr', function()
-   vim.cmd('IBLDisable')
-   vim.cmd('IBLEnable')
 end, { nargs = 0 })

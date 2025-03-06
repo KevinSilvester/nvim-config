@@ -2,7 +2,6 @@ local ufs = require('utils.fs')
 
 ---@class Core.Logger
 ---@field _logfile string
----@field _silent boolean
 local Logger = {}
 Logger.__index = Logger
 
@@ -11,7 +10,6 @@ Logger.__index = Logger
 function Logger:init()
    local logger = setmetatable({
       _logfile = ufs.path_join(PATH.data, 'my-config.log'),
-      _silent = false,
    }, self)
 
    return logger
@@ -19,59 +17,89 @@ end
 
 ---Start logger (ONCE OFF CALL)
 ---@param logfile string? logfile path
----@param silent boolean? notify log output (default is `false`)
-function Logger:start(logfile, silent)
+function Logger:start(logfile)
    if type(logfile) == 'string' then
       self._logfile = logfile
-   end
-
-   if type(silent) == 'boolean' then
-      self._silent = silent
    end
 
    _G.log = self
 end
 
+-- function Logger:_new_log(...)
+--    local args = { ... }
+
+--    local level = args[1]
+--    table.remove(args, 1)
+
+--    local msg
+--    local orgin
+
+--    if #args == 0 then
+--       return
+--    end
+
+--    if #args == 1 then
+--       orgin = 'core.logger'
+--       msg = type(args[1]) == 'string' and args[1] or vim.inspect(args[1])
+--    else
+--       assert(type(args[1]) == 'string', 'core.logger: origin must be a string')
+--       orgin = args[1]
+--       table.remove(args, 1)
+--       msg = type(args[1]) == 'string' and args[1]
+--    end
+
+--    vim.schedule(function()
+--       xpcall(function()
+--          -- stylua: ignore
+--          ufs.write_file(self._logfile,
+--             '[' .. os.date('%X %a %d/%m/%Y') .. '] - [' .. level .. '] - - [' .. origin .. '] - ' .. message .. '\n', 'a'
+--          )
+--       end, function()
+--          vim.notify('Failed writing to logfile', vim.log.levels.ERROR, { title = '[ERROR] core.logger' })
+--       end)
+--    end)
+-- end
+
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:trace(origin, message, silent)
-   self:__log('TRACE', origin, message, silent)
+   self:_log('TRACE', origin, message, silent)
 end
 
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:debug(origin, message, silent)
-   self:__log('DEBUG', origin, message, silent)
+   self:_log('DEBUG', origin, message, silent)
 end
 
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:info(origin, message, silent)
-   self:__log('INFO', origin, message, silent)
+   self:_log('INFO', origin, message, silent)
 end
 
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:warn(origin, message, silent)
-   self:__log('WARN', origin, message, silent)
+   self:_log('WARN', origin, message, silent)
 end
 
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:error(origin, message, silent)
-   self:__log('ERROR', origin, message, silent)
+   self:_log('ERROR', origin, message, silent)
 end
 
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
 function Logger:off(origin, message, silent)
-   self:__log('OFF', origin, message, silent)
+   self:_log('OFF', origin, message, silent)
 end
 
 ---Log to logfile
@@ -80,7 +108,7 @@ end
 ---@param origin string origin of logged message
 ---@param message any message to be logged
 ---@param silent? boolean notify log output (default is `false`)
-function Logger:__log(level, origin, message, silent)
+function Logger:_log(level, origin, message, silent)
    if type(message) ~= 'string' then
       message = vim.inspect(message)
    end
@@ -101,12 +129,11 @@ function Logger:__log(level, origin, message, silent)
 
    if type(silent) == 'boolean' then
       silent_log = silent
-   else
-      silent_log = self._silent
    end
 
    if not silent_log then
-      vim.notify(message, vim.log.levels[level], { title = '[' .. level .. '] ' .. origin })
+      local title = '[' .. level .. '] ' .. origin
+      vim.notify(message, vim.log.levels[level], { title = title, id = title })
    end
 end
 

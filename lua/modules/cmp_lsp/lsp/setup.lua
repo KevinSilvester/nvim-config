@@ -19,11 +19,15 @@ M.set_lsp_keymaps = function(bufnr)
       --    m.opts(m.noremap, m.silent, '[ufo/builtin] Hover doc')
       -- },
       -- { "D",  function() vim.lsp.buf.type_definition() end, m.opts(m.noremap, m.silent, '[builtin] Type Definition') },
-      { "gD", function() vim.lsp.buf.declaration() end,  m.opts(m.noremap, m.silent, '[builtin] Goto Declarations') },
-      { "gd", function() vim.lsp.buf.definition() end,   m.opts(m.noremap, m.silent, '[builtin] Goto Definitions') },
-      { "gq", function() vim.diagnostic.setqflist() end, m.opts(m.noremap, m.silent, '[builtin] Show QuickFix') },
-      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"),     m.opts(m.noremap, m.silent, '[lspsaga] Goto Prev Diagnostics') },
-      { "]d", m.cmd("Lspsaga diagnostic_jump_next"),     m.opts(m.noremap, m.silent, '[lspsaga] Goto Next Diagnostics') },
+
+      --{{ Handled by Snacks.nvim
+      -- { "gD", function() vim.lsp.buf.declaration() end,  m.opts(m.noremap, m.silent, '[builtin] Goto Declarations') },
+      -- { "gd", function() vim.lsp.buf.definition() end,   m.opts(m.noremap, m.silent, '[builtin] Goto Definitions') },
+      -- { "gq", function() vim.diagnostic.setqflist() end, m.opts(m.noremap, m.silent, '[builtin] Show QuickFix') },
+      --}}
+
+      { "[d", m.cmd("Lspsaga diagnostic_jump_prev"), m.opts(m.noremap, m.silent, '[lspsaga] Goto Prev Diagnostics') },
+      { "]d", m.cmd("Lspsaga diagnostic_jump_next"), m.opts(m.noremap, m.silent, '[lspsaga] Goto Next Diagnostics') },
       {
          "[e",
          function() require("lspsaga.diagnostic").goto_prev({ severity = vim.diagnostic.severity.ERROR }) end,
@@ -51,7 +55,6 @@ M.capabilities = vim.tbl_deep_extend(
    'force',
    vim.lsp.protocol.make_client_capabilities(),
    require('cmp_nvim_lsp').default_capabilities(),
-   require('lsp-file-operations').default_capabilities(),
    capabilities_extension
 )
 

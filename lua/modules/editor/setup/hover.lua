@@ -24,7 +24,7 @@ M.keys = {
       function()
          local winid = require('ufo').peekFoldedLinesUnderCursor()
          if not winid then
-            vim.lsp.buf.hover()
+            -- vim.lsp.buf.hover()
             require('hover').hover()
          end
       end,
@@ -50,6 +50,13 @@ M.keys = {
          require('hover').hover_switch('next')
       end,
       desc = '[hover] next source',
+   },
+   {
+      '<MouseMove>',
+      function()
+         require('hover').hover_mouse()
+      end,
+      desc = 'hover.nvim (mouse)',
    },
 }
 

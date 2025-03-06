@@ -65,8 +65,8 @@ M.opts = {
    commands = {
       trash = function(state)
          local inputs = require('neo-tree.ui.inputs')
-         local path = state.tree:get_node().path
-         local msg = 'Are you sure you want to delete ' .. path
+         local node = state.tree:get_node()
+         local msg = "Are you sure you want to trash '" .. node.name .. "'"
          inputs.confirm(msg, function(confirmed)
             if not confirmed then
                return
@@ -78,21 +78,23 @@ M.opts = {
             if HOST.is_win then
                trash = {
                   cmd = 'pwsh.exe',
-                  args = { '-c', 'Remove-ItemSafely', path },
+                  args = { '-c', 'Remove-ItemSafely', node.path },
                }
             else
                trash = {
                   cmd = 'trash-put',
-                  args = { path },
+                  args = { node.path },
                }
             end
 
+            log:info('neo-tree ~ trash', " Trashing '" .. node.name .. "'...")
             ufn.spawn(trash.cmd, trash.args, function(code, _signal)
                if code ~= 0 then
-                  log:error('neo-tree ~ trash', 'Failed to trash the file/directory: ' .. path)
+                  log:error('neo-tree ~ trash', ' Failed to trash ' .. node.type .. ": '" .. node.name .. "'")
                   return
                end
                require('neo-tree.sources.manager').refresh(state)
+               log:info('neo-tree ~ trash', " Trashed '" .. node.name .. "'...")
             end)
          end)
       end,
@@ -143,7 +145,7 @@ M.opts = {
          ['?'] = 'show_help',
          ['<'] = 'prev_source',
          ['>'] = 'next_source',
-         ['i'] = 'show_file_details',
+         ['K'] = 'show_file_details',
       },
    },
    nesting_rules = {},
@@ -180,7 +182,7 @@ M.opts = {
       follow_current_file = {
          enabled = true, -- This will find and focus the file in the active buffer every time
          --               -- the current file is changed while the tree is open.
-         leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
+         leave_dirs_open = true, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
       },
       group_empty_dirs = false, -- when true, empty folders will be grouped together
       hijack_netrw_behavior = 'open_default', -- netrw disabled, opening a directory opens neo-tree
@@ -275,6 +277,7 @@ M.opts = {
 M.config = function(_, opts)
    local neo_tree = require('neo-tree')
    local default_opts = require('neo-tree.defaults')
+   local events = require('neo-tree.events')
 
    opts.renderers = {}
    opts.renderers.directory = default_opts.renderers.directory
@@ -294,6 +297,22 @@ M.config = function(_, opts)
       -- indent_marker = '├',
       last_indent_marker = '╰',
       indent_size = 2,
+   }
+
+   -- ref: https://github.com/folke/snacks.nvim/blob/main/docs/rename.md#neo-treenvim
+   opts.event_handlers = {
+      {
+         event = events.FILE_MOVED,
+         handler = function(args)
+            Snacks.rename.on_rename_file(args.source, args.destination)
+         end,
+      },
+      {
+         event = events.FILE_RENAMED,
+         handler = function(args)
+            Snacks.rename.on_rename_file(args.source, args.destination)
+         end,
+      },
    }
 
    neo_tree.setup(opts)

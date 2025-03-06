@@ -3,18 +3,18 @@ local M = {}
 
 M.opts = {
    signs = {
-      add = { text = '▎' },
-      change = { text = '▎' },
+      add = { text = '▍' },
+      change = { text = '▍' },
       delete = { text = '󰐊' },
       topdelete = { text = '󰐊' },
-      changedelete = { text = '▎' },
+      changedelete = { text = '▍' },
    },
    signs_staged = {
-      add = { text = '▎' },
-      change = { text = '▎' },
+      add = { text = '▍' },
+      change = { text = '▍' },
       delete = { text = '󰐊' },
       topdelete = { text = '󰐊' },
-      changedelete = { text = '▎' },
+      changedelete = { text = '▍' },
    },
    preview_config = {
       border = 'rounded',
@@ -29,7 +29,7 @@ M.opts = {
 M.keys = {
    { ']h',          cmd('Gitsigns next_hunk'),                 desc = '[gitsigns] Next Hunk' },
    { '[h',          cmd('Gitsigns prev_hunk'),                 desc = '[gitsigns] Prev Hunk' },
-   { '<leader>gl',  cmd('Gitsigns blame_line'),                desc = '[gitsigns] Blame Line' },
+   { '<leader>gB',  cmd('Gitsigns blame_line'),                desc = '[gitsigns] Blame Line' },
    { '<leader>ghp', cmd('Gitsigns preview_hunk'),              desc = '[gitsigns] Preview Hunk' },
    { '<leader>ghP', cmd('Gitsigns preview_hunk_inline'),       desc = '[gitsigns] Preview Hunk Inline' },
    { '<leader>ghs', cmd('Gitsigns select_hunk'),               desc = '[gitsigns] Select Hunk' },

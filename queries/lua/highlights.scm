@@ -4,6 +4,9 @@
   (#eq? @namespace.builtin "vim"))
 
 ((identifier) @namespace.builtin
+  (#eq? @namespace.builtin "Snacks"))
+
+((identifier) @namespace.builtin
   (#eq? @namespace.builtin "buf_cache"))
 
 ((identifier) @namespace.builtin

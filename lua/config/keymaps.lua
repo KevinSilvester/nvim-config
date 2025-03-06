@@ -119,4 +119,5 @@ m.xmap({
 
    -- Better paste
    { 'p',     '"_dP',                      m.opts(m.noremap, m.silent) },
+   { 'C',     'y<cmd>let @/=@"<cr>cgn',    m.opts(m.noremap, m.silent) }
 })

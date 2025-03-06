@@ -8,6 +8,14 @@ return {
       end,
       lazy = false,
       priority = 1000,
+      -- opts = {
+      --    custom_highlights = function(colors)
+      --       return {
+      --          SnacksIndent = { fg = colors.surface0 },
+      --          SnacksIndentScope = { fg = colors.text },
+      --       }
+      --    end,
+      -- },
    },
    { 'glepnir/zephyr-nvim', event = 'VeryLazy' },
    { 'folke/tokyonight.nvim', event = 'VeryLazy' },
@@ -113,21 +121,21 @@ return {
    },
 
    -- notifications
-   {
-      'rcarriga/nvim-notify',
-      -- event = 'VeryLazy',
-      opts = require('modules.ui.setup.notify').opts,
-      init = require('modules.ui.setup.notify').init,
-      config = require('modules.ui.setup.notify').config,
-   },
+   -- {
+   --    'rcarriga/nvim-notify',
+   --    -- event = 'VeryLazy',
+   --    opts = require('modules.ui.setup.notify').opts,
+   --    init = require('modules.ui.setup.notify').init,
+   --    config = require('modules.ui.setup.notify').config,
+   -- },
 
    -- dashboard
-   {
-      'goolord/alpha-nvim',
-      event = 'VimEnter',
-      opts = require('modules.ui.setup.alpha').opts,
-      config = require('modules.ui.setup.alpha').config,
-   },
+   -- {
+   --    'goolord/alpha-nvim',
+   --    event = 'VimEnter',
+   --    opts = require('modules.ui.setup.alpha').opts,
+   --    config = require('modules.ui.setup.alpha').config,
+   -- },
 
    -- noicer ui
    {
@@ -141,10 +149,13 @@ return {
    -- lsp progress
    {
       'j-hui/fidget.nvim',
-      tag = 'v1.4.1',
+      tag = 'v1.6.1',
+      enabled = true,
       event = 'LspAttach',
       dependencies = 'neovim/nvim-lspconfig',
-      config = true,
+      opts = {
+         notification = { window = { winblend = 0 } },
+      },
    },
 
    -- preview color
@@ -152,7 +163,7 @@ return {
       'NvChad/nvim-colorizer.lua',
       event = 'VeryLazy',
       opts = {
-         filetypes = { '*', '!NvimTree', '!neo-tree', '!lazy', '!toggleterm', '!alpha', '!mason' },
+         filetypes = { '*', '!NvimTree', '!neo-tree', '!lazy', '!toggleterm', '!alpha', '!mason', 'cmp_doc' },
          mode = 'background',
          css = true,
          names = false,
@@ -164,20 +175,20 @@ return {
    },
 
    -- inputs
-   {
-      'stevearc/dressing.nvim',
-      dependencies = 'MunifTanjim/nui.nvim',
-      opts = require('modules.ui.setup.dressing').opts,
-      init = require('modules.ui.setup.dressing').init,
-   },
+   -- {
+   --    'stevearc/dressing.nvim',
+   --    dependencies = 'MunifTanjim/nui.nvim',
+   --    opts = require('modules.ui.setup.dressing').opts,
+   --    init = require('modules.ui.setup.dressing').init,
+   -- },
 
-   -- indent
-   {
-      'lukas-reineke/indent-blankline.nvim',
-      main = 'ibl',
-      event = { 'BufReadPre', 'BufNewFile' },
-      opts = require('modules.ui.setup.indent').opts,
-   },
+   -- -- indent
+   -- {
+   --    'lukas-reineke/indent-blankline.nvim',
+   --    main = 'ibl',
+   --    event = { 'BufReadPre', 'BufNewFile' },
+   --    opts = require('modules.ui.setup.indent').opts,
+   -- },
 
    -- side/file explorer
    {

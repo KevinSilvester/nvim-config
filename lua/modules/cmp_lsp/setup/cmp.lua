@@ -59,6 +59,10 @@ M.config = function(_, opts)
 
    -- cmp formatting
    opts.formatting.format = function(entry, vim_item)
+      if vim_item.kind == 'Color' then
+         vim_item = ucmp.lspkind_format(entry, vim_item)
+      end
+
       vim_item.kind = icons.kind[vim_item.kind]
 
       if entry.source.name == 'copilot' then
@@ -85,7 +89,6 @@ M.config = function(_, opts)
    -- cmp snippets
    opts.snippet = {
       expand = function(args)
-         log:debug('cmp', args)
          -- vim.snippet.expand(args.body)
          luasnip.lsp_expand(args.body)
       end,

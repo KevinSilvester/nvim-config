@@ -17,7 +17,6 @@ go
 gomod
 gosum
 gowork
-gowork
 html
 java
 javascript
@@ -31,9 +30,12 @@ make
 markdown
 markdown_inline
 nix
+nu
 pem
 python
+powershell
 regex
+ron
 rst
 rust
 scss
@@ -43,6 +45,8 @@ toml
 tsx
 typescript
 vim
+vimdoc
+wgsl
 xml
 yaml
 zig

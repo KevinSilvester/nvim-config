@@ -80,7 +80,7 @@ M.config = function(_, opts)
          { '<leader>la', group = 'actions' },
          { '<leader>ls', group = 'show' },
          { '<leader>m', group = 'mini-map' },
-         { '<leader>n', group = 'nvim-tree' },
+         { '<leader>n', group = 'neo-tree' },
          { '<leader>q', group = 'quit/session' },
          { '<leader>s', group = 'search' },
          { '<leader>sn', group = 'noice' },
@@ -92,6 +92,7 @@ M.config = function(_, opts)
          { 'g', group = 'goto' },
          { 'gc', group = 'comment' },
          { 'gz', group = 'surround' },
+         { 'm', group = 'marks' },
       },
    })
    -- wk.register(opts.defaults)
