@@ -11,7 +11,7 @@ globals = {
    'HARPOON_LIST',
    'buf_cache',
    'log',
-   'vim'
+   'vim',
    'Snacks'
 }
 

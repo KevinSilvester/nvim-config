@@ -32,11 +32,11 @@ M.opts = {
       queries = {}, -- a list of filetypes having custom `class` queries
       patterns = { -- a map of filetypes to Lua pattern lists
          -- example:
-         rust = { "class=[\"']([^\"']+)[\"']" },
-         javascript = { "clsx%(([^)]+)%)" },
-         typescript = { "clsx%(([^)]+)%)" },
-         javascriptreact = { "clsx%(([^)]+)%)" },
-         typescriptreact = { "clsx%(([^)]+)%)" },
+         rust = { 'class=["\']([^"\']+)["\']' },
+         javascript = { 'clsx%(([^)]+)%)' },
+         typescript = { 'clsx%(([^)]+)%)' },
+         javascriptreact = { 'clsx%(([^)]+)%)' },
+         typescriptreact = { 'clsx%(([^)]+)%)' },
       },
    },
 }

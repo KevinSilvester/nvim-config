@@ -12,7 +12,7 @@ M.filetypes = {
    'pug',
    'typescriptreact',
    'rust',
-   'vue'
+   'vue',
 }
 
 M.init_options = {
@@ -22,6 +22,6 @@ M.init_options = {
    },
 }
 
-M.root_dir = vim.fs.dirname(vim.fs.find({ ".emmet-root" }, { upward = true })[1])
+M.root_dir = vim.fs.dirname(vim.fs.find({ '.emmet-root' }, { upward = true })[1])
 
 return M

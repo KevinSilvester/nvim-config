@@ -90,7 +90,10 @@ M.opts = {
             log:info('neo-tree ~ trash', " Trashing '" .. node.name .. "'...")
             ufn.spawn(trash.cmd, trash.args, function(code, _signal)
                if code ~= 0 then
-                  log:error('neo-tree ~ trash', ' Failed to trash ' .. node.type .. ": '" .. node.name .. "'")
+                  log:error(
+                     'neo-tree ~ trash',
+                     ' Failed to trash ' .. node.type .. ": '" .. node.name .. "'"
+                  )
                   return
                end
                require('neo-tree.sources.manager').refresh(state)

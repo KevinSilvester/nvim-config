@@ -193,9 +193,9 @@ return {
    },
    {
       'OXY2DEV/helpview.nvim',
-      opts = { preview = { icon_provider = 'devicons' }, },
+      opts = { preview = { icon_provider = 'devicons' } },
       cmd = 'Helpview',
-      lazy = false
+      lazy = false,
    },
 
    {
@@ -244,7 +244,7 @@ return {
    },
    {
       'folke/todo-comments.nvim',
-      cmd = { 'TodoTrouble', },
+      cmd = { 'TodoTrouble' },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.editor.setup.todo-comments').opts,
       keys = require('modules.editor.setup.todo-comments').keys,

@@ -11,7 +11,11 @@ M.opts = {
       expand = '',
       collapse = '',
       lines = {
-          '╰', '├', '│', '─', '╭'
+         '╰',
+         '├',
+         '│',
+         '─',
+         '╭',
       },
       preview = ' ',
       code_action = ' ',
