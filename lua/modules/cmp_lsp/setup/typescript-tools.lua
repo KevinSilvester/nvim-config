@@ -1,50 +1,38 @@
-local lsp = vim.lsp
 local M = {}
 
-local function filterReactDTS(value)
-   -- Depending on typescript version either uri or targetUri is returned
-   if value.uri then
-      return string.match(value.uri, '%.d.ts') == nil
-   elseif value.targetUri then
-      return string.match(value.targetUri, '%.d.ts') == nil
-   end
-end
+-- local function filterReactDTS(value)
+--    -- Depending on typescript version either uri or targetUri is returned
+--    if value.uri then
+--       return string.match(value.uri, '%.d.ts') == nil
+--    elseif value.targetUri then
+--       return string.match(value.targetUri, '%.d.ts') == nil
+--    end
+-- end
 
 M.config = function()
    require('typescript-tools').setup({
-      on_attach = require('modules.cmp_lsp.lsp.setup').on_attach,
-      handlers = {
-         ['textDocument/hover'] = lsp.with(lsp.handlers.hover, { border = 'rounded' }),
-         ['textDocument/signatureHelp'] = lsp.with(lsp.handlers.signature_help, { border = 'rounded' }),
-         ['textDocument/definition'] = function(err, result, method, ...)
-            if vim.islist(result) and #result > 1 then
-               local filtered_result = vim.tbl_filter(filterReactDTS, result)
-               return lsp.handlers['textDocument/definition'](err, filtered_result, method, ...)
-            end
-
-            lsp.handlers['textDocument/definition'](err, result, method, ...)
-         end,
-      },
+      -- disabling formatting capabilities of tsserver to not conflict with biome or null-ls
+      -- ref: https://github.com/pmizio/typescript-tools.nvim/issues/288#issuecomment-2262062771
+      on_attach = function(client)
+         client.server_capabilities.documentFormattingProvider = false
+         client.server_capabilities.documentRangeFormattingProvider = false
+      end,
       settings = {
-         -- spawn additional tsserver instance to calculate diagnostics on it
+         --- spawn additional tsserver instance to calculate diagnostics on it
          separate_diagnostic_server = true,
 
-         -- "change"|"insert_leave" determine when the client asks the server about diagnostic
+         -- determine when the client asks the server about diagnostic
+         ---@type "change"|"insert_leave"
          publish_diagnostic_on = 'insert_leave',
 
-         -- array of strings("fix_all"|"add_missing_imports"|"remove_unused"|
-         -- "remove_unused_imports"|"organize_imports") -- or string "all"
-         -- to include all supported code actions
          -- specify commands exposed as code_actions
+         ---@type ("fix_all"|"add_missing_imports"|"remove_unused"|"remove_unused_imports"|"organize_imports")[]|"all"
          expose_as_code_action = 'all',
 
-         -- string|nil - specify a custom path to `tsserver.js` file, if this is nil or file under path
+         -- specify a custom path to `tsserver.js` file, if this is nil or file under path
          -- not exists then standard path resolution strategy is applied
+         ---@type string|nil
          tsserver_path = nil,
-
-         -- specify a list of plugins to load by tsserver, e.g., for support `styled-components`
-         -- (see 💅 `styled-components` support section)
-         tsserver_plugins = {},
 
          -- this value is passed to: https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
          -- memory limit in megabytes or "auto"(basically no limit)
@@ -55,11 +43,11 @@ M.config = function()
 
          tsserver_file_preferences = {
             includeInlayParameterNameHints = 'all',
-            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayParameterNameHintsWhenArgumentMatchesName = true,
             includeInlayFunctionParameterTypeHints = true,
-            includeInlayVariableTypeHints = false,
+            includeInlayVariableTypeHints = true,
             includeInlayPropertyDeclarationTypeHints = true,
-            includeInlayFunctionLikeReturnTypeHints = false,
+            includeInlayFunctionLikeReturnTypeHints = true,
             includeInlayEnumMemberValueHints = true,
          },
 

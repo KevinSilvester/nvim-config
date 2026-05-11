@@ -1,16 +1,5 @@
 local icons = require('modules.ui.icons').diagnostics
 
---  setup diagnostics signs
-local custom_diagnostics_signs = {
-   { name = 'DiagnosticSignError', text = icons.Error },
-   { name = 'DiagnosticSignWarn', text = icons.Warning },
-   { name = 'DiagnosticSignHint', text = icons.Hint },
-   { name = 'DiagnosticSignInfo', text = icons.Info },
-}
-for _, sign in ipairs(custom_diagnostics_signs) do
-   vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = '' })
-end
-
 local severity_map = {
    [vim.lsp.protocol.DiagnosticSeverity.Error] = 'Error',
    [vim.lsp.protocol.DiagnosticSeverity.Warning] = 'Warn',
@@ -20,7 +9,26 @@ local severity_map = {
 
 vim.diagnostic.config({
    virtual_text = false, -- will be handled by tiny-inline-diagnostic.nvim
-   signs = { active = custom_diagnostics_signs }, -- show signs
+   signs = {
+      text = {
+         [vim.lsp.protocol.DiagnosticSeverity.Error] = icons.Error,
+         [vim.lsp.protocol.DiagnosticSeverity.Warning] = icons.Warning,
+         [vim.lsp.protocol.DiagnosticSeverity.Hint] = icons.Hint,
+         [vim.lsp.protocol.DiagnosticSeverity.Information] = icons.Info,
+      },
+      texthl = {
+         [vim.lsp.protocol.DiagnosticSeverity.Error] = 'DiagnosticSignError',
+         [vim.lsp.protocol.DiagnosticSeverity.Warning] = 'DiagnosticSignWarn',
+         [vim.lsp.protocol.DiagnosticSeverity.Hint] = 'DiagnosticSignHint',
+         [vim.lsp.protocol.DiagnosticSeverity.Information] = 'DiagnosticSignInfo',
+      },
+      numhl = {
+         [vim.lsp.protocol.DiagnosticSeverity.Error] = '',
+         [vim.lsp.protocol.DiagnosticSeverity.Warning] = '',
+         [vim.lsp.protocol.DiagnosticSeverity.Hint] = '',
+         [vim.lsp.protocol.DiagnosticSeverity.Information] = '',
+      },
+   },
    update_in_insert = true,
    underline = true,
    severity_sort = true,

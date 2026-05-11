@@ -18,6 +18,7 @@ local helpers = require('core.cache.ui-helpers')
 ---@class Core.BufCache.Ui
 ---@field _hl_created boolean
 ---@field _aborted boolean
+---@field ns integer
 ---@field buffers Core.BufCache.Buffers
 ---@field bufnr_list number[]
 ---@field popup NuiPopup
@@ -26,10 +27,12 @@ local Ui = {}
 Ui.__index = Ui
 
 ---Must be called before creating Tree
+---@param ns integer
 ---@return nui_popup_options
 ---@private
-Ui.__POPUP_OPTIONS = function()
+Ui.__POPUP_OPTIONS = function(ns)
    return {
+      ns_id = ns,
       enter = true,
       focusable = true,
       zindex = 1000,
@@ -48,12 +51,13 @@ Ui.__POPUP_OPTIONS = function()
 end
 
 ---Must be called after creating Popup
+---@param ns integer
 ---@param popup_bufnr number
 ---@param bufnr_list number[]
 ---@param buffers Core.BufCache.Buffers
 ---@return nui_tree_options
 ---@private
-Ui.__TREE_OPTIONS = function(popup_bufnr, bufnr_list, buffers)
+Ui.__TREE_OPTIONS = function(ns, popup_bufnr, bufnr_list, buffers)
    ---@type NodeTable[]
    local nodes_table = {}
 
@@ -66,6 +70,7 @@ Ui.__TREE_OPTIONS = function(popup_bufnr, bufnr_list, buffers)
 
    ---@type nui_tree_options
    return {
+      ns_id = ns,
       bufnr = popup_bufnr,
       nodes = tree_nodes,
       prepare_node = helpers.prepare_node,
@@ -82,6 +87,7 @@ function Ui:init(buffers)
    local ui = setmetatable({
       _aborted = false,
       _hl_created = false,
+      ns = vim.api.nvim_create_namespace('core.cache'),
       tree = nil,
       popup = nil,
       buffers = buffers,
@@ -94,15 +100,15 @@ function Ui:init(buffers)
       return ui
    end
 
-   ui.popup = Popup(ui.__POPUP_OPTIONS())
-   ui.tree = Tree(ui.__TREE_OPTIONS(ui.popup.bufnr, ui.bufnr_list, ui.buffers))
+   ui.popup = Popup(ui.__POPUP_OPTIONS(ui.ns))
+   ui.tree = Tree(ui.__TREE_OPTIONS(ui.ns, ui.popup.bufnr, ui.bufnr_list, ui.buffers))
 
    return ui
 end
 
 ---Create highlight groups
 ---@private
-function Ui:__create_hl()
+function Ui:_create_hl()
    -- stylua: ignore
    local hl_groups = {
       text           = { link = 'Normal' },
@@ -116,13 +122,14 @@ function Ui:__create_hl()
    }
 
    for name, value in pairs(hl_groups) do
-      vim.api.nvim_set_hl(0, 'core.cache.' .. name, value)
+      vim.api.nvim_set_hl(self.ns, 'core.cache.' .. name, value)
    end
+   vim.api.nvim_win_set_hl_ns(self.popup.winid, self.ns)
 end
 
 ---Set keymaps for popup
 ---@private
-function Ui:__set_keymaps()
+function Ui:_set_keymaps()
    ---@param next boolean
    local function next_prev_buffer(next)
       return function()
@@ -328,7 +335,7 @@ function Ui:__set_keymaps()
 
    -- Refresh
    self.popup:map('n', 'r', function()
-      vim.notify('Refreshing buffer info...', 'info', { title = 'core.cache' })
+      log:info('core.cache', 'Refreshing buffer info...')
       buf_cache:refresh_all()
       vim.defer_fn(function()
          ---@type NodeTable[]
@@ -434,13 +441,14 @@ function Ui:render()
       return
    end
 
+   self:_set_keymaps()
+   self.popup:mount()
+
    if not self._hl_created then
-      self:__create_hl()
+      self:_create_hl()
       self._hl_created = true
    end
 
-   self:__set_keymaps()
-   self.popup:mount()
    self.tree:render()
 end
 

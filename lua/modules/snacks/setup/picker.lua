@@ -59,6 +59,8 @@ return {
    --    git_worktree = {},
    -- },
 
+   sources = { explorer = { debug = { scores = false } } },
+
    ---@type snacks.picker.icons|{}
    icons = {
       -- stylua: ignore

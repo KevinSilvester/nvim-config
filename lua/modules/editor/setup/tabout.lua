@@ -1,8 +1,8 @@
 local M = {}
 
 M.opts = {
-   tabkey = '<A-l>',
-   backwards_tabkey = '<A-h>',
+   tabkey = '<Tab>',
+   backwards_tabkey = '<S-Tab>',
    ignore_beginning = false,
    act_as_tab = true,
    enable_backward = true,

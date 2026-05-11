@@ -1,5 +1,4 @@
 local ufs = require('utils.fs')
-local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 
 local M = {}
 
@@ -67,7 +66,7 @@ end
 
 ---@param file_path string
 function M.file(file_path)
-   local fp = file_path:gsub(uv.cwd() .. ufs.path_separator, '')
+   local fp = file_path:gsub(vim.uv.cwd() .. ufs.path_separator, '')
    if #fp > 33 then
       fp = '...' .. fp:sub(-30)
    end

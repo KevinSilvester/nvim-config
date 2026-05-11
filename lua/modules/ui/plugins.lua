@@ -8,19 +8,11 @@ return {
       end,
       lazy = false,
       priority = 1000,
-      -- opts = {
-      --    custom_highlights = function(colors)
-      --       return {
-      --          SnacksIndent = { fg = colors.surface0 },
-      --          SnacksIndentScope = { fg = colors.text },
-      --       }
-      --    end,
-      -- },
+      opts = {
+         integrations = { native_lsp = { inlay_hints = { background = false } } },
+      },
    },
-   { 'glepnir/zephyr-nvim', event = 'VeryLazy' },
    { 'folke/tokyonight.nvim', event = 'VeryLazy' },
-   { 'lunarvim/darkplus.nvim', event = 'VeryLazy' },
-   { 'lunarvim/onedarker.nvim', event = 'VeryLazy' },
    { 'rebelot/kanagawa.nvim', event = 'VeryLazy' },
    {
       'marko-cerovac/material.nvim',
@@ -30,7 +22,6 @@ return {
       event = 'VeryLazy',
    },
    { 'olimorris/onedarkpro.nvim', event = 'VeryLazy' },
-   { 'olivercederborg/poimandres.nvim', event = 'VeryLazy' },
    { 'comfysage/evergarden', event = 'VeryLazy' },
    { 'ellisonleao/gruvbox.nvim', event = 'VeryLazy' },
    {
@@ -89,11 +80,11 @@ return {
 
    -- statusline
    {
-      'nvim-lualine/lualine.nvim',
+      'KevinSilvester/lualine.nvim',
       dependencies = {
          'lewis6991/gitsigns.nvim',
          'nvimtools/none-ls.nvim',
-         'ThePrimeagen/harpoon',
+         -- 'ThePrimeagen/harpoon',
       },
       event = { 'BufReadPost', 'BufNewFile' },
       opts = require('modules.ui.setup.lualine').opts,
@@ -102,15 +93,9 @@ return {
 
    -- winbar
    {
-      'utilyre/barbecue.nvim',
-      name = 'barbecue',
-      version = '*',
+      'Bekaboo/dropbar.nvim',
       event = 'VeryLazy',
-      dependencies = {
-         'SmiteshP/nvim-navic',
-         'nvim-tree/nvim-web-devicons',
-      },
-      opts = require('modules.ui.setup.barbecue').opts,
+      opts = require('modules.ui.setup.dropbar').opts,
    },
 
    -- fold/statuscolumn
@@ -119,23 +104,6 @@ return {
       config = require('modules.ui.setup.statuscol').config,
       event = 'BufEnter',
    },
-
-   -- notifications
-   -- {
-   --    'rcarriga/nvim-notify',
-   --    -- event = 'VeryLazy',
-   --    opts = require('modules.ui.setup.notify').opts,
-   --    init = require('modules.ui.setup.notify').init,
-   --    config = require('modules.ui.setup.notify').config,
-   -- },
-
-   -- dashboard
-   -- {
-   --    'goolord/alpha-nvim',
-   --    event = 'VimEnter',
-   --    opts = require('modules.ui.setup.alpha').opts,
-   --    config = require('modules.ui.setup.alpha').config,
-   -- },
 
    -- noicer ui
    {
@@ -160,59 +128,29 @@ return {
 
    -- preview color
    {
-      'NvChad/nvim-colorizer.lua',
+      'catgoose/nvim-colorizer.lua',
       event = 'VeryLazy',
       opts = {
          filetypes = { '*', '!NvimTree', '!neo-tree', '!lazy', '!toggleterm', '!alpha', '!mason', 'cmp_doc' },
-         mode = 'background',
-         css = true,
-         names = false,
-         tailwind = 'lsp',
+         use_default_options = {
+            mode = 'background',
+            css = true,
+            names = false,
+            tailwind = 'lsp',
+            tailwind_opts = {
+               update_names = true,
+            },
+            virtualtext = '󰝤',
+            virtualtext_inline = 'before',
+            virtualtext_mode = 'foreground',
+         },
       },
       config = function(_, opts)
          require('colorizer').setup(opts)
       end,
    },
 
-   -- inputs
-   -- {
-   --    'stevearc/dressing.nvim',
-   --    dependencies = 'MunifTanjim/nui.nvim',
-   --    opts = require('modules.ui.setup.dressing').opts,
-   --    init = require('modules.ui.setup.dressing').init,
-   -- },
-
-   -- -- indent
-   -- {
-   --    'lukas-reineke/indent-blankline.nvim',
-   --    main = 'ibl',
-   --    event = { 'BufReadPre', 'BufNewFile' },
-   --    opts = require('modules.ui.setup.indent').opts,
-   -- },
-
    -- side/file explorer
-   {
-      'nvim-tree/nvim-tree.lua',
-      version = '*',
-      cmd = {
-         'NvimTreeOpen',
-         'NvimTreeClose',
-         'NvimTreeToggle',
-         'NvimTreeFocus',
-         'NvimTreeRefresh',
-         'NvimTreeFindFile',
-         'NvimTreeFindFileToggle',
-         'NvimTreeClipboard',
-         'NvimTreeResize',
-         'NvimTreeCollapse',
-         'NvimTreeCollapseKeepBuffers',
-         'NvimTreeGenerateOnAttach',
-      },
-      dependencies = 'nvim-tree/nvim-web-devicons',
-      opts = require('modules.ui.setup.nvim-tree').opts,
-      config = require('modules.ui.setup.nvim-tree').config,
-      -- keys = require('modules.ui.setup.nvim-tree').keys,
-   },
    {
       'nvim-neo-tree/neo-tree.nvim',
       enabled = true,
@@ -223,7 +161,6 @@ return {
          'nvim-lua/plenary.nvim',
          'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
          'MunifTanjim/nui.nvim',
-         -- '3rd/image.nvim',-- Optional image support in preview window: See `# Preview Mode` for more information
       },
       opts = require('modules.ui.setup.neo-tree').opts,
       config = require('modules.ui.setup.neo-tree').config,

@@ -1,41 +1,5 @@
-local cmd = require('core.mapper').cmd
+local m = require('core.mapper')
 local M = {}
-
--- local input_win_opts = {
---    style = 'input',
---    relative = 'cursor',
---    col = 0,
---    row = -3,
---    width = 25,
--- }
-
--- local function rename_input(opts, on_confirm)
---    opts = opts or {}
---    opts.win = vim.tbl_extend('force', input_win_opts, opts.win or {})
---    log:info('rename_input', opts)
---    return Snacks.input(opts, on_confirm)
--- end
-
-M.config = function()
-   local opts = require('modules.cmp_lsp.lsp.servers')
-   local lspconfig = require('lspconfig')
-   local mason_lsp = require('mason-lspconfig')
-
-   for _, server in ipairs(mason_lsp.get_installed_servers()) do
-      -- using rust-tools.nvim and typescrip.nvim for better lsp config
-      if server == 'rust_analyzer' or server == 'ts_ls' or server == 'tailwindcss' then
-         goto continue
-      end
-
-      if opts.custom[server] ~= nil then
-         lspconfig[server].setup(opts.custom[server])
-      else
-         lspconfig[server].setup(opts.default)
-      end
-
-      ::continue::
-   end
-end
 
 -- stylua: ignore
 M.keys = {
@@ -57,13 +21,22 @@ M.keys = {
       desc = '[builtin] Format File',
       mode = { 'v' }
    },
-   { '<leader>li',  cmd('LspInfo'),       desc = '[lspconfig] LSP Info' },
+   { '<leader>li',  m.cmd('LspInfo'),                                                                desc = '[lspconfig] LSP Info' },
+   { '<leader>lr',  vim.lsp.buf.rename,                                                            desc = '[builtin] Rename' },
+   { '<leader>lar', vim.lsp.codelens.run,                                                          desc = '[builtin] Run CodeLens Action' },
+   { '<leader>lt',  function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, desc = '[builtin] Toggle inlay hints' },
+   { '[d',          function() vim.diagnostic.jump({ count = -1 }) end,                            desc = '[builtin] Goto Prev Diagnostics' },
+   { ']d',          function() vim.diagnostic.jump({ count = 1 }) end,                             desc = '[builtin] Goto Next Diagnostics' },
    {
-      '<leader>lr',
-      vim.lsp.buf.rename,
-      desc = '[builtin] Rename'
+      '[e',
+      function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR }) end,
+      desc = '[builtin] Goto Prev Error'
    },
-   { '<leader>lar', vim.lsp.codelens.run, desc = '[builtin] Run CodeLens Action' },
+   {
+      ']e',
+      function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR }) end,
+      desc = '[builtin] Goto Next Error'
+   },
 }
 
 return M

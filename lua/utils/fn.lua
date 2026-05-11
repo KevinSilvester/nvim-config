@@ -191,9 +191,6 @@ M.spawn = function(command, args, on_exit, out, err)
       return
    end
 
-   assert(stdout)
-   assert(stderr)
-
    local proc
    proc = uv.spawn(
       command,
@@ -298,6 +295,20 @@ M.get_treesitter_parsers = function()
       '[\n' .. table.concat(res, ',\n') .. '\n]',
       'w+'
    )
+end
+
+---@param i string|string[]
+---@return string|string[]
+M.pad_str = function(i)
+   if type(i) == 'string' then
+      return i .. ' '
+   end
+
+   local i_padded = {}
+   for k, v in pairs(i) do
+      i_padded[k] = v .. ' '
+   end
+   return i_padded
 end
 
 return M

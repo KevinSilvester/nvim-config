@@ -60,6 +60,7 @@ M.config = function(_, opts)
    -- cmp formatting
    opts.formatting.format = function(entry, vim_item)
       if vim_item.kind == 'Color' then
+         log:debug('cmp.formatting', entry.completion_item.documentation)
          vim_item = ucmp.lspkind_format(entry, vim_item)
       end
 
@@ -96,8 +97,8 @@ M.config = function(_, opts)
 
    -- cmp window
    opts.window = {
-      completion = cmp_window.bordered(),
-      documentation = cmp_window.bordered(),
+      completion = cmp_window.bordered({ border = 'rounded' }),
+      documentation = cmp_window.bordered({ border = 'rounded' }),
    }
 
    -- cmp sources

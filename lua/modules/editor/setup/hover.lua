@@ -2,16 +2,16 @@
 local M = {}
 
 M.config = function()
-   require('hover').setup({
-      init = function()
+   require('hover').config({
+      providers = {
          -- Require providers
-         require('hover.providers.lsp')
-         require('hover.providers.gh')
-         require('hover.providers.gh_user')
-         require('hover.providers.dap')
-         require('hover.providers.man')
+         'hover.providers.lsp',
+         'hover.providers.gh',
+         'hover.providers.gh_user',
+         'hover.providers.dap',
+         'hover.providers.man',
          -- require('hover.providers.dictionary')
-      end,
+      },
       preview_opts = {
          border = 'rounded',
       },
@@ -19,45 +19,34 @@ M.config = function()
 end
 
 M.keys = {
-   {
-      'K',
-      function()
-         local winid = require('ufo').peekFoldedLinesUnderCursor()
-         if not winid then
-            -- vim.lsp.buf.hover()
-            require('hover').hover()
-         end
-      end,
-      desc = '[hover/ufo] hover / peak fold',
-   },
-   {
-      'gK',
-      function()
-         require('hover').hover_select()
-      end,
-      desc = '[hover] select hover',
-   },
-   {
-      '<C-p>',
-      function()
-         require('hover').hover_switch('previous')
-      end,
-      desc = '[hover] previous source',
-   },
-   {
-      '<C-n>',
-      function()
-         require('hover').hover_switch('next')
-      end,
-      desc = '[hover] next source',
-   },
-   {
-      '<MouseMove>',
-      function()
-         require('hover').hover_mouse()
-      end,
-      desc = 'hover.nvim (mouse)',
-   },
+   -- {
+   --    'gK',
+   --    function()
+   --       require('hover').enter()
+   --    end,
+   --    desc = '[hover] select hover',
+   -- },
+   -- {
+   --    '<C-p>',
+   --    function()
+   --       require('hover').switch('previous')
+   --    end,
+   --    desc = '[hover] previous source',
+   -- },
+   -- {
+   --    '<C-n>',
+   --    function()
+   --       require('hover').switch('next')
+   --    end,
+   --    desc = '[hover] next source',
+   -- },
+   -- {
+   --    '<MouseMove>',
+   --    function()
+   --       require('hover').mouse()
+   --    end,
+   --    desc = 'hover.nvim (mouse)',
+   -- },
 }
 
 return M

@@ -6,6 +6,9 @@ M.opts = {
       { path = 'snacks.nvim', words = { 'Snacks' } },
       { path = 'wezterm-types', mods = { 'wezterm' } },
    },
+   integrations = {
+      -- lspconfig = false
+   },
 }
 
 return M

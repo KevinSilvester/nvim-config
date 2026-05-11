@@ -1,4 +1,4 @@
-local cmd = require('core.mapper').cmd
+local m = require('core.mapper')
 local kind = require('modules.ui.icons').kind
 local M = {}
 
@@ -165,11 +165,9 @@ M.opts = {
 
 -- stylua: ignore
 M.keys = {
-   { '<leader>lac', cmd('Lspsaga code_action'),           desc = '[lspsaga] Code Action' },
+   { '<leader>lac', m.cmd('Lspsaga code_action'),          desc = '[lspsaga] Code Action' },
    -- { '<leader>ld',  cmd('Lspsaga show_line_diagnostics'), desc = '[lspsaga] Show Line Diagnostics' },
-   { '<leader>lsd', cmd('Lspsaga peek_definition'),       desc = '[lspsaga] Show Definitions' },
-   { '<leader>lso', cmd('Lspsaga outline'),               desc = '[lspsaga] Show LS Outline' },
-   { '<leader>lsr', cmd('Lspsaga finder'),                desc = '[lspsaga] Show References' },
+   { '<leader>lso', m.cmd('Lspsaga outline'),              desc = '[lspsaga] Show LS Outline' },
 }
 
 return M

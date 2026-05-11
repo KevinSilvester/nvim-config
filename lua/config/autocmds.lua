@@ -116,3 +116,52 @@ vim.api.nvim_create_autocmd('BufReadPost', {
       end
    end,
 })
+
+-- vim.api.nvim_create_autocmd('LspProgress', {
+--    buffer = 0,
+--    callback = function(ev)
+--       local value = ev.data.params.value
+--       -- log:debug('config.autocmd', ev.data, true)
+--       vim.api.nvim_echo({ { value.message or 'done' } }, false, {
+--          id = 'lsp.' .. ev.data.params.token,
+--          kind = 'progress',
+--          source = 'vim.lsp',
+--          title = value.title,
+--          status = value.kind ~= 'end' and 'running' or 'success',
+--          percent = value.percentage,
+--       })
+--    end,
+-- })
+
+local active_count = 0
+
+vim.api.nvim_create_autocmd('LspProgress', {
+   buffer = 0,
+   callback = function(ev)
+      local value = ev.data.params.value
+      -- log:debug('config.autocmd', ev.data, true)
+
+      if value.kind == 'begin' then
+         active_count = active_count + 1
+         if value.percentage then
+            vim.api.nvim_ui_send(string.format('\027]9;4;1;%d\027\\', value.percentage))
+         else
+            vim.api.nvim_ui_send('\027]9;4;3\027\\')
+         end
+      elseif value.kind == 'report' then
+         if value.percentage then
+            vim.api.nvim_ui_send(string.format('\027]9;4;1;%d\027\\', value.percentage))
+         else
+            vim.api.nvim_ui_send('\027]9;4;3\027\\')
+         end
+      elseif value.kind == 'end' then
+         active_count = math.max(0, active_count - 1)
+         if active_count == 0 then
+            vim.api.nvim_ui_send('\027]9;4;1;100\027\\')
+            vim.defer_fn(function()
+               vim.api.nvim_ui_send('\027]9;4;1;0\027\\')
+            end, 100)
+         end
+      end
+   end,
+})

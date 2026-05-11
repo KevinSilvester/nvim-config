@@ -55,24 +55,45 @@ end
 ---Load the plugin specs from modules folder
 ---@private
 function Lazy:__load_spec()
-   local modules_dir = ufs.path_join(PATH.config, 'lua', 'modules')
-   local match_pattern = 'lua/(.+).lua$'
-   ---@diagnostic disable-next-line: missing-fields
-   local imports = vim.fs.find('plugins.lua', {
-      upward = false,
-      path = modules_dir,
-      type = 'file',
-      limit = 10,
-   })
+   -- local modules_dir = ufs.path_join(PATH.config, 'lua', 'modules')
+   -- local match_pattern = 'lua/(.+).lua$'
+   -- ---@diagnostic disable-next-line: missing-fields
+   -- local imports = vim.fs.find('plugins.lua', {
+   --    upward = false,
+   --    path = modules_dir,
+   --    type = 'file',
+   --    limit = 10,
+   -- })
 
-   if #imports == 0 then
-      log:warn('core.lazy', 'No import modules were found')
-      return
-   end
+   -- if #imports == 0 then
+   --    log:warn('core.lazy', 'No import modules were found')
+   --    return
+   -- end
 
-   for idx, path in ipairs(imports) do
-      self.spec[idx] = { import = string.match(path, match_pattern):gsub('/', '.') }
-   end
+   -- for idx, path in ipairs(imports) do
+   --    self.spec[idx] = { import = string.match(path, match_pattern):gsub('/', '.') }
+   -- end
+
+   self.spec = {
+      {
+         import = 'modules._essentials.plugins',
+      },
+      {
+         import = 'modules.cmp_lsp.plugins',
+      },
+      {
+         import = 'modules.editor.plugins',
+      },
+      {
+         import = 'modules.snacks.plugins',
+      },
+      {
+         import = 'modules.tools.plugins',
+      },
+      {
+         import = 'modules.ui.plugins',
+      },
+   }
 end
 
 ---Bootstrap lazy.nvim
@@ -107,9 +128,10 @@ function Lazy:__setup()
       -- spec = { { 'LazyVim/LazyVim', import = 'lazyvim.plugins' } },
       spec = self.spec,
       rocks = {
-         hererocks = true,
-         root = ufs.path_join(PATH.data, 'lazy-rocks'),
-         server = 'https://nvim-neorocks.github.io/rocks-binaries/',
+         enabled = false,
+         -- hererocks = true,
+         -- root = ufs.path_join(PATH.data, 'lazy'),
+         -- server = 'https://nvim-neorocks.github.io/rocks-binaries/',
       },
       defaults = {
          lazy = true,

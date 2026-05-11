@@ -1,4 +1,4 @@
-local cmd = require('core.mapper').cmd
+local m = require('core.mapper')
 
 -- plugin({
 --    'rcarriga/nvim-dap-ui',
@@ -8,6 +8,15 @@ local cmd = require('core.mapper').cmd
 -- })
 
 return {
+   -- measure startuptime
+   {
+      'dstein64/vim-startuptime',
+      cmd = 'StartupTime',
+      config = function()
+         vim.g.startuptime_tries = 10
+      end,
+   },
+
    -- session+project management
    {
       'folke/persistence.nvim',
@@ -49,26 +58,11 @@ return {
          require('project_nvim').setup(opts)
       end,
    },
-   {
-      'polarmutex/git-worktree.nvim',
-      dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
-      config = function()
-         require('git-worktree').setup()
-         require('telescope').load_extension('git_worktree')
-      end,
-      keys = {
-         {
-            '<leader>gww',
-            cmd('lua require("telescope").extensions.git_worktree.git_worktrees()'),
-            desc = '[git-worktree] Git Worktrees',
-         },
-         {
-            '<leader>gwc',
-            cmd('lua require("telescope").extensions.git_worktree.create_git_worktree()'),
-            desc = '[git-worktree] Create Git Worktree',
-         },
-      },
-   },
+   -- {
+   --    'polarmutex/git-worktree.nvim',
+   --    dependencies = { 'nvim-lua/plenary.nvim', },
+   --    config = true,
+   -- },
    {
       'tpope/vim-fugitive',
       lazy = true,
@@ -90,21 +84,6 @@ return {
       },
    },
 
-   -- fuzzy finder
-   {
-      'nvim-telescope/telescope.nvim',
-      -- tag = '0.1.1',
-      dependencies = { 'nvim-lua/plenary.nvim' },
-      config = require('modules.tools.setup.telescope').config,
-      keys = require('modules.tools.setup.telescope').keys,
-      cmd = 'Telescope',
-   },
-   {
-      'nvim-telescope/telescope-fzf-native.nvim',
-      dependencies = { 'nvim-telescope/telescope.nvim' },
-      build = 'make',
-   },
-
    -- keymap helper
    {
       'folke/which-key.nvim',
@@ -120,28 +99,27 @@ return {
    --    opts = require('modules.tools.setup.spectre').opts,
    --    keys = require('modules.tools.setup.spectre').keys,
    -- },
-   {
-      'MagicDuck/grug-far.nvim',
-      dependencies = { 'nvim-tree/nvim-web-devicons' },
-      opts = require('modules.tools.setup.spectre').opts,
-      keys = require('modules.tools.setup.grug-far').keys,
-   },
+   -- {
+   --    'MagicDuck/grug-far.nvim',
+   --    dependencies = { 'nvim-tree/nvim-web-devicons' },
+   --    opts = require('modules.tools.setup._spectre').opts,
+   --    keys = require('modules.tools.setup.grug-far').keys,
+   -- },
 
    -- nerd font icons + emoji picker
    {
       'ziontee113/icon-picker.nvim',
       opts = { disable_legacy_commands = true },
       keys = {
-         { '<leader>ii', cmd('IconPickerNormal'), desc = '[icon-picker] Pick Icons' },
-         { '<leader>iy', cmd('IconPickerYank'), desc = '[icon-picker] Yank Icons' },
+         { '<leader>ii', m.cmd('IconPickerNormal'), desc = '[icon-picker] Pick Icons' },
+         { '<leader>iy', m.cmd('IconPickerYank'), desc = '[icon-picker] Yank Icons' },
       },
    },
 
    -- better yank
    {
       'gbprod/yanky.nvim',
-      dependencies = { 'nvim-telescope/telescope.nvim' },
-      config = require('modules.tools.setup.yanky').config,
+      config = true,
       keys = require('modules.tools.setup.yanky').keys,
    },
 
@@ -150,7 +128,7 @@ return {
       'HakonHarnes/img-clip.nvim',
       event = 'BufEnter',
       keys = {
-         { '<leader>ip', cmd('PasteImage'), desc = '[img-clip] Paste image' },
+         { '<leader>ip', m.cmd('PasteImage'), desc = '[img-clip] Paste image' },
       },
       cmd = 'PasteImage',
    },
@@ -165,8 +143,7 @@ return {
    -- snippet maker
    {
       'chrisgrieser/nvim-scissors',
-      dependencies = 'nvim-telescope/telescope.nvim',
-      opts = { jsonFormatter = 'jq' },
+      opts = { jsonFormatter = 'jq', snippetSelection = { picker = 'snacks' } },
       config = true,
       -- stylua: ignore
       keys = {
@@ -180,27 +157,32 @@ return {
       },
    },
 
-   -- WARNNING: Cursor disappears after using plugin
+   -- smarter w,b,e
+   -- { 'chrisgrieser/nvim-spider', keys = require('modules.tools.setup.nvim-spider').keys },
+
    -- colour picker
-   -- {
-   --    'max397574/colortils.nvim',
-   --    cmd = 'Colortils',
-   --    opts = {
-   --       default_format = 'hsl'
-   --    },
-   --    config = true
-   -- },
+   {
+      'max397574/colortils.nvim',
+      cmd = 'Colortils',
+      opts = {
+         default_format = 'hsl',
+         mappings = {
+            replace_default_format = '<S-cr>',
+            replace_choose_format = 'g<S-cr>',
+         },
+      },
+   },
 
    -- HARPOON
-   {
-      'ThePrimeagen/harpoon',
-      -- dir = '/home/kevin/projects/harpoon',
-      dependencies = { 'nvim-lua/plenary.nvim' },
-      enabled = true,
-      branch = 'harpoon2',
-      config = require('modules.tools.setup.harpoon').config,
-      keys = require('modules.tools.setup.harpoon').keys,
-   },
+   -- {
+   --    'ThePrimeagen/harpoon',
+   --    -- dir = '/home/kevin/projects/harpoon',
+   --    dependencies = { 'nvim-lua/plenary.nvim' },
+   --    branch = 'harpoon2',
+   --    config = require('modules.tools.setup.harpoon').config,
+   --    keys = require('modules.tools.setup.harpoon').keys,
+   --    enabled = false,
+   -- },
 
    -- package info
    {
@@ -212,7 +194,7 @@ return {
    },
    {
       'saecki/crates.nvim',
-      tag = 'v0.3.0',
+      tag = 'v0.7.1',
       event = { 'BufReadPre Cargo.toml', 'BufNewFile Cargo.toml' },
       dependencies = 'nvim-lua/plenary.nvim',
       opts = require('modules.tools.setup.crates').opts,
@@ -267,16 +249,78 @@ return {
    },
 
    -- show keys
-   { 'nvzone/showkeys', cmd = { 'ShowkeysToggle' }, opts = { position = 'top-center' } },
+   { 'nvzone/showkeys', cmd = { 'ShowkeysToggle' }, opts = { position = 'top-right' } },
 
    -- timer
    { 'nvzone/timerly', cmd = 'TimerlyToggle' },
 
    -- fancy menu
-   { 'nvzone/menu', lazy = true },
+   {
+      'nvzone/menu',
+      lazy = true,
+      keys = {
+         {
+            '<C-t>',
+            function()
+               require('menu').open('default')
+            end,
+            desc = '[menu] open',
+         },
+         {
+            '<RightMouse>',
+            function()
+               vim.cmd('normal! \\<RightMouse>')
+               local option = vim.bo.ft == 'NvimTree' and 'nvimtree' or 'default'
+               require('menu').open(option, { mouse = true })
+            end,
+            desc = '[menu] open',
+         },
+         {
+            '<C-RightMouse>',
+            function()
+               vim.cmd('normal! \\<RightMouse>')
+               if vim.tbl_contains(buf_cache._excluded_ft, vim.bo.ft) then
+                  return
+               end
+               require('menu').open('gitsigns', { mouse = true })
+            end,
+            desc = '[menu] open',
+         },
+      },
+   },
 
    -- type stats
    { 'nvzone/typr', cmd = { 'Typr', 'TyprStats' }, dependencies = { 'nvzone/volt' } },
+
+   {
+      -- 'nvzone/floaterm',
+      'Opyuu/floaterm', -- for rounded border support
+      dependencies = 'nvzone/volt',
+      opts = {
+         border = 'rounded',
+         mappings = {
+            term = function(bufnr)
+               require('floaterm').setup()
+               m.buf_tmap(bufnr, {
+                  {
+                     '<C-_>',
+                     m.cmd('FloatermToggle'),
+                     m.opts(m.silent, m.noremap, m.nowait, '[floaterm] toggle'),
+                  },
+                  {
+                     '<Esc>',
+                     [[<C-\><C-n>]],
+                     m.opts(m.silent, m.noremap, m.nowait, '[floaterm] escape terminal'),
+                  },
+               })
+            end,
+         },
+      },
+      keys = {
+         { '<C-_>', m.cmd('FloatermToggle'), desc = '[floaterm] Toggle' },
+      },
+      cmd = 'FloatermToggle',
+   },
 
    -- misc
    {
@@ -302,24 +346,37 @@ return {
       keys = { '<C-a>', '<C-x>' },
    },
    {
-      'folke/zen-mode.nvim',
-      config = true,
-      cmd = 'ZenMode',
-      keys = {
-         {
-            '<leader>z',
-            function()
-               require('zen-mode').toggle({ window = { width = 0.55 } })
-            end,
-            desc = 'Zen Mode',
-         },
-      },
+      -- dir = '~/projects/wrapped.nvim',
+      'aikhe/wrapped.nvim',
+      dependencies = { 'nvzone/volt' },
+      cmd = { 'NvimWrapped' },
+      opts = { border = 'rounded' },
    },
-
-   -- image preview
-   {
-      '3rd/image.nvim',
-      config = true,
-      enabled = not HOST.is_win,
-   },
+   -- {
+   --    'folke/zen-mode.nvim',
+   --    config = true,
+   --    cmd = 'ZenMode',
+   --    keys = {
+   --       {
+   --          '<leader>z',
+   --          function()
+   --             require('zen-mode').toggle({ window = { width = 0.55 } })
+   --          end,
+   --          desc = 'Zen Mode',
+   --       },
+   --    },
+   -- },
+   -- {
+   --    'shortcuts/no-neck-pain.nvim',
+   --    cmd = {
+   --       'NoNeckPain',
+   --       'NoNeckPainResize',
+   --       'NoNeckPainToggleLeftSide',
+   --       'NoNeckPainToggleRightSide',
+   --       'NoNeckPainWidthUp',
+   --       'NoNeckPainWidthDown',
+   --       'NoNeckPainScratchPad'
+   --    },
+   --    version = '*',
+   -- },
 }

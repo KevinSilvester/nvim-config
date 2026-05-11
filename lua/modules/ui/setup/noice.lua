@@ -9,20 +9,13 @@ M.opts = {
       },
       hover = { enabled = false },
       progress = { enabled = false },
-      signature = {
-         enabled = true,
-         view = 'hover',
-         opts = {
-            anchor = 'SW',
-            position = { row = 1, col = -1 },
-         },
-      },
+      signature = { enabled = false },
    },
    presets = {
       bottom_search = true,
       command_palette = true,
       long_message_to_split = true,
-      lsp_doc_border = true,
+      lsp_doc_border = false,
    },
    cmdline = {
       view = 'cmdline_popup', ---@type 'cmdline'|'cmdline_popup'

@@ -18,7 +18,7 @@ vim.opt.encoding = 'utf-8'
 vim.opt.viewoptions = 'folds,cursor,curdir,slash,unix'
 vim.opt.wildignore =
 '.hg,.svn,*.pyc,*.o,*.out,*.jpg,*.jpeg,*.png,*.gif,*.zip,**/tmp/**,*.DS_Store,**/node_modules/**'
-vim.opt.runtimepath:append(PATH.data .. '/ts-parsers')
+vim.opt.runtimepath:append(PATH.data .. '/nvim-treesitter-main')
 vim.opt.spell = true
 vim.opt.spelllang = { 'en_gb' }
 
@@ -144,6 +144,7 @@ vim.opt.fillchars = {
    foldopen = '',
    foldclose = '',
    foldsep = ' ', -- or '│' to use bar for show fold area
+   diff = '⟍'
 }
 vim.opt.guicursor =
     'n-v-c:block-blinkwait175-blinkon175-blinkoff175,' ..
@@ -186,5 +187,6 @@ vim.filetype.add({
    filename = {
       ['.swcrc'] = 'json',
       ['.luacheckrc'] = 'text',
+      ['docker-compose.yml'] = 'yaml.docker-compose',
    }
 })

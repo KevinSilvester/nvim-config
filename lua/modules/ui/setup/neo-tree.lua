@@ -1,4 +1,3 @@
-local m = require('core.mapper')
 local i = require('modules.ui.icons')
 local ufn = require('utils.fn')
 local M = {}
@@ -121,7 +120,7 @@ M.opts = {
          -- ['<S-l>'] = 'expand_all_nodes',
          -- ['<S-h>'] = 'close_all_nodes',
          ['<esc>'] = 'cancel', -- close preview or floating neo-tree window
-         ['P'] = { 'toggle_preview', config = { use_float = true, use_image_nvim = true } },
+         ['P'] = { 'toggle_preview', config = { use_float = true, use_snacks_image = true } },
          ['t'] = 'focus_preview',
          ['S'] = 'open_split',
          ['s'] = 'open_vsplit',
@@ -351,7 +350,16 @@ M.config = function(_, opts)
 end
 
 M.keys = {
-   { '<leader>ne', m.cmd('Neotree toggle'), desc = 'Toggle Neotree' },
+   {
+      '<leader>ne',
+      function()
+         require('neo-tree.command').execute({
+            toggle = true,
+            dir = Snacks.git.get_root() or vim.uv.cwd(),
+         })
+      end,
+      desc = 'Toggle Neotree',
+   },
    {
       '<leader>nr',
       function()

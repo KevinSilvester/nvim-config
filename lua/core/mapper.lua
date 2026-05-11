@@ -139,9 +139,17 @@ M.opts = function(...)
 end
 
 ---@param str string
+---@param str2? string
 ---@return string
-M.cmd = function(str)
-   return '<cmd>' .. str .. '<CR>'
+M.cmd = function(str, str2)
+   return '<Cmd>' .. str .. '<CR>' .. (str2 or '')
+end
+
+---@param str string
+---@param str2? string
+---@return string
+M.esc = function(str, str2)
+   return '<Esc>' .. str .. '<CR>' .. (str2 or '')
 end
 
 M.nmap = _map('n')

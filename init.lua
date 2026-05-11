@@ -12,5 +12,6 @@ require('config.autocmds')
 require('config.cmds')
 require('config.keymaps')
 require('config.diagnostics')
+require('config.lsp')
 
 require('modules.ui.colorscheme').setup('catppuccin')

@@ -105,8 +105,8 @@ M.config = function(_, opts)
    require('nvim-treesitter.configs').setup(opts)
 
    -- handle deprecated API, https://github.com/windwp/nvim-autopairs/pull/324
-   require('nvim-treesitter.ts_utils').is_in_node_range = vim.treesitter.is_in_node_range
-   require('nvim-treesitter.ts_utils').get_node_range = vim.treesitter.get_node_range
+   -- require('nvim-treesitter.ts_utils').is_in_node_range = vim.treesitter.is_in_node_range
+   -- require('nvim-treesitter.ts_utils').get_node_range = vim.treesitter.get_node_range
 
    ---A function convert an ipair to string
    -- local arr_to_str = function(arr, sep)
@@ -163,9 +163,6 @@ M.config = function(_, opts)
    --    require('nvim-treesitter.install').commands.TSInstall['run' .. bang](o.args)
    --    ufs.write_file(manual_install_file, arr_to_str(manual_installs), 'w')
    -- end, { nargs = '+', bang = true, complete = 'custom,nvim_treesitter#installable_parsers' })
-
-   vim.api.nvim_command('set foldmethod=expr')
-   vim.api.nvim_command('set foldexpr=nvim_treesitter#foldexpr()')
 end
 
 return M

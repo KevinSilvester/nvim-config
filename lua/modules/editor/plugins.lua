@@ -1,26 +1,9 @@
+local i = require('modules.ui.icons')
+
 return {
-   -- hightlight selection
-   -- {
-   --    'RRethy/vim-illuminate',
-   --    event = { 'BufReadPost', 'BufNewFile' },
-   --    opts = require('modules.editor.setup.illuminate').opts,
-   --    config = require('modules.editor.setup.illuminate').config,
-   --    keys = require('modules.editor.setup.illuminate').keys,
-   -- },
-
-   -- buffer remove
-   -- {
-   --    'echasnovski/mini.bufremove',
-   --    -- stylua: ignore
-   --    keys = {
-   --       { '<leader>bd', function() require('mini.bufremove').delete(0, false) end, desc = '[mini] Delete Buffer ', },
-   --       { '<leader>bD', function() require('mini.bufremove').delete(0, true) end,  desc = '[mini] Delete Buffer (Force) ', },
-   --    },
-   -- },
-
    -- minimap
    {
-      'echasnovski/mini.map',
+      'nvim-mini/mini.map',
       config = require('modules.editor.setup.mini-map').config,
       keys = require('modules.editor.setup.mini-map').keys,
    },
@@ -33,7 +16,7 @@ return {
       keys = require('modules.editor.setup.gitsigns').keys,
    },
    {
-      'sindrets/diffview.nvim',
+      'dlyongemallo/diffview.nvim',
       dependencies = 'nvim-lua/plenary.nvim',
       cmd = {
          'DiffviewOpen',
@@ -45,7 +28,24 @@ return {
          'DiffviewToggleFiles',
       },
       opts = require('modules.editor.setup.diffview').opts,
+      -- config = true,
       keys = require('modules.editor.setup.diffview').keys,
+   },
+   {
+      'esmuellert/codediff.nvim',
+      cmd = 'CodeDiff',
+      opts = {
+         diff = { layout = 'inline' },
+         explorer = {
+            view_mode = 'tree',
+            initial_focus = 'original',
+            ident_markers = false,
+            icons = {
+               folder_closed = i.fs.DirClosed,
+               folder_open = i.fs.DirOpen,
+            },
+         },
+      },
    },
 
    -- undo/redo
@@ -56,16 +56,16 @@ return {
    },
 
    -- multiple cursors
+   -- {
+   --    'mg979/vim-visual-multi',
+   --    event = 'VeryLazy',
+   --    enabled = false,
+   -- },
    {
-      'mg979/vim-visual-multi',
-      event = 'VeryLazy',
-   },
-
-   -- hover
-   {
-      'lewis6991/hover.nvim',
-      config = require('modules.editor.setup.hover').config,
-      keys = require('modules.editor.setup.hover').keys,
+      'jake-stewart/multicursor.nvim',
+      branch = '1.0',
+      config = require('modules.editor.setup.multicursor').config,
+      keys = require('modules.editor.setup.multicursor').keys,
    },
 
    -- navigation
@@ -91,9 +91,9 @@ return {
    },
    {
       'ggandor/flit.nvim',
-      dependencies = { 'ggandor/leap.nvim', 'tpope/vim-repeat' },
+      dependencies = { { url = 'https://codeberg.org/andyg/leap.nvim' }, 'tpope/vim-repeat' },
       keys = function()
-         ---@type LazyKeys[]
+         ---@type LazyKeysSpec[]
          local ret = {}
          for _, key in ipairs({ 'f', 'F', 't', 'T' }) do
             ret[#ret + 1] = { key, mode = { 'n', 'x', 'o' }, desc = key }
@@ -102,29 +102,29 @@ return {
       end,
       opts = { labeled_modes = 'nx' },
    },
-   {
-      'ggandor/leap.nvim',
-      dependencies = { 'tpope/vim-repeat' },
-      keys = {
-         { 's', mode = { 'n', 'x', 'o' }, desc = 'Leap forward to' },
-         { 'S', mode = { 'n', 'x', 'o' }, desc = 'Leap backward to' },
-         { 'gs', mode = { 'n', 'x', 'o' }, desc = 'Leap from windows' },
-      },
-      config = function(_, opts)
-         local leap = require('leap')
-         for k, v in pairs(opts) do
-            leap.opts[k] = v
-         end
-         leap.add_default_mappings(true)
-         vim.keymap.del({ 'x', 'o' }, 'x')
-         vim.keymap.del({ 'x', 'o' }, 'X')
-      end,
-   },
-   {
-      'KevinSilvester/specs.nvim',
-      event = 'CursorMoved',
-      config = require('modules.editor.setup.specs').config,
-   },
+   -- {
+   --    url = 'https://codeberg.org/andyg/leap.nvim',
+   --    dependencies = { 'tpope/vim-repeat' },
+   --    keys = {
+   --       { 's', mode = { 'n', 'x', 'o' }, desc = 'Leap forward to' },
+   --       { 'S', mode = { 'n', 'x', 'o' }, desc = 'Leap backward to' },
+   --       { 'gs', mode = { 'n', 'x', 'o' }, desc = 'Leap from windows' },
+   --    },
+   --    config = function(_, opts)
+   --       local leap = require('leap')
+   --       for k, v in pairs(opts) do
+   --          leap.opts[k] = v
+   --       end
+   --       leap.add_default_mappings(true)
+   --       vim.keymap.del({ 'x', 'o' }, 'x')
+   --       vim.keymap.del({ 'x', 'o' }, 'X')
+   --    end,
+   -- },
+   -- {
+   --    'KevinSilvester/specs.nvim',
+   --    event = 'CursorMoved',
+   --    config = require('modules.editor.setup.specs').config,
+   -- },
    {
       'gbprod/stay-in-place.nvim',
       event = 'VeryLazy',
@@ -139,39 +139,29 @@ return {
    -- syntax hightlighting
    {
       'nvim-treesitter/nvim-treesitter',
-      -- version = false,
-      -- commit = 'e49f1e8ef3e8450a8446cb1f2bbb53c919f60b6d',
-      opts = require('modules.editor.setup.nvim-treesitter').opts,
-      init = require('modules.editor.setup.nvim-treesitter').init,
-      config = require('modules.editor.setup.nvim-treesitter').config,
-      event = { 'BufReadPost', 'BufNewFile' },
+      branch = 'main',
+      lazy = false,
+      opts = {
+         install_dir = vim.fn.stdpath('data') .. '/nvim-treesitter-main',
+      },
       dependencies = {
          'nvim-treesitter/nvim-treesitter-textobjects',
-         'nvim-treesitter/nvim-treesitter-refactor',
-         'nvim-treesitter/nvim-treesitter-context',
-         'nvim-treesitter/playground',
+         'nvim-treesitter/nvim-treesitter-locals',
+         -- 'nvim-treesitter/nvim-treesitter-refactor',
+         -- 'nvim-treesitter/nvim-treesitter-context',
          'JoosepAlviste/nvim-ts-context-commentstring',
          'andymass/vim-matchup',
       },
    },
+   -- { 'JoosepAlviste/nvim-ts-context-commentstring', opts = { enable_autocmd = false } },
    {
       'nvim-treesitter/nvim-treesitter-textobjects',
+      branch = 'main',
       init = function()
-         local plugin = require('lazy.core.config').spec.plugins['nvim-treesitter']
-         local opts = require('lazy.core.plugin').values(plugin, 'opts', false)
-         local enabled = false
-         if opts.textobjects then
-            for _, mod in ipairs({ 'move', 'select', 'swap', 'lsp_interop' }) do
-               if opts.textobjects[mod] and opts.textobjects[mod].enable then
-                  enabled = true
-                  break
-               end
-            end
-         end
-         if not enabled then
-            require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-textobjects')
-         end
+         vim.g.no_plugin_maps = true
       end,
+      opts = require('modules.editor.setup.nvim-treesitter-textobjects').opts,
+      keys = require('modules.editor.setup.nvim-treesitter-textobjects').keys,
    },
 
    {
@@ -187,33 +177,17 @@ return {
    -- markdown
    {
       'OXY2DEV/markview.nvim',
-      config = true,
-      event = { 'BufReadPost *.md', 'BufNewFile *.md' },
+      opts = { preview = { icon_provider = 'devicons' } },
+      ft = 'markdown',
       cmd = 'Markview',
    },
    {
       'OXY2DEV/helpview.nvim',
       opts = { preview = { icon_provider = 'devicons' } },
+      ft = 'help',
       cmd = 'Helpview',
-      lazy = false,
    },
 
-   {
-      'nvim-treesitter/nvim-treesitter-context',
-      init = function()
-         local plugin = require('lazy.core.config').spec.plugins['nvim-treesitter']
-         local opts = require('lazy.core.plugin').values(plugin, 'opts', false)
-         local enabled = false
-         if opts.context then
-            if opts.context and opts.context.enable then
-               enabled = true
-            end
-         end
-         if not enabled then
-            require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-context')
-         end
-      end,
-   },
    {
       'andymass/vim-matchup',
       dependencies = 'nvim-treesitter/nvim-treesitter',
@@ -224,14 +198,12 @@ return {
    {
       'Wansmer/treesj',
       dependencies = { 'nvim-treesitter/nvim-treesitter' },
-      config = function()
-         require('treesj').setup({ max_join_length = 480 })
-      end,
+      opts = { max_join_length = 480 },
       -- stylua: ignore
       keys = {
-         { '<leader>jt', function() require('treesj').toggle() end, desc = 'Toggle split/join block', },
-         { '<leader>jj', function() require('treesj').join() end,   desc = 'Join block', },
-         { '<leader>js', function() require('treesj').split() end,  desc = 'Split block', },
+         { '<leader>jt', function() require('treesj').toggle() end, desc = '[treesj] Toggle split/join block', },
+         { '<leader>jj', function() require('treesj').join() end,   desc = '[treesj] Join block', },
+         { '<leader>js', function() require('treesj').split() end,  desc = '[treesj] Split block', },
       },
    },
 
@@ -268,6 +240,7 @@ return {
             enable_on_insert = true,
             multilines = true,
             show_source = true,
+            virt_texts = { priority = 9000 },
          },
       },
    },
@@ -295,37 +268,22 @@ return {
    { 'mbbill/undotree', cmd = 'UndotreeToggle' },
 
    -- misc
-   {
-      'abecodes/tabout.nvim',
-      event = 'InsertEnter',
-      opts = require('modules.editor.setup.tabout').opts,
-      keys = {
-         { '<A-l>', modes = { 'n' } },
-         { '<A-h>', modes = { 'n' } },
-      },
-   },
+   -- {
+   --    'abecodes/tabout.nvim',
+   --    event = 'InsertCharPre',
+   --    priority = 1000,
+   --    opts = require('modules.editor.setup.tabout').opts,
+   --    keys = {
+   --       { '<Tab>', modes = { 'n' } },
+   --       { '<S-Tab>', modes = { 'n' } },
+   --    },
+   --    enabled = false
+   -- },
    {
       'barrett-ruth/import-cost.nvim',
       event = { 'BufReadPost *.{ts,tsx,js,cjs,mjs}', 'BufNewFile *.{ts,tsx,js,cjs,mjs}' },
       build = HOST.is_win and 'pwsh install.ps1 npm' or 'bash install.sh npm',
       config = true,
-   },
-   {
-      'gbprod/stay-in-place.nvim',
-      config = true,
-   },
-   {
-      'GitMarkedDan/you-are-an-idiot.nvim',
-      cmd = 'ToggleIdiot',
-      config = function()
-         local idiot = require('you-are-an-idiot')
-         vim.api.nvim_create_user_command('ToggleIdiot', function(_opt)
-            if idiot.is_running() then
-               idiot.abort()
-            else
-               idiot.run({ flashing = true, reproduce_count = 10 })
-            end
-         end, { nargs = 0 })
-      end,
+      enabled = false,
    },
 }

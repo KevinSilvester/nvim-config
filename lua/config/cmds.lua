@@ -65,25 +65,25 @@ end, {
    end,
 })
 
-vim.api.nvim_create_user_command('Tab', function(opts)
-   local val = string.gsub(opts.args, ' ', '')
-   if val:match('^%d+$') then
-      ---@diagnostic disable-next-line: param-type-mismatch
-      ufn.tab_opts(tonumber(val))
-   else
-      log:error('config.cmds.tab', 'Invalid value!')
-   end
-end, {
-   nargs = 1,
-   complete = function(_, line)
-      local args = vim.split(line, '%s+')
-      if #args ~= 2 then
-         return {}
-      end
+-- vim.api.nvim_create_user_command('Tab', function(opts)
+--    local val = string.gsub(opts.args, ' ', '')
+--    if val:match('^%d+$') then
+--       ---@diagnostic disable-next-line: param-type-mismatch
+--       ufn.tab_opts(tonumber(val))
+--    else
+--       log:error('config.cmds.tab', 'Invalid value!')
+--    end
+-- end, {
+--    nargs = 1,
+--    complete = function(_, line)
+--       local args = vim.split(line, '%s+')
+--       if #args ~= 2 then
+--          return {}
+--       end
 
-      return { tostring(vim.o.tabstop) }
-   end,
-})
+--       return { tostring(vim.o.tabstop) }
+--    end,
+-- })
 
 vim.api.nvim_create_user_command('LogClear', function(opts)
    log:clear(opts.bang)

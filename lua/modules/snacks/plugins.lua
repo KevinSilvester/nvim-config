@@ -20,10 +20,12 @@ return {
       picker = require('modules.snacks.setup.picker'),
       notifier = require('modules.snacks.setup.notifier'),
       quickfile = { enabled = true },
+      scratch = { enabled = true },
       scope = { enabled = true },
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = true },
+      zen = require('modules.snacks.setup.zen'),
    },
 
    -- stylua: ignore
@@ -41,13 +43,13 @@ return {
 
       -- find
       { '<leader>fb',      function() Snacks.picker.buffers(layouts.VSCODE_PREVIEW) end,                          desc = '[Snacks] Buffers' },
-      ---@diagnostic disable-next-line: assign-type-mismatch
       { '<leader>fc',      function() Snacks.picker.files({ cwd = vim.fn.stdpath('config') }) end,                desc = '[Snacks] Find Config File' },
       { '<leader>ff',      function() Snacks.picker.files() end,                                                  desc = '[Snacks] Find Files' },
       { '<leader>fg',      function() Snacks.picker.git_files() end,                                              desc = '[Snacks] Find Git Files' },
       { '<leader>fp',      function() Snacks.picker.projects() end,                                               desc = '[Snacks] Projects' },
       { '<leader>fr',      function() Snacks.picker.recent() end,                                                 desc = '[Snacks] Recent' },
       { '<leader>fz',      function() Snacks.picker.zoxide() end,                                                 desc = '[Snacks] Zoxide' },
+
 
       -- git
       { '<leader>gb',      function() Snacks.picker.git_branches() end,                                           desc = '[Snacks] Git Branches' },
@@ -56,6 +58,13 @@ return {
       { '<leader>gS',      function() Snacks.picker.git_status() end,                                             desc = '[Snacks] Git Status' },
       { '<leader>gd',      function() Snacks.picker.git_diff() end,                                               desc = '[Snacks] Git Diff (Hunks)' },
       { '<leader>gf',      function() Snacks.picker.git_log_file() end,                                           desc = '[Snacks] Git Log File' },
+
+      -- image
+      { '<leader>ik',      function() Snacks.image.hover() end,                                                   desc = '[Snacks] Hover Image' },
+
+      -- scratch
+      { '<leader>So',       function() Snacks.scratch.open() end,                                                 desc = '[Snacks] Scratch Pad Open' },
+      { '<leader>Ss',       function() Snacks.scratch.select() end,                                               desc = '[Snacks] Scratch Pad Select' },
 
       -- Grep
       { '<leader>sb',      function() Snacks.picker.lines() end,                                                  desc = '[Snacks] Buffer Lines' },
@@ -86,6 +95,7 @@ return {
       { '<leader>sR',      function() Snacks.picker.resume() end,                                                 desc = '[Snacks] Resume' },
       { '<leader>sU',      function() Snacks.picker.colorschemes() end,                                           desc = '[Snacks] Colorschemes' },
       { '<leader>su',      function() Snacks.picker.undo() end,                                                   desc = '[Snacks] Undo History' },
+      { '<leader>sy',      function() Snacks.picker.yanky() end,                                                  desc = '[Snacks] Yanky History' },
 
       -- LSP
       { 'gd',              function() Snacks.picker.lsp_definitions() end,                                        desc = '[Snacks] Goto Definition' },
@@ -105,11 +115,12 @@ return {
       ---@diagnostic disable-next-line: undefined-field
       { '<leader>snh',     function() Snacks.picker.noice() end,                                                  desc = '[Snacks] Noice History', },
 
-      -- todo-comments
-      { '<leader>st',      function() Snacks.picker.todo_comments() end,                                          desc = 'Todo' },
-      { '<leader>sT',      function() Snacks.picker.todo_comments({ keywords = { 'TODO', 'FIX', 'FIXME' } }) end, desc = 'Todo/Fix/Fixme' },
+      -- todo-comments: exported by todo-comments.nvim
+      { '<leader>st',      function() Snacks.picker.todo_comments() end,                                          desc = '[Snacks] Todo' },
+      { '<leader>sT',      function() Snacks.picker.todo_comments({ keywords = { 'TODO', 'FIX', 'FIXME' } }) end, desc = '[Snacks] Todo/Fix/Fixme' },
 
-      -- image
-      { '<leader>ik',      function() Snacks.image.hover() end,                                                   desc = '[Snacks] Hover Image' }
+      -- zen mode
+      { '<leader>zz',      function() Snacks.zen.zen() end,                                                       desc = '[Snacks] Zen Mode' },
+      { '<leader>zZ',      function() Snacks.zen.zoom() end,                                                      desc = '[Snacks] Zen Mode' },
    },
 }

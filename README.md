@@ -36,7 +36,7 @@
 
 -  [x] Implement global `buf_cache`
 -  [ ] Create wrapper for `nvim-treesitter` commands to interop with `ts-parsers`
--  [ ] ~~Create wrapper for `lazy.nvim` commands~~
+-  [-] Create wrapper for `lazy.nvim` commands
 -  [x] Bootstrap
    -  [x] Add function to create git-hooks
    -  [x] Add function to download pre-compiled treesitter parsers
@@ -52,7 +52,7 @@
    -  [ ] nvim-dap-virtual-text
    -  [ ] neotest
    -  [x] yanky.nvim
-   -  [x] git-worktree.nvim
+   -  [-] git-worktree.nvim
    -  [ ] nvim-regexplainer
    -  [x] dial.nvim
    -  [ ] ~~gitlinker.nvim~~
@@ -70,8 +70,8 @@
    -  [ ] nvim-html-css
    -  [ ] johmsalas/text-case.nvim
    -  [ ] jake-stewart/multicursor.nvim or smoka7/multicursors.nvim
-   -  [ ] shortcuts/no-neck-pain.nvim
-   -  [ ] rafcamlet/nvim-luapad
+   -  [-] shortcuts/no-neck-pain.nvim
+   -  [-] rafcamlet/nvim-luapad
    -  [x] MagicDuck/grug-far.nvim (replace nvim-spectre)
 - [ ] Snacks
    -  [x] Deprecate dressing.nvim
@@ -83,7 +83,14 @@
    -  [x] Deprecate telescope-file-browser.nvim
    -  [x] Deprecate nvim-notify
    -  [ ] Deprecate toggleterm.nvim
-   -  [ ] Deprecate zen-mode.nvim
+   -  [x] Deprecate zen-mode.nvim
+- [x] Treesitter
+   -  [x] Update to main branch
+   -  [x] 'nvim-treesitter/nvim-treesitter-refactor' -> 'nvim-treesitter/nvim-treesitter-locals' 
+   -  [x] 'nvim-treesitter/nvim-treesitter-textobjects:master' -> 'nvim-treesitter/nvim-treesitter-textobjects:main' 
+   -  [x] Deprecate 'nvim-treesitter/playground' (`InspectTree` command is now builtin)
+   -  [ ] Update the config
+   -  [ ]
 
 ### Preview Config
 

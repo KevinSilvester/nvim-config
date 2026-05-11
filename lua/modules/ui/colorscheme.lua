@@ -3,7 +3,7 @@ local M = {}
 ---@alias Catppuccino 'catppuccin' | 'catppuccin-mocha' | 'catppuccin-macchiato' | 'catppuccin-latte' | 'catppuccin-frappe'
 
 ---set colorscheme
----@param colorscheme Catppuccino|'kanagawa'|'material'|'tokyonight'|'zephyr'|'darkplus'|'onedarker'|'poimandres'|'everforest'
+---@param colorscheme Catppuccino|'kanagawa'|'material'|'tokyonight'|'zephyr'|'darkplus'|'onedarker'|'everforest'
 M.setup = function(colorscheme)
    xpcall(function()
       vim.cmd('colorscheme ' .. colorscheme)

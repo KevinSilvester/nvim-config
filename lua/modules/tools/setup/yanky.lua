@@ -1,17 +1,7 @@
 local M = {}
 
-M.config = function()
-   require('yanky').setup({})
-   require('telescope').load_extension('yank_history')
-end
-
 -- stylua: ignore
 M.keys = {
-   {
-      '<leader>sy',
-      function() require('telescope').extensions.yank_history.yank_history({}) end,
-      desc = '[yanky] Open Yank History',
-   },
    {
       'y',
       '<Plug>(YankyYank)',

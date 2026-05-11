@@ -2,9 +2,8 @@ local M = {}
 
 ---@type TailwindTools.Option|{}
 M.opts = {
-   server = {
-      override = false, -- setup the server from the plugin if true
-   },
+   ---@diagnostic disable-next-line: missing-fields
+   server = { override = true }, -- setup the server from the plugin if true
    document_color = {
       enabled = true, -- can be toggled by commands
       kind = 'inline', -- "inline" | "foreground" | "background"
@@ -35,14 +34,5 @@ M.opts = {
       },
    },
 }
-
-M.config = function(_, opts)
-   local tailwindcss = require('tailwind-tools')
-
-   local lspconfig = require('lspconfig')
-   require('telescope').load_extension('tailwind')
-   lspconfig.tailwindcss.setup(require('modules.cmp_lsp.lsp.servers.tailwindcss'))
-   tailwindcss.setup(opts)
-end
 
 return M

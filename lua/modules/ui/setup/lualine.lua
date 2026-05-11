@@ -141,28 +141,28 @@ M.config = function(_, opts)
       separator = separators.both,
    }
 
-   local harpoon = {
-      function()
-         local list_len = vim.tbl_count(HARPOON_LIST)
-         if list_len == 0 then
-            return ''
-         end
+   -- local harpoon = {
+   --    function()
+   --       local list_len = vim.tbl_count(HARPOON_LIST)
+   --       if list_len == 0 then
+   --          return ''
+   --       end
 
-         local tbl = {}
+   --       local tbl = {}
 
-         for path, idx in pairs(HARPOON_LIST) do
-            if path == buf_cache.buffers.active.file then
-               tbl[idx] = '[' .. idx .. ']'
-            else
-               tbl[idx] = idx
-            end
-         end
+   --       for path, idx in pairs(HARPOON_LIST) do
+   --          if path == buf_cache.buffers.active.file then
+   --             tbl[idx] = '[' .. idx .. ']'
+   --          else
+   --             tbl[idx] = idx
+   --          end
+   --       end
 
-         return ' : ' .. table.concat(tbl, ' ')
-      end,
-      separator = separators.both,
-      color = { bg = colours.blue, fg = colours.black },
-   }
+   --       return ' : ' .. table.concat(tbl, ' ')
+   --    end,
+   --    separator = separators.both,
+   --    color = { bg = colours.blue, fg = colours.black },
+   -- }
 
    local copilot = {
       function()
@@ -263,9 +263,10 @@ M.config = function(_, opts)
 
    local location = {
       function()
+         local col = vim.fn.virtcol('.')
          local line = vim.fn.line('.')
          local total = vim.fn.line('$')
-         return string.format(icons.location .. ' %d/%d', line, total)
+         return string.format(icons.location .. ' %d:%d|%d', col, line, total)
       end,
       on_click = function()
          local line = vim.fn.line('.')
@@ -283,7 +284,11 @@ M.config = function(_, opts)
    opts.sections = {
       lualine_a = { mode },
       lualine_b = { filename, branch, diff },
-      lualine_c = { info, diagnostics, '%=', harpoon },
+      lualine_c = {
+         info,
+         diagnostics,
+         '%=' --[[ , harpoon ]],
+      },
       lualine_x = { copilot, treesitter, fmt, lsp, fileformat },
       lualine_y = { filesize, filetype },
       lualine_z = { location },

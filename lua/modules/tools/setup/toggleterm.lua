@@ -1,10 +1,10 @@
-local cmd = require('core.mapper').cmd
+local m = require('core.mapper')
 local M = {}
 
 M.opts = function()
    return {
       size = 30,
-      open_mapping = '<C-p>',
+      -- open_mapping = '<C-_>',
       hide_numbers = true,
       shade_terminals = true,
       shading_factor = 2,
@@ -19,10 +19,10 @@ end
 
 -- stylua: ignore
 M.keys = {
-   { '<C-p>',      cmd('ToggleTerm direction=float'),              desc = 'new terminal (float)' },
-   { '<leader>tf', cmd('ToggleTerm direction=float'),              desc = 'new terminal (float)' },
-   { '<leader>th', cmd('ToggleTerm direction=horizontal size=10'), desc = 'new terminal (horizontal)' },
-   { '<leader>tv', cmd('ToggleTerm direction=vertical size=80'),   desc = 'new terminal (vertical)' },
+   -- { '<C-_>',      m.cmd('ToggleTerm direction=float'),              desc = 'new terminal (float)' },
+   { '<leader>tf', m.cmd('ToggleTerm direction=float'),              desc = 'new terminal (float)' },
+   { '<leader>th', m.cmd('ToggleTerm direction=horizontal size=10'), desc = 'new terminal (horizontal)' },
+   { '<leader>tv', m.cmd('ToggleTerm direction=vertical size=80'),   desc = 'new terminal (vertical)' },
 }
 
 return M

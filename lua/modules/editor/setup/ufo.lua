@@ -58,7 +58,17 @@ M.keys = {
          require('ufo').peekFoldedLinesUnderCursor()
       end,
       desc = '[ufo] Goto Prev Fold'
-   }
+   },
+   {
+      'K',
+      function()
+         local winid = require('ufo').peekFoldedLinesUnderCursor()
+         if not winid then
+            vim.lsp.buf.hover({ border = 'rounded' })
+         end
+      end,
+      desc = '[builtin/ufo] lsp hover / peak fold',
+   },
 }
 
 return M

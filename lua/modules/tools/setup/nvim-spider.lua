@@ -3,18 +3,29 @@ local M = {}
 M.keys = {
    { -- example for lazy-loading on keystroke
       'e',
-      "<cmd>lua require('spider').motion('e')<CR>",
+      function()
+         require('spider').motion('e')
+      end,
       mode = { 'n', 'o', 'x' },
    },
-   { -- example using an explicit function
+   {
       'w',
       function()
-         require('spider').motion('w', {
-            customPatterns = {
-               patterns = { ('%x'):rep(6) .. '+' },
-               overrideDefault = true,
-            },
-         })
+         require('spider').motion('w')
+      end,
+      mode = { 'n', 'o', 'x' },
+   },
+   {
+      'b',
+      function()
+         require('spider').motion('b')
+      end,
+      mode = { 'n', 'o', 'x' },
+   },
+   {
+      'ge',
+      function()
+         require('spider').motion('ge')
       end,
       mode = { 'n', 'o', 'x' },
    },

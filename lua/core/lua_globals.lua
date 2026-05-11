@@ -1,13 +1,12 @@
-local uv = vim.version().minor >= 10 and vim.uv or vim.loop
 -- stylua: ignore start
 
 ------------------------------------------------------------------------
 --                            host OS                                 --
 ------------------------------------------------------------------------
 _G.HOST = {}
-HOST.is_win = uv.os_uname().sysname == 'Windows_NT'
-HOST.is_linux = uv.os_uname().sysname == 'Linux'
-HOST.is_mac = uv.os_uname().sysname == 'Darwin'
+HOST.is_win = vim.uv.os_uname().sysname == 'Windows_NT'
+HOST.is_linux = vim.uv.os_uname().sysname == 'Linux'
+HOST.is_mac = vim.uv.os_uname().sysname == 'Darwin'
 HOST.is_docker = vim.fn.filereadable('/.dockerenv') == 1
 
 
@@ -34,16 +33,21 @@ PATH.cache = vim.fn.stdpath('cache')
 _G.DEFAULT_LSP_SERVERS = {
    'astro',
    'bashls',
+   'biome',
    'cmake',
    'cssls',
+   'css_variables',
+   -- 'denols',
    'dockerls',
-   'dotls',
-   -- 'emmet_ls',
+   'docker_compose_language_service',
+   'emmet_ls',
    -- 'eslint',
    'html',
    'jsonls',
+   'lua_ls',
+   -- 'omnisharp',
    'pyright',
-   'rust_analyzer',
+   -- 'rust_analyzer', rustaceanvim get confused between this and ls that comes with the rust toolchain
    'sqlls',
    'svelte',
    'tailwindcss',
@@ -63,5 +67,5 @@ end
 --                           harpoon list                             --
 ------------------------------------------------------------------------
 ---@type table<string, number>
-_G.HARPOON_LIST = {}
+-- _G.HARPOON_LIST = {}
 -- stylua: ignore end
